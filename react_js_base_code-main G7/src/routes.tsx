@@ -14,6 +14,7 @@ export const AppRoutes = () => {
         <Route path={PATHS.LOGIN.path} element={<Views.Login />} />
         <Route path={PATHS.LOGOUT.path} element={<Views.Logout />} />
         <Route path={PATHS.NOT_FOUND.path} element={<Views.NotFound />} />
+        <Route path={PATHS.FORGOTPASSWORD.path} element={<Views.ForgotPassword />} />
       </Routes>
     </BrowserRouter>
   );
