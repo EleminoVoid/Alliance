@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constant';
-import './Login.css'
+import './Login.css';
 
 export const Login = () => {
   const { pathname } = window.location;
@@ -11,7 +11,7 @@ export const Login = () => {
       navigate(PATHS.DASHBOARD.path);
     }
   };
-  
+
   const handleClickToChangePass = () => {
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.FORGOTPASSWORD.path);
@@ -19,19 +19,19 @@ export const Login = () => {
   };
 
   return (
-    <div className="wrapper">
+    <div className="login-wrapper">
       <div className="login-container">
         <div className="login-box-left">
           <h1>Sign In</h1>
           <div>
             <form className="login-form">
-              <div className="input-container">
+              <div className="login-input-container">
                 <label>
                   <span>Email</span>
                   <input type="text" />
                 </label>
               </div>
-              <div className="input-container">
+              <div className="login-input-container">
                 <label>
                   <span>Password</span>
                   <input type="password" />
@@ -41,12 +41,12 @@ export const Login = () => {
               <button type="submit" onClick={handleClickToDashboard}>Sign In</button>
             </form>
           </div>
-          <div className="sign-up">
+          <div className="login-sign-up">
             <p>Don't have an account? <button>Sign Up</button></p>
           </div>
         </div>
         <div className="login-box-right">
-          <img src='loginpic.jpg' alt='loginpic'></img>
+          <img src="loginpic.jpg" alt="loginpic" />
         </div>
       </div>
     </div>

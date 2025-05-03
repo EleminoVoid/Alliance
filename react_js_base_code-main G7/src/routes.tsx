@@ -7,7 +7,7 @@ export const AppRoutes = () => {
     <BrowserRouter>
       <Routes>
         <Route path={PATHS.MAIN.path} element={<Views.Main />}>
-          {/* ADD PPRIVATE ROUTES HERE (Routes that can only access after login like Dashboard, Account Setting, etc.) */}
+          {/* ADD PRIVATE ROUTES HERE (Routes that can only access after login like Dashboard, Account Setting, etc.) */}
           <Route path={PATHS.DASHBOARD.path} element={<Views.Dashboard />} />
         </Route>
         {/* ADD PUBLIC ROUTES HERE (e.g., Login, Sign Up, Forgot Pass, etc. ) */}
