@@ -22,21 +22,31 @@ export const Login = () => {
     <div className="wrapper">
       <div className="login-container">
         <div className="login-box-left">
-          <h2>Sign In</h2>
+          <h1>Sign In</h1>
           <div>
             <form className="login-form">
-              <input type="text" placeholder="Email"></input><br />
-              <input type="password" placeholder="Password"></input>
-              <p>Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button></p>
+              <div className="input-container">
+                <label>
+                  <span>Email</span>
+                  <input type="text" />
+                </label>
+              </div>
+              <div className="input-container">
+                <label>
+                  <span>Password</span>
+                  <input type="password" />
+                </label>
+                <p>Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button></p>
+              </div>
               <button type="submit" onClick={handleClickToDashboard}>Sign In</button>
             </form>
           </div>
-          <div>
-            <p>Don't have an account? <i>Sign Up</i></p>
+          <div className="sign-up">
+            <p>Don't have an account? <button>Sign Up</button></p>
           </div>
         </div>
         <div className="login-box-right">
-          <img src='login-pic.jpg' alt='loginpic'></img>
+          <img src='loginpic.jpg' alt='loginpic'></img>
         </div>
       </div>
     </div>

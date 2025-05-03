@@ -1,48 +1,143 @@
 body {
+    font-family: "Poppins", sans-serif;
+    font-weight: 100;
+    font-style: normal;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: lab(59.66% 8.64 -36.67);
+    margin: 0;
+    height: 100vh;
 }
 
 .wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    width: 100vh;
+    height: 100%;
+    width: 100%;
     background-color: lab(59.66% 8.64 -36.67);
 }
 
 .login-container {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr 1fr; /* Two columns: left and right */
     border: none;
     border-radius: 10px;
     padding: 20px;
     margin: 20px;
     background-color: white;
-}
-
-h2 {
-    text-align: left;
+    gap: 20px; /* Space between the two columns */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .login-box-left {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Space out elements vertically */
+    padding: 20px;
+}
+
+h1 {
+    text-align: left;
+    color: #4b0082; /* Matches the purple theme */
+    margin-top: 0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
 }
 
 .login-form input {
-    margin: 10px;
+    margin: 10px 0;
     padding: 8px;
-    width: 200px;
+    width: 250px; /* Slightly wider for better alignment */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    align-self: center;
 }
 
-.login-form button {
-    padding: 10px 20px;
-    background-color: purple;
+.input-container {
+    position: relative;
+    margin-bottom: 20px;
+    width: 250px;
+    align-self: center;
+}
+
+.input-container label {
+    display: block;
+    position: relative;
+}
+
+.input-container span {
+    position: absolute;
+    top: -4px; /* Position the placeholder text above the input */
+    left: 10px;
+    font-weight: bold;
+    font-style: bold;
+    color: #333;
+    background-color: white; /* Matches the background of the form */
+    padding: 0 5px; /* Adds padding around the text */
+    pointer-events: none; /* Prevents interaction with the placeholder */
+}
+
+.input-container input {
+    width: 100%;
+    padding: px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    font-size: 1em;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.login-form p button {
+    font-style: italic;
+    background: none;
+    border: none;
+    color: #4b0082;
+    cursor: pointer;
+    font-size: 0.9em;
+    padding: 0;
+}
+
+.login-form button[type="submit"] {
+    font-family: "Poppins", sans-serif;
+    align-self: center; /* Centers the button */
+    margin-top: 30px; /* Adds space between the button and the "Forgot Password" */
+    padding: 10px 30px;
+    background-color: #4b0082;
     color: white;
     border: none;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: 5px;
+    font-size: 1.2em;
+}
+
+.sign-up p {
+    margin-bottom: 0;
+}
+
+.sign-up button {
+    font-style: italic;
+    background: none;
+    border: none;
+    color: #4b0082;
+    cursor: pointer;
+    font-size: 0.9em;
+    padding: 0;
+}
+
+.login-box-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 20px; /* Adds space between the image and the left box */
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px; /* Optional: Adds rounded corners to the image */
 }
