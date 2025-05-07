@@ -6,10 +6,10 @@ export const Login = () => {
   const { pathname } = window.location;
   const navigate = useNavigate();
 
-  const handleClickToDashboard = (e: React.FormEvent) => {
+  const handleClickToHomePage = (e: React.FormEvent) => {
     e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.DASHBOARD.path);
+      navigate(PATHS.HOMEPAGE.path);
     }
   };
   
@@ -38,7 +38,7 @@ export const Login = () => {
               <p className="forgot-password">
                 Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button>
               </p>
-              <button type="submit" onClick={handleClickToDashboard}>Sign In</button>
+              <button type="submit" onClick={handleClickToHomePage}>Sign In</button>
             </form>
           </div>
           <div className="signup-prompt">

@@ -1,10 +1,38 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import "./Homepage.css";
 
-export const Home = () => {
+export const Homepage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [featuredRooms, setFeaturedRooms] = useState<any[]>([]);
+
+  // Example API call for featured rooms
+  useEffect(() => {
+    const fetchFeaturedRooms = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/featured-rooms");
+        setFeaturedRooms(response.data);
+      } catch (error) {
+        console.error("Error fetching featured rooms:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedRooms();
+  }, []);
+
+  // Example booking function
+  const handleQuickBook = async (roomId: string) => {
+    try {
+      await axios.post("http://localhost:3000/quick-book", { roomId });
+      navigate("/confirmation");
+    } catch (error) {
+      console.error("Booking failed:", error);
+    }
+  };
 
   return (
     <div className="home-container">
@@ -33,6 +61,23 @@ export const Home = () => {
           >
             Book A Room
           </button>
+
+          {/* Optional: Display featured rooms from API */}
+          {!loading && featuredRooms.length > 0 && (
+            <div className="featured-rooms">
+              <h3>Featured Rooms</h3>
+              <div className="room-list">
+                {featuredRooms.map(room => (
+                  <div key={room.id} className="room-card">
+                    <h4>{room.name}</h4>
+                    <button onClick={() => handleQuickBook(room.id)}>
+                      Quick Book
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
 

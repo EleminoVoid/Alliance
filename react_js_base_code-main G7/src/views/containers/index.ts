@@ -4,3 +4,4 @@ export * from "./Dashboard";
 export * from "./Login";
 export * from "./Logout";
 export * from "./ForgotPassword";
+export * from "./Homepage";

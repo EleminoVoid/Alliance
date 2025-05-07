@@ -1,3 +1,5 @@
+import { Label } from "../includes";
+
 // ROUTER PATH
 export const PATHS = {
   MAIN: {
@@ -23,6 +25,10 @@ export const PATHS = {
   NOT_FOUND: {
     path: "*",
     label: "Not Found"
+  },
+  HOMEPAGE: {
+    path: "/homepage",
+    label: "Homepage"
   }
   // Add more routes here
 };
