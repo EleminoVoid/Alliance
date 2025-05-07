@@ -1,18 +1,20 @@
 import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constant';
-import './Login.css'
+import './Login.css';
 
 export const Login = () => {
   const { pathname } = window.location;
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const handleClickToDashboard = () => {
+  const handleClickToDashboard = (e: React.FormEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.DASHBOARD.path);
     }
   };
   
-  const handleClickToChangePass = () => {
+  const handleClickToChangePass = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.FORGOTPASSWORD.path);
     }
@@ -25,18 +27,26 @@ export const Login = () => {
           <h2>Sign In</h2>
           <div>
             <form className="login-form">
-              <input type="text" placeholder="Email"></input><br />
-              <input type="password" placeholder="Password"></input>
-              <p>Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button></p>
+              <div className="input-group">
+                <input type="text" id="Email" placeholder=" " />
+                <label htmlFor="Email">Email</label>
+              </div>
+              <div className="input-group">
+                <input type="password" id="Password" placeholder=" " />
+                <label htmlFor="Password">Password</label>
+              </div>
+              <p className="forgot-password">
+                Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button>
+              </p>
               <button type="submit" onClick={handleClickToDashboard}>Sign In</button>
             </form>
           </div>
-          <div>
-            <p>Don't have an account? <i>Sign Up</i></p>
+          <div className="signup-prompt">
+            <p>Don't have an account? <span className="signup-link">Sign Up</span></p>
           </div>
         </div>
         <div className="login-box-right">
-          <img src='login-pic.jpg' alt='loginpic'></img>
+          <img src='login-pic.jpg' alt='login' />
         </div>
       </div>
     </div>
