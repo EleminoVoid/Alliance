@@ -9,6 +9,7 @@ export const AppRoutes = () => {
         <Route path={PATHS.MAIN.path} element={<Views.Main />}>
           {/* ADD PRIVATE ROUTES HERE (Routes that can only access after login like Dashboard, Account Setting, etc.) */}
           <Route path={PATHS.DASHBOARD.path} element={<Views.Dashboard />} />
+          <Route path={PATHS.HOMEPAGE.path} element={<Views.Homepage />} />
         </Route>
         {/* ADD PUBLIC ROUTES HERE (e.g., Login, Sign Up, Forgot Pass, etc. ) */}
         <Route path={PATHS.LOGIN.path} element={<Views.Login />} />
