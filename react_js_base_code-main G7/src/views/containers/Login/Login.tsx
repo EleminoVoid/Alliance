@@ -18,6 +18,12 @@ export const Login = () => {
     }
   };
 
+  const handleClickToRegister = () => {
+    if (pathname === PATHS.LOGIN.path) {
+      navigate(PATHS.REGISTER.path);
+    }
+  };
+
   return (
     <div className="login-wrapper">
       <div className="login-container">
@@ -42,7 +48,7 @@ export const Login = () => {
             </form>
           </div>
           <div className="login-sign-up">
-            <p>Don't have an account? <button>Sign Up</button></p>
+            <p>Don't have an account? <button onClick={handleClickToRegister}>Sign Up</button></p>
           </div>
         </div>
         <div className="login-box-right">
