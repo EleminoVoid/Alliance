@@ -1,90 +1,144 @@
-/* Reset default margins/padding */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 body, html {
   margin: 0;
   padding: 0;
 }
 
-/* Hero Section fills full viewport height */
+.banner {
+  width: 100%;
+  height: 100vh; /* Full screen height */
+  background-image: url("https://storage.googleapis.com/a1aa/image/c0ead8a9-64a0-47e9-6ce1-1d79f3345ef8.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+
 .hero-section {
   position: relative;
   width: 100%;
-  height: 100vh;
+  max-height: 400px;
   overflow: hidden;
 }
 
-/* Background Image */
 .hero-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  background-image: url('https://storage.googleapis.com/a1aa/image/c0ead8a9-64a0-47e9-6ce1-1d79f3345ef8.jpg'); /* Add image path here */
-  background-size: cover;
-  background-position: center;
+  filter: brightness(50%);
+  object-position: center 40%;
 }
 
-/* Overlay content centered */
 .hero-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4); /* Dark overlay */
+  inset: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  color: white;
   padding: 1rem;
 }
 
-/* Subtitle Text */
 .hero-subtitle {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  color: white;
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 600;
+  max-width: 48rem;
+  line-height: 1.3;
+}
+
+@media (min-width: 640px) {
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-subtitle {
+    font-size: 1.875rem;
+  }
 }
 
 .hero-highlight {
+  font-weight: 800;
   font-style: italic;
 }
 
-/* Small text */
 .hero-with {
-  font-size: 0.8rem;
-  margin: 0.25rem 0;
-}
-
-/* Title */
-.hero-title {
-  font-size: 3rem;
-  font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-  margin: 0.5rem 0;
-}
-
-/* Button */
-.hero-button {
-  background-color: #7c3aed; /* Violet-600 equivalent */
   color: white;
-  padding: 0.5rem 1.25rem;
-  font-size: 0.85rem;
-  border-radius: 1rem;
-  border: none;
-  cursor: pointer;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
 }
 
-/* Quote Section */
+@media (min-width: 640px) {
+  .hero-with {
+    font-size: 1rem;
+  }
+}
+
+.hero-title {
+  color: white;
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 4px 3px rgba(0, 0, 0, 0.7);
+}
+
+@media (min-width: 640px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 3.75rem;
+  }
+}
+
+.hero-button {
+  margin-top: 1.5rem;
+  background-color: #6b21a8;
+  color: white;
+  font-weight: 600;
+  font-style: italic;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.5rem 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.hero-button:hover {
+  background-color: #581c87;
+}
+
 .quote-section {
-  background-color: #f0fdfa; /* Tailwind's emerald-50 */
-  padding: 1rem;
+  background-color: #f3fcfc;
+  padding: 1.5rem 1rem;
   text-align: center;
 }
 
 .quote-text {
-  font-weight: bold;
-  font-style: italic;
+  color: black;
   font-size: 1rem;
+  font-weight: 600;
+  font-style: italic;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .quote-text {
+    font-size: 1.125rem;
+  }
 }
