@@ -46,11 +46,7 @@ export const Login = () => {
           </div>
         </div>
         <div className="login-box-right">
-<<<<<<< Updated upstream
           <img src="loginpic.jpg" alt="loginpic" />
-=======
-          <img src='loginassets/loginpic.jpg' alt='loginpic'></img>
->>>>>>> Stashed changes
         </div>
       </div>
     </div>
