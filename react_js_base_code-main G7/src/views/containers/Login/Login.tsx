@@ -3,6 +3,8 @@ import { PATHS } from '../../../constant';
 import './Login.css';
 
 export const Login = () => {
+  <link href="https://fonts.googleapis.com/css2?family=Inter&amp;display=swap" rel="stylesheet"/>
+
   const { pathname } = window.location;
   const navigate = useNavigate();
 
@@ -17,6 +19,13 @@ export const Login = () => {
     e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.FORGOTPASSWORD.path);
+    }
+  };
+  
+  const handleClickToRegister = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (pathname === PATHS.LOGIN.path) {
+      navigate(PATHS.REGISTER.path);
     }
   };
 
@@ -42,11 +51,11 @@ export const Login = () => {
             </form>
           </div>
           <div className="signup-prompt">
-            <p>Don't have an account? <span className="signup-link">Sign Up</span></p>
+            <p>Don't have an account? <span className="signup-link" onClick={handleClickToRegister}>Sign Up</span></p>
           </div>
         </div>
         <div className="login-box-right">
-          <img src='login-pic.jpg' alt='login' />
+        <img alt="Overhead view of a diverse group of people in a business meeting around a wooden table with laptops, tablets, coffee cups, and documents" className="w-full h-full object-cover rounded-tr-2xl rounded-br-2xl" height="600" src="https://storage.googleapis.com/a1aa/image/cabf2495-2a51-4614-106c-845b62f8d170.jpg" width="600"/>
         </div>
       </div>
     </div>
