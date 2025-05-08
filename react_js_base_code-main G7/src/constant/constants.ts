@@ -8,9 +8,9 @@ export const PATHS = {
     path: "/login",
     label: "Login"
   },
-  LOGOUT: {
-    path: "/logout",
-    label: "Logout"
+  REGISTER: {
+    path: "/register",
+    label: "Register"
   },
   DASHBOARD: {
     path: "/dashboard",
