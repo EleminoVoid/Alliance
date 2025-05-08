@@ -4,55 +4,49 @@ import './Login.css';
 
 export const Login = () => {
   const { pathname } = window.location;
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const handleClickToDashboard = () => {
+  const handleClickToHomePage = (e: React.FormEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.DASHBOARD.path);
+      navigate(PATHS.HOMEPAGE.path);
     }
   };
-
-  const handleClickToChangePass = () => {
+  
+  const handleClickToChangePass = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.FORGOTPASSWORD.path);
     }
   };
 
-  const handleClickToRegister = () => {
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.REGISTER.path);
-    }
-  };
-
   return (
-    <div className="login-wrapper">
+    <div className="wrapper">
       <div className="login-container">
         <div className="login-box-left">
-          <h1>Sign In</h1>
+          <h2>Sign In</h2>
           <div>
             <form className="login-form">
-              <div className="login-input-container">
-                <label>
-                  <span>Email</span>
-                  <input type="text" />
-                </label>
+              <div className="input-group">
+                <input type="text" id="Email" placeholder=" " />
+                <label htmlFor="Email">Email</label>
               </div>
-              <div className="login-input-container">
-                <label>
-                  <span>Password</span>
-                  <input type="password" />
-                </label>
-                <p>Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button></p>
+              <div className="input-group">
+                <input type="password" id="Password" placeholder=" " />
+                <label htmlFor="Password">Password</label>
               </div>
-              <button type="submit" onClick={handleClickToDashboard}>Sign In</button>
+              <p className="forgot-password">
+                Forgot Password? <button onClick={handleClickToChangePass}>Click Here</button>
+              </p>
+              <button type="submit" onClick={handleClickToHomePage}>Sign In</button>
             </form>
           </div>
-          <div className="login-sign-up">
-            <p>Don't have an account? <button onClick={handleClickToRegister}>Sign Up</button></p>
+          <div className="signup-prompt">
+            <p>Don't have an account? <span className="signup-link">Sign Up</span></p>
           </div>
         </div>
         <div className="login-box-right">
-          <img src="loginpic.jpg" alt="loginpic" />
+          <img src='login-pic.jpg' alt='login' />
         </div>
       </div>
     </div>
