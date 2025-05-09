@@ -41,6 +41,10 @@ export const PATHS = {
   CALENDAR:{
     path: "/Calendar",
     label: "Calendar"
+  },
+  SETTINGS:{
+    path: "/Settings",
+    label: "Settings"
   }
   // Add more routes here
 };

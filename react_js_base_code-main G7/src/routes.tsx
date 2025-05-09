@@ -12,6 +12,8 @@ export const AppRoutes = () => {
           <Route path={PATHS.VIEW_ROOMS.path} element={<Views.ViewRooms />} />
           <Route path={PATHS.FAQ.path} element={<Views.Faq />} />
           <Route path={PATHS.CALENDAR.path} element={<Views.CalendarBooking />} />
+          <Route path={PATHS.SETTINGS.path} element={<Views.Settings />} />
+
 
         </Route>
         {/* ADD PUBLIC ROUTES HERE (e.g., Login, Sign Up, Forgot Pass, etc. ) */}

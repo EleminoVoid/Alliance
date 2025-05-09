@@ -8,3 +8,4 @@ export * from "./Homepage";
 export * from "./ViewRooms";
 export * from "./Faq";
 export * from "./CalendarBooking";
+export * from "./Settings";
