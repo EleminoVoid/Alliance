@@ -2,22 +2,27 @@ import { useNavigate } from 'react-router';
 import { PATHS } from '../../../constant';
 
 export const Login = () => {
-  const { pathname } = window.location;
-  let navigate = useNavigate();
+  <link href="https://fonts.googleapis.com/css2?family=Inter&amp;display=swap" rel="stylesheet"/>
 
-  const handleClickToDashboard = () => {
+  const { pathname } = window.location;
+  const navigate = useNavigate();
+
+  const handleClickToHomePage = (e: React.FormEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.HOMEPAGE.path);
     }
   };
-
-  const handleClickToChangePass = () => {
+  
+  const handleClickToChangePass = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.FORGOTPASSWORD.path);
     }
   };
-
-  const handleClickToRegister = () => {
+  
+  const handleClickToRegister = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (pathname === PATHS.LOGIN.path) {
       navigate(PATHS.REGISTER.path);
     }
