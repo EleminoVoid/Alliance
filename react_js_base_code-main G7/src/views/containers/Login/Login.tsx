@@ -48,7 +48,7 @@ export const Login = () => {
                 </label>
                 <p>Forgot Password? <button onClick={handleClickToChangePass} style={{ fontStyle: 'italic', background: 'none', border: 'none', color: '#593F62', cursor: 'pointer', fontSize: '0.9em', padding: '0' }}>Click Here</button></p>
               </div>
-              <button type="submit" onClick={handleClickToDashboard} style={{ fontFamily: 'Poppins, sans-serif', alignSelf: 'center', marginTop: '30px', padding: '10px 30px', backgroundColor: '#593F62', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '5px', fontSize: '1.2em' }}>Sign In</button>
+              <button type="submit" onClick={handleClickToHomePage} style={{ fontFamily: 'Poppins, sans-serif', alignSelf: 'center', marginTop: '30px', padding: '10px 30px', backgroundColor: '#593F62', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '5px', fontSize: '1.2em' }}>Sign In</button>
             </form>
           </div>
           <div className="login-sign-up">
