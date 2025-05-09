@@ -31,7 +31,7 @@ export const PATHS = {
     label: "Homepage"
   },
   VIEW_ROOMS: {
-    path: "/rooms",
+    path: "/ViewRooms",
     label: "Booking"
   },
   FAQ: {

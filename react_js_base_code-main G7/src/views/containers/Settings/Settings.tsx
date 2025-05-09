@@ -1,4 +1,4 @@
-// Settings.tsx
+// Settings.tsx different from figma because this is more practical and functional
 import React, { useState } from "react";
 
 export const Settings: React.FC = () => {
@@ -24,22 +24,18 @@ export const Settings: React.FC = () => {
       return;
     }
 
-    // In a real app, this would update the user's account
     setNotificationMessage("Account information updated successfully.");
     setShowNotification(true);
 
-    // Auto-hide notification after 3 seconds
     setTimeout(() => {
       setShowNotification(false);
     }, 3000);
   };
 
   const handleSaveNotifications = (): void => {
-    // In a real app, this would update notification preferences
     setNotificationMessage("Notification preferences saved successfully.");
     setShowNotification(true);
 
-    // Auto-hide notification after 3 seconds
     setTimeout(() => {
       setShowNotification(false);
     }, 3000);
