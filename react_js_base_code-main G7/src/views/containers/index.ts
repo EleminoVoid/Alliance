@@ -7,3 +7,4 @@ export * from "./ForgotPassword";
 export * from "./Homepage";
 export * from "./ViewRooms";
 export * from "./Faq";
+export * from "./CalendarBooking";

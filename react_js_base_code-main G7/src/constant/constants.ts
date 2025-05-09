@@ -1,3 +1,5 @@
+import { patch } from "@mui/material";
+
 // ROUTER PATH
 export const PATHS = {
   MAIN: {
@@ -35,6 +37,10 @@ export const PATHS = {
   FAQ: {
     path: "/faq",
     label: "FAQ"
+  },
+  CALENDAR:{
+    path: "/Calendar",
+    label: "Calendar"
   }
   // Add more routes here
 };

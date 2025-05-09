@@ -23,6 +23,7 @@ import Divider from "@mui/material/Divider";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
+import './Main.css';
 
 export const Main = () => {
   // CURRENT URL/PATH LOCATORS

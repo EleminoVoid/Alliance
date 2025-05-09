@@ -19,6 +19,7 @@ export const Register = () => {
   };
 
   return (
+    
     <div className="register-wrapper">
       <div className="register-container">
         <div className="register-box-left">

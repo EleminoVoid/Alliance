@@ -1,0 +1,121 @@
+/* Base container */
+.marshal-container {
+  font-family: Arial, sans-serif;
+  background-color: #eef7f8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation bar */
+nav {
+  background-color: #5a6b81;
+  color: white;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Main layout */
+.main-content {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+/* Calendar section */
+.calendar-section {
+  flex: 2;
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid #ccc;
+  margin-right: 1rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  text-align: center;
+  background-color: #b1cddd;
+  padding: 0.5rem 0;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/* Booking section */
+.booking-section {
+  flex: 1;
+  background-color: #f5f7f8;
+  border-left: 1px solid #ccc;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.booking-section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.room-image {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+/* Toggle label */
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+/* Booking form */
+#bookingForm {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+#bookingForm label {
+  font-weight: 500;
+}
+
+#bookingForm input[type="date"],
+#bookingForm input[type="time"] {
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.time-inputs span {
+  font-weight: bold;
+}
+
+#bookingForm button {
+  background-color: #604b66;
+  color: white;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#bookingForm button:hover {
+  background-color: #4e3b52;
+}
