@@ -27,7 +27,7 @@ const AppBar = styled(MuiAppBar, {
         })
       }
     }
-  ]
+  ], backgroundColor: '#56697F'
 }));
 
 export default AppBar;

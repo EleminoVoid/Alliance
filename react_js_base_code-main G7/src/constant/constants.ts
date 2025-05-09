@@ -23,6 +23,18 @@ export const PATHS = {
   NOT_FOUND: {
     path: "*",
     label: "Not Found"
+  },
+  HOMEPAGE: {
+    path: "/homepage",
+    label: "Homepage"
+  },
+  VIEW_ROOMS: {
+    path: "/rooms",
+    label: "Booking"
+  },
+  FAQ: {
+    path: "/faq",
+    label: "FAQ"
   }
   // Add more routes here
 };
