@@ -22,6 +22,7 @@ import Divider from "@mui/material/Divider";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
+import './Main.css';
 
 export const Main = () => {
   // CURRENT URL/PATH LOCATORS
@@ -47,37 +48,30 @@ export const Main = () => {
   return (
     <Fragment>
       <CssBaseline />
-      <AppBar position="fixed" open={openDrawer}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => setOpenDrawer(!openDrawer)}
-            edge="start"
-            sx={[
-              {
-                mr: 2
-              },
-              openDrawer && { display: "none" }
-            ]}
-          >
+      <AppBar position="fixed" open={openDrawer} style={{ }}>
+        <Toolbar style={{ flexGrow: 1 }}>
+          <IconButton color="inherit" aria-label="open drawer" onClick={() => setOpenDrawer(!openDrawer)} edge="start" sx={[{ mr: 2 }, openDrawer && { display: "none" }]}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Alliance Reactjs Basecode
+          <Typography variant="h6" noWrap component="div" style={{ marginRight: '3em', fontWeight: '900' }}>
+            MARSHAL
           </Typography>
+          <div>
+            <a href="/homepage" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
+              Home
+            </a>
+            <a href="/viewRooms" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
+              View Rooms
+            </a>
+            <a href="/faq" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
+              FAQ
+            </a>
+        </div>
         </Toolbar>
       </AppBar>
       {/* SIDE BAR DRAWER */}
       <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: drawerWidth,
-            boxSizing: "border-box"
-          }
-        }}
+        sx={{ width: drawerWidth, flexShrink: 0, "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box"}}}
         variant="persistent"
         anchor="left"
         open={openDrawer}
@@ -94,21 +88,19 @@ export const Main = () => {
         <Divider />
         {/* SIDE BAR MENU ITEMS */}
         <List>
-          {SIDE_BAR_MENU.map((item, index) => (
+          {SIDE_BAR_MENU.map((item) => (
             <ListItem key={item.path} disablePadding>
-              <ListItemButton>
+              <ListItemButton component={NavLink} to={item.path}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <ListIcon /> : <AddIcon />}
+                  {/* Add icons here if needed */}
                 </ListItemIcon>
-                <NavLink to={item.path}>
-                  <ListItemText primary={item.label} />
-                </NavLink>
+                <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
-      <MainLayout open={openDrawer}>
+      <MainLayout open={openDrawer} style={{ padding: '0' }}>
         <DrawerHeader />
         {/* OUTLET DISPLAY THE FOLLOWING SCREEN THAT MATCHES THE ROUTE INSIDE THE PARENT ROUTE*/}
         <Outlet />
