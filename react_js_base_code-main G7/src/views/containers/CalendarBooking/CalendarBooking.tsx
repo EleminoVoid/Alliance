@@ -4,15 +4,20 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
-import interactionPlugin from "@fullcalendar/interaction" 
+import interactionPlugin from "@fullcalendar/interaction"
 
 export function CalendarBooking() {
   const [selectedRoom, setSelectedRoom] = useState("Room 1")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<string>("") // State for the selected date
 
   useEffect(() => {
     // Initialization logic if needed
   }, [])
+
+  const handleDateClick = (info: { dateStr: string }) => {
+    setSelectedDate(info.dateStr) 
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -103,6 +108,7 @@ export function CalendarBooking() {
                 color: "#6b4f6d",
               },
             ]}
+            dateClick={handleDateClick} 
           />
         </section>
         <aside
@@ -195,6 +201,8 @@ export function CalendarBooking() {
               name="date"
               type="date"
               required
+              value={selectedDate} 
+              onChange={(e) => setSelectedDate(e.target.value)} 
               style={{
                 padding: "0.4rem",
                 border: "1px solid #ccc",
