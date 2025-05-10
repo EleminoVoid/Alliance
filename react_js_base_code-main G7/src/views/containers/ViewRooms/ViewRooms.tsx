@@ -1,6 +1,7 @@
 // ViewRooms.tsx
 import React, { useState } from "react";
 import { PATHS } from "../../../constant";
+import "./ViewRooms.css";
 
 interface Room {
   id: string;

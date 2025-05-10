@@ -14,7 +14,6 @@ import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import ListIcon from "@mui/icons-material/List";
 import MainLayout from "../../components/Main";
-import Link from "@mui/material/Link";
 
 import ListItem from "@mui/material/ListItem";
 import AddIcon from "@mui/icons-material/Add";
@@ -61,7 +60,7 @@ export const Main = () => {
             <a href="/homepage" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
               Home
             </a>
-            <a href="/rooms" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
+            <a href="/viewRooms" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
               View Rooms
             </a>
             <a href="/faq" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
@@ -89,15 +88,13 @@ export const Main = () => {
         <Divider />
         {/* SIDE BAR MENU ITEMS */}
         <List>
-          {SIDE_BAR_MENU.map((item, index) => (
+          {SIDE_BAR_MENU.map((item) => (
             <ListItem key={item.path} disablePadding>
-              <ListItemButton>
+              <ListItemButton component={NavLink} to={item.path}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <ListIcon /> : <AddIcon />}
+                  {/* Add icons here if needed */}
                 </ListItemIcon>
-                <NavLink to={item.path}>
-                  <ListItemText primary={item.label} />
-                </NavLink>
+                <ListItemText primary={item.label} />
               </ListItemButton>
             </ListItem>
           ))}

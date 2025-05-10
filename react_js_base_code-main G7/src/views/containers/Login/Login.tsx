@@ -1,64 +1,271 @@
-import { useNavigate } from 'react-router';
-import { PATHS } from '../../../constant';
+"use client"
+
+import type React from "react"
+import { useNavigate } from "react-router"
+import { PATHS } from "../../../constant"
 
 export const Login = () => {
-  <link href="https://fonts.googleapis.com/css2?family=Inter&amp;display=swap" rel="stylesheet"/>
-
-  const { pathname } = window.location;
-  const navigate = useNavigate();
+  const { pathname } = window.location
+  const navigate = useNavigate()
 
   const handleClickToHomePage = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.HOMEPAGE.path);
+      navigate(PATHS.HOMEPAGE.path)
     }
-  };
-  
+  }
+
   const handleClickToChangePass = (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.FORGOTPASSWORD.path);
+      navigate(PATHS.FORGOTPASSWORD.path)
     }
-  };
-  
+  }
+
   const handleClickToRegister = (e: React.MouseEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.REGISTER.path);
+      navigate(PATHS.REGISTER.path)
     }
-  };
+  }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw', backgroundColor: "#56697F" }}>
-      <div style={{ height: "600px", width: "860px", display: "grid", gridTemplateColumns: "1fr 1fr", border: "none", borderRadius: "10px", padding: '20px', margin: '20px', backgroundColor: 'white', gap: '20px', boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)'}}>
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "20px"}}>
-          <h1 style={{ textAlign: "left", color: "#593F62", marginTop: 0 }}>Sign In</h1>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100vw",
+        backgroundColor: "#56697F",
+        fontFamily: "Inter, Arial, sans-serif",
+      }}
+    >
+      <div
+        style={{
+          height: "auto",
+          width: window.innerWidth < 768 ? "90%" : "860px",
+          display: "grid",
+          gridTemplateColumns: window.innerWidth < 768 ? "1fr" : "1fr 1fr",
+          border: "none",
+          borderRadius: "10px",
+          padding: "20px",
+          margin: "20px",
+          backgroundColor: "white",
+          gap: "20px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: "20px",
+            minHeight: "400px",
+          }}
+        >
+          <h1
+            style={{
+              textAlign: "left",
+              color: "#593F62",
+              marginTop: 0,
+              fontSize: "28px",
+              fontWeight: "600",
+            }}
+          >
+            Sign In
+          </h1>
           <div>
-            <form style={{ display: 'flex', flexDirection: 'column'}}>
-              <div style={{ position: 'relative', marginBottom: '20px', width: '250px', alignSelf: 'center' }}>
-                <label style={{ display: 'block', position: 'relative'}}>
-                  <span style={{ position: 'absolute', top: '-4px', left: '10px', fontWeight: 'bold', fontStyle: 'bold', color: '#333', backgroundColor: 'white', padding: '0 5px',  pointerEvents: 'none'}}>Email</span>
-                  <input type="text" style={{ margin: '10px 0', padding: '8px', width: "250px", border: "1px solid #ccc", borderRadius: "5px", alignSelf: "center", fontSize: '1em', outline: 'none', boxSizing: 'border-box' }}/>
+            <form
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  position: "relative",
+                  marginBottom: "20px",
+                  width: "100%",
+                  maxWidth: "300px",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    position: "relative",
+                  }}
+                >
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      left: "10px",
+                      fontWeight: "bold",
+                      fontStyle: "bold",
+                      color: "#333",
+                      backgroundColor: "white",
+                      padding: "0 5px",
+                      pointerEvents: "none",
+                      fontSize: "14px",
+                    }}
+                  >
+                    Email
+                  </span>
+                  <input
+                    type="text"
+                    style={{
+                      margin: "10px 0",
+                      padding: "12px 10px",
+                      width: "100%",
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      fontSize: "1em",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      transition: "border-color 0.2s ease",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = "#593F62")}
+                    onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  />
                 </label>
               </div>
-              <div style={{ position: 'relative', marginBottom: '20px', width: '250px', alignSelf: 'center' }}>
-                <label style={{ display: 'block', position: 'relative'}}>
-                  <span style={{ position: 'absolute', top: '-4px', left: '10px', fontWeight: 'bold', fontStyle: 'bold', color: '#333', backgroundColor: 'white', padding: '0 5px',  pointerEvents: 'none'}}>Password</span>
-                  <input type="password" style={{ margin: '10px 0',padding: '8px', width: "250px", border: "1px solid #ccc", borderRadius: "5px", alignSelf: "center", fontSize: '1em', outline: 'none', boxSizing: 'border-box' }}/>
+              <div
+                style={{
+                  position: "relative",
+                  marginBottom: "20px",
+                  width: "100%",
+                  maxWidth: "300px",
+                }}
+              >
+                <label
+                  style={{
+                    display: "block",
+                    position: "relative",
+                  }}
+                >
+                  <span
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      left: "10px",
+                      fontWeight: "bold",
+                      fontStyle: "bold",
+                      color: "#333",
+                      backgroundColor: "white",
+                      padding: "0 5px",
+                      pointerEvents: "none",
+                      fontSize: "14px",
+                    }}
+                  >
+                    Password
+                  </span>
+                  <input
+                    type="password"
+                    style={{
+                      margin: "10px 0",
+                      padding: "12px 10px",
+                      width: "100%",
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      fontSize: "1em",
+                      outline: "none",
+                      boxSizing: "border-box",
+                      transition: "border-color 0.2s ease",
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = "#593F62")}
+                    onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  />
                 </label>
-                <p>Forgot Password? <button onClick={handleClickToChangePass} style={{ fontStyle: 'italic', background: 'none', border: 'none', color: '#593F62', cursor: 'pointer', fontSize: '0.9em', padding: '0' }}>Click Here</button></p>
+                <p
+                  style={{
+                    margin: "5px 0 0 0",
+                    fontSize: "14px",
+                    textAlign: "right",
+                  }}
+                >
+                  Forgot Password?
+                  <button
+                    onClick={handleClickToChangePass}
+                    style={{
+                      fontStyle: "italic",
+                      background: "none",
+                      border: "none",
+                      color: "#593F62",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      padding: "0 0 0 5px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Click Here
+                  </button>
+                </p>
               </div>
-              <button type="submit" onClick={handleClickToHomePage} style={{ fontFamily: 'Poppins, sans-serif', alignSelf: 'center', marginTop: '30px', padding: '10px 30px', backgroundColor: '#593F62', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '5px', fontSize: '1.2em' }}>Sign In</button>
+              <button
+                type="submit"
+                onClick={handleClickToHomePage}
+                style={{
+                  fontFamily: "Inter, sans-serif",
+                  alignSelf: "center",
+                  marginTop: "30px",
+                  padding: "12px 40px",
+                  backgroundColor: "#593F62",
+                  color: "white",
+                  border: "none",
+                  cursor: "pointer",
+                  borderRadius: "5px",
+                  fontSize: "1.1em",
+                  fontWeight: "500",
+                  transition: "background-color 0.2s ease",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#4e3b52")}
+                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#593F62")}
+              >
+                Sign In
+              </button>
             </form>
           </div>
-          <div className="login-sign-up">
-            <p style={{ marginBottom: 0 }}>Don't have an account? <button onClick={handleClickToRegister} style={{ fontStyle: 'italic', background: 'none', border: 'none', color: '#593F62', cursor: 'pointer', fontSize: '0.9em', padding: '0' }}>Sign Up</button></p>
+          <div style={{ marginTop: "40px", textAlign: "center" }}>
+            <p style={{ marginBottom: 0, fontSize: "14px" }}>
+              Don't have an account?
+              <button
+                onClick={handleClickToRegister}
+                style={{
+                  fontStyle: "italic",
+                  background: "none",
+                  border: "none",
+                  color: "#593F62",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  padding: "0 0 0 5px",
+                  fontWeight: "500",
+                }}
+              >
+                Sign Up
+              </button>
+            </p>
           </div>
         </div>
-        <div style={{ height: '94%', paddingLeft: '20px'}}>
-          <img src="loginpic.jpg" alt="loginpic" style={{ width: "100%", height: '100%', borderRadius: '10px' }}/>
-        </div>
+        {window.innerWidth >= 768 && (
+          <div style={{ height: "100%", paddingLeft: "20px" }}>
+            <img
+              src="loginpic.jpg"
+              alt="loginpic"
+              style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "10px",
+                objectFit: "cover",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              }}
+            />
+          </div>
+        )}
       </div>
     </div>
-  );
-};
+  )
+}

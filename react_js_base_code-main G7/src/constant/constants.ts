@@ -31,7 +31,7 @@ export const PATHS = {
     label: "Homepage"
   },
   VIEW_ROOMS: {
-    path: "/ViewRooms",
+    path: "/viewRooms",
     label: "Booking"
   },
   FAQ: {
@@ -39,11 +39,11 @@ export const PATHS = {
     label: "FAQ"
   },
   CALENDAR:{
-    path: "/Calendar",
+    path: "/calendar",
     label: "Calendar"
   },
   SETTINGS:{
-    path: "/Settings",
+    path: "/settings",
     label: "Settings"
   }
   // Add more routes here
