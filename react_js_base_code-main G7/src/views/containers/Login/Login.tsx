@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 import { useNavigate } from "react-router"
 import { PATHS } from "../../../constant"

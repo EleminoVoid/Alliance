@@ -32,7 +32,7 @@ export const PATHS = {
   },
   VIEW_ROOMS: {
     path: "/viewRooms",
-    label: "Booking"
+    label: "Book A Room"
   },
   FAQ: {
     path: "/faq",
@@ -45,16 +45,20 @@ export const PATHS = {
   SETTINGS:{
     path: "/settings",
     label: "Settings"
+  },
+  BOOKINGS:{
+    path: "/bookings",
+    label: "Bookings"
+  },
+  EDIT_BOOKING:{
+    path: "/editBooking",
+    label: "Edit Booking"
   }
   // Add more routes here
 };
 
 // SIDE BAR MENU PATH
 export const SIDE_BAR_MENU = [
-  {
-    path: "/profile",
-    label: "Edit Profile"
-  },
   {
     path: "/bookings",
     label: "View Bookings"

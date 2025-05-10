@@ -9,3 +9,5 @@ export * from "./ViewRooms";
 export * from "./Faq";
 export * from "./CalendarBooking";
 export * from "./Settings";
+export * from "./ViewBooking";
+export * from "./EditBooking";

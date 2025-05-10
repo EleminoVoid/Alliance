@@ -14,6 +14,9 @@ export const AppRoutes = () => {
           <Route path={PATHS.FAQ.path} element={<Views.Faq />} />
           <Route path={PATHS.CALENDAR.path} element={<Views.CalendarBooking />} />
           <Route path={PATHS.SETTINGS.path} element={<Views.Settings />} />
+          <Route path={PATHS.BOOKINGS.path} element={<Views.ViewBookings />} />
+          <Route path={PATHS.EDIT_BOOKING.path} element={<Views.EditBooking />} />
+          {/* Add more nested routes here */}
         </Route>
         {/* Add public routes here if needed */}
         <Route path={PATHS.LOGIN.path} element={<Views.Login />} />
