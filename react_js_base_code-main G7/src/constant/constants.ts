@@ -6,6 +6,10 @@ export const PATHS = {
     path: "/",
     label: "Not Found"
   },
+  ADMIN_MAIN: {
+    path: "/admin/Main", // New path for Admin Dashboard
+    label: "Admin Dashboard"
+  },
   LOGIN: {
     path: "/login",
     label: "Login"

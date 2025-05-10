@@ -6,6 +6,8 @@ export const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Views.Main />}>
+        </Route>
         <Route path={PATHS.MAIN.path} element={<Views.Main />}>
           {/* Nested routes under Main */}
           <Route path={PATHS.HOMEPAGE.path} element={<Views.Homepage />} />
