@@ -6,6 +6,10 @@ export const PATHS = {
     path: "/",
     label: "Not Found"
   },
+  ADMIN_MAIN: {
+    path: "/admin/Main", // New path for Admin Dashboard
+    label: "Admin Dashboard"
+  },
   LOGIN: {
     path: "/login",
     label: "Login"
@@ -68,7 +72,7 @@ export const SIDE_BAR_MENU = [
     label: "Settings"
   },
   {
-    path: "/logout",
+    path: "/login",
     label: "Logout"
   }
   // Add more path here

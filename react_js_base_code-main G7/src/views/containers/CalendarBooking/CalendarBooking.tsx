@@ -2,15 +2,46 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
-import interactionPlugin from "@fullcalendar/interaction" 
+import interactionPlugin from "@fullcalendar/interaction"
 
 export function CalendarBooking() {
   const [selectedRoom, setSelectedRoom] = useState("Room 1")
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<string>("") // State for the selected date
+  const [calendarEvents, setCalendarEvents] = useState<any[]>([
+    {
+      id: "1",
+      title: "Team Meeting",
+      start: new Date().toISOString().slice(0, 10),
+      color: "#6b4f6d",
+    },
+    {
+      id: "2",
+      title: "Project Review",
+      start: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().slice(0, 10),
+      color: "#6b4f6d",
+    },
+  ])
 
   useEffect(() => {
-    // Initialization logic if needed
-  }, [])
+    if (selectedDate) {
+      setCalendarEvents((prevEvents) => [
+        ...prevEvents.filter((event) => event.id !== "selected-date"), 
+        {
+          id: "selected-date",
+          start: selectedDate,
+          display: "background",
+          backgroundColor: "#ffcc00", 
+        },
+      ])
+    } else {
+      setCalendarEvents((prevEvents) => prevEvents.filter((event) => event.id !== "selected-date")) // Remove highlight if no date is selected
+    }
+  }, [selectedDate])
+
+  const handleDateClick = (info: { dateStr: string }) => {
+    setSelectedDate(info.dateStr) 
+  }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -87,20 +118,8 @@ export function CalendarBooking() {
             height="auto"
             selectable
             dayMaxEvents
-            events={[
-              {
-                id: "1",
-                title: "Team Meeting",
-                start: new Date().toISOString().slice(0, 10),
-                color: "#6b4f6d",
-              },
-              {
-                id: "2",
-                title: "Project Review",
-                start: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().slice(0, 10),
-                color: "#6b4f6d",
-              },
-            ]}
+            events={calendarEvents}
+            dateClick={handleDateClick} 
           />
         </section>
         <aside
@@ -193,6 +212,8 @@ export function CalendarBooking() {
               name="date"
               type="date"
               required
+              value={selectedDate} 
+              onChange={(e) => setSelectedDate(e.target.value)} 
               style={{
                 padding: "0.4rem",
                 border: "1px solid #ccc",
