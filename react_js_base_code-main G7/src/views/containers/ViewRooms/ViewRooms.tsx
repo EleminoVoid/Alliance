@@ -1,5 +1,5 @@
-// ViewRooms.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { PATHS } from "../../../constant";
 import "./ViewRooms.css";
 
@@ -14,19 +14,18 @@ interface Room {
   image: string;
 }
 
-const mockRooms: Room[] = [
-  { id: "room-101", name: "Room 101", floor: "ground", capacity: 4, available: true, amenities: ["wifi", "monitor"], description: "Small meeting room", image: "/placeholder.svg" },
-  { id: "room-102", name: "Room 102", floor: "ground", capacity: 6, available: false, amenities: ["wifi", "monitor", "coffee"], description: "Medium-sized meeting room", image: "/placeholder.svg" },
-  { id: "conference-a", name: "Conference Room A", floor: "ground", capacity: 20, available: true, amenities: ["wifi", "video"], description: "Large conference room", image: "/placeholder.svg" },
-  { id: "room-201", name: "Room 201", floor: "mezzanine", capacity: 8, available: true, amenities: ["wifi", "monitor"], description: "Medium-sized meeting room", image: "/placeholder.svg" },
-  { id: "room-301", name: "Room 301", floor: "first", capacity: 10, available: true, amenities: ["wifi", "monitor", "video"], description: "Large meeting room", image: "/placeholder.svg" },
-];
-
 export const ViewRooms: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFloor, setActiveFloor] = useState("ground");
+  const [rooms, setRooms] = useState<Room[]>([]);
 
-  const filteredRooms = mockRooms.filter(
+  useEffect(() => {
+    axios.get("http://localhost:3001/rooms").then((response) => {
+      setRooms(response.data);
+    });
+  }, []);
+
+  const filteredRooms = rooms.filter(
     (room) =>
       room.floor === activeFloor &&
       (room.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -34,7 +33,6 @@ export const ViewRooms: React.FC = () => {
   );
 
   const handleBookNow = (roomId: string) => {
-    // Use window.location to navigate
     window.location.href = `${PATHS.CALENDAR.path}?room=${roomId}`;
   };
 
