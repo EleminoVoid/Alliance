@@ -1,6 +1,5 @@
-"use client"
-
-import type React from "react"
+// Login.tsx
+import React, { useState } from "react"
 import { useNavigate } from "react-router"
 import { PATHS } from "../../../constant"
 
@@ -8,10 +7,33 @@ export const Login = () => {
   const { pathname } = window.location
   const navigate = useNavigate()
 
-  const handleClickToHomePage = (e: React.FormEvent) => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+
+  const handleClickToHomePage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.HOMEPAGE.path)
+
+    try {
+      const response = await fetch("http://localhost:3001/users")
+      const users = await response.json()
+
+      const foundUser = users.find(
+        (user: any) => user.email === email && user.password === password
+      )
+
+      if (foundUser) {
+        if (foundUser.role === "admin") {
+          navigate(PATHS.DASHBOARD.path)
+        } else {
+          navigate(PATHS.HOMEPAGE.path)
+        }
+      } else {
+        setError("Invalid email or password.")
+      }
+    } catch (err) {
+      setError("Failed to connect to server.")
+      console.error(err)
     }
   }
 
@@ -83,32 +105,16 @@ export const Login = () => {
                 flexDirection: "column",
                 alignItems: "center",
               }}
+              onSubmit={handleClickToHomePage}
             >
-              <div
-                style={{
-                  position: "relative",
-                  marginBottom: "20px",
-                  width: "100%",
-                  maxWidth: "300px",
-                }}
-              >
-                <label
-                  style={{
-                    display: "block",
-                    position: "relative",
-                  }}
-                >
+              <div style={{ width: "100%", maxWidth: "300px" }}>
+                <label>
                   <span
                     style={{
-                      position: "absolute",
-                      top: "-4px",
-                      left: "10px",
+                      display: "block",
+                      marginBottom: "5px",
                       fontWeight: "bold",
-                      fontStyle: "bold",
                       color: "#333",
-                      backgroundColor: "white",
-                      padding: "0 5px",
-                      pointerEvents: "none",
                       fontSize: "14px",
                     }}
                   >
@@ -116,47 +122,27 @@ export const Login = () => {
                   </span>
                   <input
                     type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     style={{
-                      margin: "10px 0",
+                      marginBottom: "15px",
                       padding: "12px 10px",
                       width: "100%",
                       border: "1px solid #ccc",
                       borderRadius: "5px",
                       fontSize: "1em",
-                      outline: "none",
-                      boxSizing: "border-box",
-                      transition: "border-color 0.2s ease",
                     }}
-                    onFocus={(e) => (e.target.style.borderColor = "#593F62")}
-                    onBlur={(e) => (e.target.style.borderColor = "#ccc")}
                   />
                 </label>
               </div>
-              <div
-                style={{
-                  position: "relative",
-                  marginBottom: "20px",
-                  width: "100%",
-                  maxWidth: "300px",
-                }}
-              >
-                <label
-                  style={{
-                    display: "block",
-                    position: "relative",
-                  }}
-                >
+              <div style={{ width: "100%", maxWidth: "300px" }}>
+                <label>
                   <span
                     style={{
-                      position: "absolute",
-                      top: "-4px",
-                      left: "10px",
+                      display: "block",
+                      marginBottom: "5px",
                       fontWeight: "bold",
-                      fontStyle: "bold",
                       color: "#333",
-                      backgroundColor: "white",
-                      padding: "0 5px",
-                      pointerEvents: "none",
                       fontSize: "14px",
                     }}
                   >
@@ -164,52 +150,51 @@ export const Login = () => {
                   </span>
                   <input
                     type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     style={{
-                      margin: "10px 0",
+                      marginBottom: "10px",
                       padding: "12px 10px",
                       width: "100%",
                       border: "1px solid #ccc",
                       borderRadius: "5px",
                       fontSize: "1em",
-                      outline: "none",
-                      boxSizing: "border-box",
-                      transition: "border-color 0.2s ease",
                     }}
-                    onFocus={(e) => (e.target.style.borderColor = "#593F62")}
-                    onBlur={(e) => (e.target.style.borderColor = "#ccc")}
                   />
                 </label>
-                <p
+              </div>
+              {error && (
+                <p style={{ color: "red", fontSize: "14px" }}>{error}</p>
+              )}
+              <p
+                style={{
+                  margin: "5px 0 0 0",
+                  fontSize: "14px",
+                  textAlign: "right",
+                  width: "100%",
+                  maxWidth: "300px",
+                }}
+              >
+                Forgot Password?
+                <button
+                  onClick={handleClickToChangePass}
                   style={{
-                    margin: "5px 0 0 0",
+                    fontStyle: "italic",
+                    background: "none",
+                    border: "none",
+                    color: "#593F62",
+                    cursor: "pointer",
                     fontSize: "14px",
-                    textAlign: "right",
+                    paddingLeft: "5px",
+                    fontWeight: "500",
                   }}
                 >
-                  Forgot Password?
-                  <button
-                    onClick={handleClickToChangePass}
-                    style={{
-                      fontStyle: "italic",
-                      background: "none",
-                      border: "none",
-                      color: "#593F62",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      padding: "0 0 0 5px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Click Here
-                  </button>
-                </p>
-              </div>
+                  Click Here
+                </button>
+              </p>
               <button
                 type="submit"
-                onClick={handleClickToHomePage}
                 style={{
-                  fontFamily: "Inter, sans-serif",
-                  alignSelf: "center",
                   marginTop: "30px",
                   padding: "12px 40px",
                   backgroundColor: "#593F62",
@@ -222,8 +207,6 @@ export const Login = () => {
                   transition: "background-color 0.2s ease",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                 }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#4e3b52")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#593F62")}
               >
                 Sign In
               </button>
@@ -241,7 +224,7 @@ export const Login = () => {
                   color: "#593F62",
                   cursor: "pointer",
                   fontSize: "14px",
-                  padding: "0 0 0 5px",
+                  paddingLeft: "5px",
                   fontWeight: "500",
                 }}
               >

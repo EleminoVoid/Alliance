@@ -64,7 +64,7 @@ export const SIDE_BAR_MENU = [
     label: "Settings"
   },
   {
-    path: "/logout",
+    path: "/login",
     label: "Logout"
   }
   // Add more path here
