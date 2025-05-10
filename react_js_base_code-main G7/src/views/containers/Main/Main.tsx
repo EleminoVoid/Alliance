@@ -48,7 +48,7 @@ export const Main = () => {
   return (
     <Fragment>
       <CssBaseline />
-      <AppBar position="fixed" open={openDrawer} style={{ }}>
+      <AppBar position="fixed" open={openDrawer}>
         <Toolbar style={{ flexGrow: 1 }}>
           <IconButton color="inherit" aria-label="open drawer" onClick={() => setOpenDrawer(!openDrawer)} edge="start" sx={[{ mr: 2 }, openDrawer && { display: "none" }]}>
             <MenuIcon />

@@ -140,7 +140,123 @@ export const ViewBookings: React.FC = () => {
     return `${formatTime(startTime)} - ${formatTime(endTime)}`;
   };
 
-  const styles = {
+  return (
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <h1 style={styles.title}>Your Bookings</h1>
+        <div style={styles.filterContainer}>
+          <div style={styles.filterTabs}>
+            <button
+              style={{
+                ...styles.filterTab,
+                ...(activeFilter === "All Users" ? styles.activeFilterTab : {}),
+              }}
+              onClick={() => setActiveFilter("All Users")}
+            >
+              All Users
+              <span style={styles.filterCount}>{bookings.length}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {!isMobile ? (
+        <div style={styles.tableContainer}>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={{ ...styles.tableHeader, ...styles.tableHeaderFirst }}>Room</th>
+                <th style={styles.tableHeader}>Type</th>
+                <th style={styles.tableHeader}>Date/s</th>
+                <th style={styles.tableHeader}>Time</th>
+                <th style={{ ...styles.tableHeader, ...styles.tableHeaderLast }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.length > 0 ? (
+                bookings.map((booking) => (
+                  <tr key={booking.id} style={styles.tableRow}>
+                    <td style={{ ...styles.tableCell, width: "25%" }}>
+                      <div style={styles.roomCell}>
+                        <div style={styles.roomIcon}></div>
+                        <span>{`${booking.roomFloor} - ${booking.roomName}`}</span>
+                      </div>
+                    </td>
+                    <td style={{ ...styles.tableCell, width: "15%" }}>{booking.type}</td>
+                    <td style={{ ...styles.tableCell, width: "30%" }}>{formatDateRange(booking)}</td>
+                    <td style={{ ...styles.tableCell, width: "15%" }}>
+                      {formatTimeRange(booking.startTime, booking.endTime)}
+                    </td>
+                    <td style={{ ...styles.tableCell, width: "15%", textAlign: "right" }}>
+                      <button
+                        style={styles.editButton}
+                        onClick={() => handleEditBooking(booking.id)}
+                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#c0392b")}
+                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#e74c3c")}
+                      >
+                        Edit booking
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} style={{ ...styles.tableCell, textAlign: "center" }}>
+                    No bookings found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        // Mobile view
+        <div>
+          {bookings.length > 0 ? (
+            bookings.map((booking) => (
+              <div key={booking.id} style={styles.mobileBookingCard}>
+                <div style={styles.mobileBookingHeader}>
+                  <div style={styles.mobileRoomName}>
+                    <div style={styles.roomIcon}></div>
+                    <span>{`${booking.roomFloor} - ${booking.roomName}`}</span>
+                  </div>
+                </div>
+                <div style={styles.mobileBookingDetails}>
+                  <div>
+                    <div style={styles.mobileDetailLabel}>Type</div>
+                    <div style={styles.mobileDetailValue}>{booking.type}</div>
+                  </div>
+                  <div>
+                    <div style={styles.mobileDetailLabel}>Time</div>
+                    <div style={styles.mobileDetailValue}>{formatTimeRange(booking.startTime, booking.endTime)}</div>
+                  </div>
+                  <div style={{ gridColumn: "1 / -1" }}>
+                    <div style={styles.mobileDetailLabel}>Date/s</div>
+                    <div style={styles.mobileDetailValue}>{formatDateRange(booking)}</div>
+                  </div>
+                </div>
+                <div style={styles.mobileActions}>
+                  <button
+                    style={styles.editButton}
+                    onClick={() => handleEditBooking(booking.id)}
+                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#c0392b")}
+                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#e74c3c")}
+                  >
+                    Edit booking
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div style={styles.emptyState}>No bookings found</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const styles = {
     container: {
       padding: "20px",
       maxWidth: "1200px",
@@ -295,119 +411,4 @@ export const ViewBookings: React.FC = () => {
     },
   };
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Your Bookings</h1>
-        <div style={styles.filterContainer}>
-          <div style={styles.filterTabs}>
-            <button
-              style={{
-                ...styles.filterTab,
-                ...(activeFilter === "All Users" ? styles.activeFilterTab : {}),
-              }}
-              onClick={() => setActiveFilter("All Users")}
-            >
-              All Users
-              <span style={styles.filterCount}>{bookings.length}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {!isMobile ? (
-        <div style={styles.tableContainer}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={{ ...styles.tableHeader, ...styles.tableHeaderFirst }}>Room</th>
-                <th style={styles.tableHeader}>Type</th>
-                <th style={styles.tableHeader}>Date/s</th>
-                <th style={styles.tableHeader}>Time</th>
-                <th style={{ ...styles.tableHeader, ...styles.tableHeaderLast }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.length > 0 ? (
-                bookings.map((booking) => (
-                  <tr key={booking.id} style={styles.tableRow}>
-                    <td style={{ ...styles.tableCell, width: "25%" }}>
-                      <div style={styles.roomCell}>
-                        <div style={styles.roomIcon}></div>
-                        <span>{`${booking.roomFloor} - ${booking.roomName}`}</span>
-                      </div>
-                    </td>
-                    <td style={{ ...styles.tableCell, width: "15%" }}>{booking.type}</td>
-                    <td style={{ ...styles.tableCell, width: "30%" }}>{formatDateRange(booking)}</td>
-                    <td style={{ ...styles.tableCell, width: "15%" }}>
-                      {formatTimeRange(booking.startTime, booking.endTime)}
-                    </td>
-                    <td style={{ ...styles.tableCell, width: "15%", textAlign: "right" }}>
-                      <button
-                        style={styles.editButton}
-                        onClick={() => handleEditBooking(booking.id)}
-                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#c0392b")}
-                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#e74c3c")}
-                      >
-                        Edit booking
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} style={{ ...styles.tableCell, textAlign: "center" }}>
-                    No bookings found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        // Mobile view
-        <div>
-          {bookings.length > 0 ? (
-            bookings.map((booking) => (
-              <div key={booking.id} style={styles.mobileBookingCard}>
-                <div style={styles.mobileBookingHeader}>
-                  <div style={styles.mobileRoomName}>
-                    <div style={styles.roomIcon}></div>
-                    <span>{`${booking.roomFloor} - ${booking.roomName}`}</span>
-                  </div>
-                </div>
-                <div style={styles.mobileBookingDetails}>
-                  <div>
-                    <div style={styles.mobileDetailLabel}>Type</div>
-                    <div style={styles.mobileDetailValue}>{booking.type}</div>
-                  </div>
-                  <div>
-                    <div style={styles.mobileDetailLabel}>Time</div>
-                    <div style={styles.mobileDetailValue}>{formatTimeRange(booking.startTime, booking.endTime)}</div>
-                  </div>
-                  <div style={{ gridColumn: "1 / -1" }}>
-                    <div style={styles.mobileDetailLabel}>Date/s</div>
-                    <div style={styles.mobileDetailValue}>{formatDateRange(booking)}</div>
-                  </div>
-                </div>
-                <div style={styles.mobileActions}>
-                  <button
-                    style={styles.editButton}
-                    onClick={() => handleEditBooking(booking.id)}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#c0392b")}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#e74c3c")}
-                  >
-                    Edit booking
-                  </button>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div style={styles.emptyState}>No bookings found</div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
 

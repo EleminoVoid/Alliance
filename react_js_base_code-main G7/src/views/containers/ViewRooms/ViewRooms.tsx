@@ -20,7 +20,7 @@ export const ViewRooms: React.FC = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/rooms").then((response) => {
+    axios.get("http://localhost:3000/rooms").then((response) => {
       setRooms(response.data);
     });
   }, []);

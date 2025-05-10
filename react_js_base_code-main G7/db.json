@@ -1,35 +1,102 @@
 {
-  
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "email": "admin@example.com",
       "password": "admin123",
       "role": "admin"
     },
     {
-      "id": 2,
+      "id": "2",
       "email": "user@example.com",
+      "password": "user123",
+      "role": "user"
+    },
+    {
+      "id": "648f",
+      "email": "user2@email.com",
+      "username": "username",
       "password": "user123",
       "role": "user"
     }
   ],
-
   "rooms": [
-    { "id": "room-101", "name": "Room 101", "floor": "ground", "capacity": 4, "available": true, "amenities": ["wifi", "monitor"], "description": "Small meeting room", "image": "/placeholder.svg" },
-    { "id": "room-102", "name": "Room 102", "floor": "ground", "capacity": 6, "available": false, "amenities": ["wifi", "monitor", "coffee"], "description": "Medium-sized meeting room", "image": "/placeholder.svg" },
-    { "id": "conference-a", "name": "Conference Room A", "floor": "ground", "capacity": 20, "available": true, "amenities": ["wifi", "video"], "description": "Large conference room", "image": "/placeholder.svg" },
-    { "id": "room-201", "name": "Room 201", "floor": "mezzanine", "capacity": 8, "available": true, "amenities": ["wifi", "monitor"], "description": "Medium-sized meeting room", "image": "/placeholder.svg" },
-    { "id": "room-301", "name": "Room 301", "floor": "first", "capacity": 10, "available": true, "amenities": ["wifi", "monitor", "video"], "description": "Large meeting room", "image": "/placeholder.svg" }
-    ],
+    {
+      "id": "room-101",
+      "name": "Room 101",
+      "floor": "ground",
+      "capacity": 4,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "monitor"
+      ],
+      "description": "Small meeting room",
+      "image": "/placeholder.svg"
+    },
+    {
+      "id": "room-102",
+      "name": "Room 102",
+      "floor": "ground",
+      "capacity": 6,
+      "available": false,
+      "amenities": [
+        "wifi",
+        "monitor",
+        "coffee"
+      ],
+      "description": "Medium-sized meeting room",
+      "image": "/placeholder.svg"
+    },
+    {
+      "id": "conference-a",
+      "name": "Conference Room A",
+      "floor": "ground",
+      "capacity": 20,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "video"
+      ],
+      "description": "Large conference room",
+      "image": "/placeholder.svg"
+    },
+    {
+      "id": "room-201",
+      "name": "Room 201",
+      "floor": "mezzanine",
+      "capacity": 8,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "monitor"
+      ],
+      "description": "Medium-sized meeting room",
+      "image": "/placeholder.svg"
+    },
+    {
+      "id": "room-301",
+      "name": "Room 301",
+      "floor": "first",
+      "capacity": 10,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "monitor",
+        "video"
+      ],
+      "description": "Large meeting room",
+      "image": "/placeholder.svg"
+    }
+  ],
   "bookings": [
     {
-      "id": 1,
+      "id": "1",
       "userId": 2,
       "roomId": 1,
       "startDate": "2025-05-12",
       "endDate": "2025-05-14",
-      "type": "continuous" 
+      "type": "continuous"
     }
   ]
 }
