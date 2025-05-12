@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { PATHS } from "../../../constant";
 import React, { useState } from "react";
+import bcrypt from "bcryptjs";
 
 export const Login = () => {
   const { pathname } = window.location;
@@ -17,15 +18,20 @@ export const Login = () => {
       const response = await fetch("http://localhost:3000/users");
       const users = await response.json();
 
-      const foundUser = users.find(
-        (user: any) => user.email === email && user.password === password
-      );
+      const foundUser = users.find((user: any) => user.email === email);
 
       if (foundUser) {
-        if (foundUser.role === "admin") {
-          navigate(PATHS.DASHBOARD.path);
+        // Compare the entered password with the hashed password
+        const isPasswordValid = await bcrypt.compare(password, foundUser.password);
+
+        if (isPasswordValid) {
+          if (foundUser.role === "admin") {
+            navigate(PATHS.DASHBOARD.path);
+          } else {
+            navigate(PATHS.HOMEPAGE.path);
+          }
         } else {
-          navigate(PATHS.HOMEPAGE.path);
+          setError("Invalid email or password.");
         }
       } else {
         setError("Invalid email or password.");

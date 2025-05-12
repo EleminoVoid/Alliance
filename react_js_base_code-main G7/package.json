@@ -18,6 +18,8 @@
     "@mui/material": "^6.4.3",
     "@toolpad/core": "^0.12.0",
     "axios": "^1.7.9",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
     "formik": "^2.4.6",
     "fullcalendar": "^6.1.17",
     "react": "^19.0.0",

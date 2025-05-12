@@ -3,20 +3,15 @@
     {
       "id": "1",
       "email": "admin@example.com",
-      "password": "admin123",
+      "username": "admin",
+      "password": "$2b$10$Zf7xG2CxjZS4XJC089ejbejswWIx10urF7u1PcLjICW5T9eEPoSjm",
       "role": "admin"
     },
     {
-      "id": "2",
+      "id": "4bc8",
       "email": "user@example.com",
-      "password": "user123",
-      "role": "user"
-    },
-    {
-      "id": "648f",
-      "email": "user2@email.com",
-      "username": "username",
-      "password": "user123",
+      "username": "User",
+      "password": "$2b$10$EdqvGUuNynCJdAtmXi0uY.eghKiEfDX8HN9d2yDgyY4M3FfNGW992",
       "role": "user"
     }
   ],

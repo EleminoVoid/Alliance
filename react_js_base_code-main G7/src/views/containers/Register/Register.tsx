@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { PATHS } from "../../../constant";
 import React, { useState } from "react";
+import bcrypt from "bcryptjs";
 
 export const Register = () => {
   const { pathname } = window.location;
@@ -20,10 +21,13 @@ export const Register = () => {
     }
 
     try {
+      // Hash the password before sending it to the server
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       const response = await fetch("http://localhost:3000/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password, role: "user" }),
+        body: JSON.stringify({ email, username, password: hashedPassword, role: "user" }),
       });
 
       if (response.ok) {
@@ -83,12 +87,13 @@ export const Register = () => {
                     style={styles.input}
                   />
                 </label>
-              </div>
-              {error && <p style={styles.error}>{error}</p>}
-              <button type="submit" style={styles.submitButton}>
-                Sign Up
-              </button>
-            </form>
+                </div>
+                {error && <p style={styles.error}>{error}</p>}
+                <button type="submit" style={styles.submitButton}>
+                  Sign Up
+                </button>
+              </form>
+            </div>
           </div>
           <div style={styles.registerContainer}>
             <p style={styles.registerText}>
@@ -98,7 +103,6 @@ export const Register = () => {
               </button>
             </p>
           </div>
-        </div>
         {window.innerWidth >= 768 && (
           <div style={styles.imageContainer}>
             <img src="registerpic.jpg" alt="registerpic" style={styles.image} />
@@ -108,8 +112,7 @@ export const Register = () => {
     </div>
   );
 };
-
-const styles = {
+const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
     justifyContent: "center",
