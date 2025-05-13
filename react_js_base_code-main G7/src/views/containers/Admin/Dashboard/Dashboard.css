@@ -98,12 +98,6 @@
   height: 200px;
   margin: 0 auto;
   border-radius: 50%;
-  background: conic-gradient(
-    #90b4f9 0% 52% /* Light blue - 11/21 */,
-    #1e6bfa 52% 57% /* Blue - 1/21 */,
-    #ff8c42 57% 71% /* Orange - 3/21 */,
-    #ffbd82 71% 100% /* Light orange - 6/21 */
-  );
   display: flex;
   align-items: center;
   justify-content: center;
