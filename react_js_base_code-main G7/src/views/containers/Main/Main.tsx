@@ -1,7 +1,7 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import ListItemButton from "@mui/material/ListItemButton";
-import { PATHS, SIDE_BAR_MENU } from "../../../constant";
+import { PATHS, USER_SIDE_BAR_MENU } from "../../../constant";
 import DrawerHeader from "../../components/DrawerHeader";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
@@ -111,7 +111,7 @@ useEffect(() => {
           {/* Menu Items */}
           <Box sx={{ flexGrow: 1 }}>
             <List>
-              {SIDE_BAR_MENU.map((item) => (
+              {USER_SIDE_BAR_MENU.map((item) => (
                 <ListItem key={item.path} disablePadding>
                   <ListItemButton component={NavLink} to={item.path}>
                     <ListItemIcon>

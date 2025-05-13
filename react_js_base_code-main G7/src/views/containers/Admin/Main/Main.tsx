@@ -1,8 +1,8 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import ListItemButton from "@mui/material/ListItemButton";
-import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../constant";
-import DrawerHeader from "../../components/DrawerHeader";
+import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../../constant";
+import DrawerHeader from "../../../components/DrawerHeader";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -11,20 +11,20 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import AppBar from "../../components/AppBar";
+import AppBar from "../../../components/AppBar";
 import Divider from "@mui/material/Divider";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
 import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
-import MainLayout from "../../components/Main";
+import MainLayout from "../../../components/Main";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PeopleIcon from "@mui/icons-material/People";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import "./AdminMain.css";
+import "./Main.css";
 
 export const AdminMain = () => {
   const { pathname } = window.location;
@@ -58,8 +58,8 @@ export const AdminMain = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (pathname === ADMIN_PATHS.ADMIN_DASHBOARD.path) {
-      navigate(ADMIN_PATHS.ADMIN_DASHBOARD.path);
+    if (pathname === ADMIN_PATHS.DASHBOARD.path) {
+      navigate(ADMIN_PATHS.DASHBOARD.path);
     }
   }, [pathname, navigate]);
 

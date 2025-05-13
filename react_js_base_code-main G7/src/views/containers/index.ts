@@ -11,6 +11,7 @@ export * from "./CalendarBooking";
 export * from "./Settings";
 export * from "./ViewBooking";
 export * from "./EditBooking";
+export * from "./Admin/Main";
 export * from "./Admin/EditUser";
 export * from "./Admin/EditRoom";
 export * from "./Admin/AddUser";

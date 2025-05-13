@@ -1,31 +1,13 @@
-import { patch } from "@mui/material";
+// constants.ts
 
-// ROUTER PATH
-export const PATHS = {
-  MAIN: {
-    path: "/",
-    label: "Not Found"
-  },
-  ADMIN_MAIN: {
-    path: "/admin", // New path for Admin Dashboard
-    label: "Admin Main"
-  },
-   USER_MANAGEMENT: {
-     path: "/admin/users", 
-     label: "User Management" 
-    },
-  ROOM_MANAGEMENT: {
-     path: "/admin/rooms",
-      label: "Room Management" 
-    },
-  DASHBOARD: {
-     path: "/admin/Dashboard",
-      label: "Dashboard"
-    },
-  BOOKING_OVERVIEW: {
-     path: "/admin/bookings",
-      label: "Bookings" 
-    },
+// BASE PATHS
+const BASE = {
+  ADMIN: '/admin',
+  USER: '/user'
+};
+
+// PUBLIC ROUTES
+export const PUBLIC_PATHS = {
   LOGIN: {
     path: "/login",
     label: "Login"
@@ -34,83 +16,118 @@ export const PATHS = {
     path: "/register",
     label: "Register"
   },
-
-  FORGOTPASSWORD: {
-    path:"/forgotpassword",
-    label: "ForgotPassword"
+  FORGOT_PASSWORD: {
+    path: "/forgot-password",
+    label: "Forgot Password"
   },
   NOT_FOUND: {
     path: "*",
     label: "Not Found"
+  }
+};
+
+// USER ROUTES
+export const USER_PATHS = {
+  MAIN: {
+    path: "/",
+    label: "Home"
   },
   HOMEPAGE: {
     path: "/homepage",
     label: "Homepage"
   },
   VIEW_ROOMS: {
-    path: "/viewRooms",
-    label: "Book A Room"
+    path: "/rooms",
+    label: "View Rooms"
+  },
+  BOOKINGS: {
+    path: "/bookings",
+    label: "My Bookings"
+  },
+  EDIT_BOOKINGS: {
+    path: "/edit/bookings",
+    label: "My Bookings"
+  },
+  CALENDAR: {
+    path: "/calendar",
+    label: "Calendar"
+  },
+  SETTINGS: {
+    path: "/settings",
+    label: "Settings"
   },
   FAQ: {
     path: "/faq",
     label: "FAQ"
+  }
+};
+
+// ADMIN ROUTES
+export const ADMIN_PATHS = {
+   ADMIN_MAIN: {
+    path: `${BASE.ADMIN}`,
+    label: "Home"
   },
-  CALENDAR:{
-    path: "/calendar",
-    label: "Calendar"
+  DASHBOARD: {
+    path: `${BASE.ADMIN}/dashboard`,
+    label: "Dashboard",
+    icon: "Dashboard"
   },
-  SETTINGS:{
-    path: "/settings",
-    label: "Settings"
+  USER_MANAGEMENT: {
+    path: `${BASE.ADMIN}/users`,
+    label: "User Management",
+    icon: "People"
   },
-  BOOKINGS:{
-    path: "/bookings",
-    label: "Bookings"
+  ROOM_MANAGEMENT: {
+    path: `${BASE.ADMIN}/rooms`,
+    label: "Room Management",
+    icon: "MeetingRoom"
   },
-  EDIT_BOOKING:{
-    path: "/editBooking",
-    label: "Edit Booking"
+  BOOKING_OVERVIEW: {
+    path: `${BASE.ADMIN}/bookings`,
+    label: "Booking Overview",
+    icon: "CalendarView"
+  },
+  SYSTEM_SETTINGS: {
+    path: `${BASE.ADMIN}/settings`,
+    label: "System Settings",
+    icon: "Settings"
   },
   EDIT_USER:{
-    path: "/editUser",
+    path: `${BASE.ADMIN}/EditUser`,
     label: "Edit User"
   },
   EDIT_ROOM:{
-    path: "/editRoom",
+    path: `${BASE.ADMIN}/editRoom`,
     label: "Edit Room"
   },
   ADD_USER:{
-    path: "/addUser",
+    path: `${BASE.ADMIN}/addUser`,
     label: "Add User"
   },
   ADD_ROOM:{
-    path: "/addRoom",
+    path: `${BASE.ADMIN}/addRoom`,
     label: "Add Room"
   },
-  USERS:{
-    path: "/users",
-    label: "Users"
-  },
-  ROOMS:{
-    path: "/rooms",
-    label: "Rooms"
-  }
-  // Add more routes here
 };
 
-// SIDE BAR MENU PATH
-export const SIDE_BAR_MENU = [
-  {
-    path: "/bookings",
-    label: "View Bookings"
-  },
-  {
-    path: "/settings",
-    label: "Settings"
-  },
-  {
-    path: "/login",
-    label: "Logout"
-  }
-  // Add more path here
+// COMBINED PATHS (for easy access if needed)
+export const PATHS = {
+  ...PUBLIC_PATHS,
+  ...USER_PATHS,
+  ...ADMIN_PATHS
+};
+
+// SIDEBAR MENUS
+export const USER_SIDE_BAR_MENU = [
+  { path: USER_PATHS.BOOKINGS.path, label: USER_PATHS.BOOKINGS.label },
+  { path: USER_PATHS.CALENDAR.path, label: USER_PATHS.CALENDAR.label },
+  { path: USER_PATHS.SETTINGS.path, label: USER_PATHS.SETTINGS.label }
+];
+
+export const ADMIN_SIDE_BAR_MENU = [
+  { path: ADMIN_PATHS.DASHBOARD.path, label: ADMIN_PATHS.DASHBOARD.label },
+  { path: ADMIN_PATHS.USER_MANAGEMENT.path, label: ADMIN_PATHS.USER_MANAGEMENT.label },
+  { path: ADMIN_PATHS.ROOM_MANAGEMENT.path, label: ADMIN_PATHS.ROOM_MANAGEMENT.label },
+  { path: ADMIN_PATHS.BOOKING_OVERVIEW.path, label: ADMIN_PATHS.BOOKING_OVERVIEW.label }
 ];
