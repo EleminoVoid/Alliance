@@ -8,7 +8,6 @@ interface User {
   id: string;
   name: string;
   email: string;
-  avatar?: string;
 }
 
 interface Booking {
@@ -24,7 +23,6 @@ interface Booking {
   isRecurring: boolean;
   recurringDays?: string[];
   createdBy: User;
-  attendees: User[];
   purpose: string;
   status: "confirmed" | "pending" | "cancelled";
   createdAt: string;
@@ -47,22 +45,7 @@ const mockBooking: Booking = {
     id: "user-1",
     name: "John Doe",
     email: "john.doe@example.com",
-    avatar: "/placeholder.svg?height=40&width=40",
   },
-  attendees: [
-    {
-      id: "user-1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    {
-      id: "user-2",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-  ],
   purpose: "Weekly Team Meeting",
   status: "confirmed",
   createdAt: "2025-04-01T10:30:00Z",
@@ -206,26 +189,6 @@ export const EditBooking: React.FC = () => {
               </div>
             )}
           </div>
-
-          <div className="edit-booking-section">
-            <h3 className="edit-booking-sectionTitle">Attendees ({booking.attendees.length})</h3>
-            <div className="edit-booking-attendeesList">
-              {booking.attendees.map((attendee) => (
-                <div key={attendee.id} className="edit-booking-attendeeItem">
-                  <img
-                    src={attendee.avatar || "/placeholder.svg"}
-                    alt={attendee.name}
-                    className="edit-booking-attendeeAvatar"
-                  />
-                  <div className="edit-booking-attendeeInfo">
-                    <span className="edit-booking-attendeeName">{attendee.name}</span>
-                    <span className="edit-booking-attendeeEmail">{attendee.email}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div className="edit-booking-section">
             <h3 className="edit-booking-sectionTitle">Additional Information</h3>
             <div className="edit-booking-infoGrid">

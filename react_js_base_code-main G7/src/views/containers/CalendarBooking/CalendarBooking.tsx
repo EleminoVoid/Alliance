@@ -2,10 +2,18 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import axios from "axios";
 import "./CalendarBooking.css";
 
+interface Room {
+  id: string;
+  name: string;
+  image: string;
+}
+
 export function CalendarBooking() {
-  const [selectedRoom, setSelectedRoom] = useState("Room 1");
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [calendarEvents, setCalendarEvents] = useState<any[]>([
     {
@@ -21,6 +29,16 @@ export function CalendarBooking() {
       color: "#6b4f6d",
     },
   ]);
+
+  useEffect(() => {
+    // Fetch rooms from db.json
+    axios.get("http://localhost:3000/rooms").then((response) => {
+      setRooms(response.data);
+      if (response.data.length > 0) {
+        setSelectedRoom(response.data[0].id); // Set the first room as the default selected room
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (selectedDate) {
@@ -62,7 +80,7 @@ export function CalendarBooking() {
     alert(`Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`);
   };
 
-  const rooms = ["Room 1", "Room 2", "Room 3", "Conference Hall"];
+  const selectedRoomData = rooms.find((room) => room.id === selectedRoom);
 
   return (
     <div className="calendar-booking-container">
@@ -81,24 +99,28 @@ export function CalendarBooking() {
         </section>
         <aside className="calendar-booking-bookingSection">
           <div className="calendar-booking-roomHeader">
-            <h2 className="calendar-booking-roomTitle">{selectedRoom}</h2>
+            <h2 className="calendar-booking-roomTitle">
+              {selectedRoomData?.name || "Select a Room"}
+            </h2>
             <select
               value={selectedRoom}
               onChange={(e) => setSelectedRoom(e.target.value)}
               className="calendar-booking-roomSelect"
             >
               {rooms.map((room) => (
-                <option key={room} value={room}>
-                  {room}
+                <option key={room.id} value={room.id}>
+                  {room.name}
                 </option>
               ))}
             </select>
           </div>
-          <img
-            src="https://storage.googleapis.com/a1aa/image/05f97f0f-f572-4254-819e-d8de80ea65ac.jpg"
-            alt="Office room"
-            className="calendar-booking-roomImage"
-          />
+          {selectedRoomData?.image && (
+            <img
+              src={selectedRoomData.image}
+              alt={selectedRoomData.name}
+              className="calendar-booking-roomImage"
+            />
+          )}
           <label className="calendar-booking-toggleLabel">
             <input
               id="recurring"

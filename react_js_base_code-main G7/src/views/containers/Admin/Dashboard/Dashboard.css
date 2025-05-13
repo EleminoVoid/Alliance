@@ -1,0 +1,267 @@
+.stats-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Inter", sans-serif;
+  background-color: #f5f7fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.stats-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.time-range-tabs {
+  display: flex;
+  background-color: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  background-color: #d1d5db;
+}
+
+.tab.active {
+  background-color: #5d4b8c;
+  color: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1.5rem;
+}
+
+.bookings-chart {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  background-color: #374151;
+  color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.most-used-room,
+.trendline {
+  background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chart-icon {
+  font-size: 1.5rem;
+}
+
+.chart-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.donut-chart {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: conic-gradient(
+    #90b4f9 0% 52% /* Light blue - 11/21 */,
+    #1e6bfa 52% 57% /* Blue - 1/21 */,
+    #ff8c42 57% 71% /* Orange - 3/21 */,
+    #ffbd82 71% 100% /* Light orange - 6/21 */
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-color: #374151;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.donut-label {
+  font-size: 0.75rem;
+  color: #d1d5db;
+}
+
+.donut-total {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chart-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+}
+
+.light-blue {
+  background-color: #90b4f9;
+}
+
+.blue {
+  background-color: #1e6bfa;
+}
+
+.orange {
+  background-color: #ff8c42;
+}
+
+.light-orange {
+  background-color: #ffbd82;
+}
+
+.green {
+  background-color: #22c55e;
+}
+
+.line-chart {
+  height: 100px;
+  background-color: #374151;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.line-chart::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 10%,
+    rgba(255, 255, 255, 0.1) 10%,
+    rgba(255, 255, 255, 0.1) 20%,
+    transparent 20%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 255, 255, 0.1) 40%,
+    transparent 40%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.1) 60%,
+    transparent 60%,
+    transparent 70%,
+    rgba(255, 255, 255, 0.1) 70%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent 80%,
+    transparent 90%,
+    rgba(255, 255, 255, 0.1) 90%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+}
+
+.trendline-chart {
+  height: 200px;
+  background-color: white;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.trendline-chart::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.05) 1px,
+    transparent 1px,
+    transparent 20%,
+    rgba(0, 0, 0, 0.05) 20%,
+    rgba(0, 0, 0, 0.05) 21px,
+    transparent 21px,
+    transparent 40%,
+    rgba(0, 0, 0, 0.05) 40%,
+    rgba(0, 0, 0, 0.05) 41px,
+    transparent 41px,
+    transparent 60%,
+    rgba(0, 0, 0, 0.05) 60%,
+    rgba(0, 0, 0, 0.05) 61px,
+    transparent 61px,
+    transparent 80%,
+    rgba(0, 0, 0, 0.05) 80%,
+    rgba(0, 0, 0, 0.05) 81px,
+    transparent 81px,
+    transparent 100%
+  );
+}
+
+@media (max-width: 768px) {
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bookings-chart {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}

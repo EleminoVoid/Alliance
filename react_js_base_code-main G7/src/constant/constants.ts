@@ -57,6 +57,30 @@ export const PATHS = {
   EDIT_BOOKING:{
     path: "/editBooking",
     label: "Edit Booking"
+  },
+  EDIT_USER:{
+    path: "/editUser",
+    label: "Edit User"
+  },
+  EDIT_ROOM:{
+    path: "/editRoom",
+    label: "Edit Room"
+  },
+  ADD_USER:{
+    path: "/addUser",
+    label: "Add User"
+  },
+  ADD_ROOM:{
+    path: "/addRoom",
+    label: "Add Room"
+  },
+  USERS:{
+    path: "/users",
+    label: "Users"
+  },
+  ROOMS:{
+    path: "/rooms",
+    label: "Rooms"
   }
   // Add more routes here
 };

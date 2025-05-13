@@ -34,7 +34,7 @@
         "monitor"
       ],
       "description": "Small meeting room",
-      "image": "/placeholder.svg"
+      "image": "room-pic-5.webp"
     },
     {
       "id": "room-102",
@@ -48,7 +48,7 @@
         "coffee"
       ],
       "description": "Medium-sized meeting room",
-      "image": "/placeholder.svg"
+      "image": "room-pic-4.jpg"
     },
     {
       "id": "conference-a",
@@ -61,7 +61,7 @@
         "video"
       ],
       "description": "Large conference room",
-      "image": "/placeholder.svg"
+      "image": "room-pic-3.jpg"
     },
     {
       "id": "room-201",
@@ -74,7 +74,7 @@
         "monitor"
       ],
       "description": "Medium-sized meeting room",
-      "image": "/placeholder.svg"
+      "image": "room-pic-2.webp"
     },
     {
       "id": "room-301",
@@ -88,7 +88,7 @@
         "video"
       ],
       "description": "Large meeting room",
-      "image": "/placeholder.svg"
+      "image": "room-pic-1.jpg"
     }
   ],
   "bookings": [
