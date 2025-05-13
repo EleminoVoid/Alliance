@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { PATHS } from "../../../constant";
 import React, { useState } from "react";
 import bcrypt from "bcryptjs";
+import "./Login.css";
 
 export const Login = () => {
   const { pathname } = window.location;
@@ -21,7 +22,6 @@ export const Login = () => {
       const foundUser = users.find((user: any) => user.email === email);
 
       if (foundUser) {
-        // Compare the entered password with the hashed password
         const isPasswordValid = await bcrypt.compare(password, foundUser.password);
 
         if (isPasswordValid) {
@@ -57,177 +57,61 @@ export const Login = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.wrapper}>
-        <div style={styles.formContainer}>
-          <h1 style={styles.title}>Sign In</h1>
+    <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-formContainer">
+          <h1 className="login-title">Sign In</h1>
           <div>
-            <form style={styles.form} onSubmit={handleClickToHomePage}>
-              <div style={styles.inputGroup}>
+            <form className="login-form" onSubmit={handleClickToHomePage}>
+              <div className="login-inputGroup">
                 <label>
-                  <span style={styles.label}>Email</span>
+                  <span className="login-label">Email</span>
                   <input
                     type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    style={styles.input}
+                    className="login-input"
                   />
                 </label>
               </div>
-              <div style={styles.inputGroup}>
+              <div className="login-inputGroup">
                 <label>
-                  <span style={styles.label}>Password</span>
+                  <span className="login-label">Password</span>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={styles.input}
+                    className="login-input"
                   />
                 </label>
               </div>
-              {error && <p style={styles.error}>{error}</p>}
-              <p style={styles.forgotPassword}>
+              {error && <p className="login-error">{error}</p>}
+              <p className="login-forgotPassword">
                 Forgot Password?
-                <button type="button" onClick={handleClickToChangePass} style={styles.link}>
+                <button type="button" onClick={handleClickToChangePass} className="login-link">
                   Click Here
                 </button>
               </p>
-              <button type="submit" style={styles.submitButton}>
+              <button type="submit" className="login-submitButton">
                 Sign In
               </button>
             </form>
           </div>
-          <div style={styles.registerContainer}>
-            <p style={styles.registerText}>
+          <div className="login-registerContainer">
+            <p className="login-registerText">
               Don't have an account?
-              <button type="button" onClick={handleClickToRegister} style={styles.link}>
+              <button type="button" onClick={handleClickToRegister} className="login-link">
                 Sign Up
               </button>
             </p>
           </div>
         </div>
         {window.innerWidth >= 768 && (
-          <div style={styles.imageContainer}>
-            <img src="loginpic.jpg" alt="loginpic" style={styles.image} />
+          <div className="login-imageContainer">
+            <img src="loginpic.jpg" alt="loginpic" className="login-image" />
           </div>
         )}
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    width: "100vw",
-    backgroundColor: "#56697F",
-    fontFamily: "Inter, Arial, sans-serif",
-  },
-  wrapper: {
-    height: "auto",
-    width: window.innerWidth < 768 ? "90%" : "860px",
-    display: "grid",
-    gridTemplateColumns: window.innerWidth < 768 ? "1fr" : "1fr 1fr",
-    border: "none",
-    borderRadius: "10px",
-    padding: "20px",
-    margin: "20px",
-    backgroundColor: "white",
-    gap: "20px",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-  },
-  formContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: "20px",
-    minHeight: "400px",
-  },
-  title: {
-    textAlign: "left",
-    color: "#593F62",
-    marginTop: 0,
-    fontSize: "28px",
-    fontWeight: "600",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  inputGroup: {
-    width: "100%",
-    maxWidth: "300px",
-  },
-  label: {
-    display: "block",
-    marginBottom: "5px",
-    fontWeight: "bold",
-    color: "#333",
-    fontSize: "14px",
-  },
-  input: {
-    marginBottom: "15px",
-    padding: "12px 10px",
-    width: "100%",
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    fontSize: "1em",
-  },
-  error: {
-    color: "red",
-    fontSize: "14px",
-  },
-  forgotPassword: {
-    margin: "5px 0 0 0",
-    fontSize: "14px",
-    textAlign: "right",
-    width: "100%",
-    maxWidth: "300px",
-  },
-  link: {
-    fontStyle: "italic",
-    background: "none",
-    border: "none",
-    color: "#593F62",
-    cursor: "pointer",
-    fontSize: "14px",
-    paddingLeft: "5px",
-    fontWeight: "500",
-  },
-  submitButton: {
-    marginTop: "30px",
-    padding: "12px 40px",
-    backgroundColor: "#593F62",
-    color: "white",
-    border: "none",
-    cursor: "pointer",
-    borderRadius: "5px",
-    fontSize: "1.1em",
-    fontWeight: "500",
-    transition: "background-color 0.2s ease",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-  },
-  registerContainer: {
-    marginTop: "40px",
-    textAlign: "center",
-  },
-  registerText: {
-    marginBottom: 0,
-    fontSize: "14px",
-  },
-  imageContainer: {
-    height: "100%",
-    paddingLeft: "20px",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    borderRadius: "10px",
-    objectFit: "cover",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-  },
 };

@@ -1,0 +1,127 @@
+.edit-booking-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+}
+
+.edit-booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    color: #593f62;
+}
+
+.edit-booking-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #56697f;
+}
+
+.edit-booking-buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-booking-backButton,
+.edit-booking-editButton,
+.edit-booking-cancelButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.edit-booking-backButton {
+    background-color: #5a6b81;
+    color: white;
+}
+
+.edit-booking-editButton {
+    background-color: #593f62;
+    color: white;
+}
+
+.edit-booking-cancelButton {
+    background-color: #d32f2f;
+    color: white;
+}
+
+.edit-booking-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.edit-booking-purpose {
+    margin: 0;
+    font-size: 20px;
+}
+
+.edit-booking-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.edit-booking-status.confirmed {
+    background-color: #4caf50;
+    color: white;
+}
+
+.edit-booking-status.pending {
+    background-color: #ff9800;
+    color: white;
+}
+
+.edit-booking-status.cancelled {
+    background-color: #f44336;
+    color: white;
+}
+
+.edit-booking-content {
+    padding: 20px;
+}
+
+.edit-booking-section {
+    margin-bottom: 20px;
+}
+
+.edit-booking-sectionTitle {
+    font-size: 16px;
+    font-weight: bold;
+    color: #593f62;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.edit-booking-infoGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.edit-booking-infoItem {
+    margin-bottom: 10px;
+}
+
+.edit-booking-infoLabel {
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.edit-booking-infoValue {
+    color: #333;
+    font-size: 16px;
+}

@@ -13,6 +13,13 @@
       "username": "User",
       "password": "$2b$10$EdqvGUuNynCJdAtmXi0uY.eghKiEfDX8HN9d2yDgyY4M3FfNGW992",
       "role": "user"
+    },
+    {
+      "id": "eeff",
+      "email": "test1@email.com",
+      "username": "test1",
+      "password": "$2b$10$NYx1HC/2UcK9wPA6ORNRlOUpWJ/c.4jrEfPYuw7oX5WkgVhwBbVKK",
+      "role": "user"
     }
   ],
   "rooms": [
