@@ -11,7 +11,6 @@ export const AppRoutes = () => {
         <Route path={PATHS.MAIN.path} element={<Views.Main />}>
           {/* Nested routes under Main */}
           <Route path={PATHS.HOMEPAGE.path} element={<Views.Homepage />} />
-          <Route path={PATHS.DASHBOARD.path} element={<Views.Dashboard />} />
           <Route path={PATHS.VIEW_ROOMS.path} element={<Views.ViewRooms />} />
           <Route path={PATHS.FAQ.path} element={<Views.Faq />} />
           <Route path={PATHS.CALENDAR.path} element={<Views.CalendarBooking />} />
@@ -24,6 +23,11 @@ export const AppRoutes = () => {
           <Route path={PATHS.ADD_ROOM.path} element={<Views.AddRoom />} />
           <Route path={PATHS.USERS.path} element={<Views.Users />} />
           <Route path={PATHS.ROOMS.path} element={<Views.Rooms />} />
+          {/* Add more nested routes here */}
+        </Route><Route path={PATHS.ADMIN_MAIN.path} element={<Views.Main />}>
+          {/* Nested routes under Main */}
+          <Route path={PATHS.DASHBOARD.path} element={<Views.Dashboard />} />
+        
           {/* Add more nested routes here */}
         </Route>
         {/* Add public routes here if needed */}

@@ -13,34 +13,38 @@ export const Login = () => {
   const [error, setError] = useState("");
 
   const handleClickToHomePage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await fetch("http://localhost:3000/users");
-      const users = await response.json();
+  try {
+    const response = await fetch("http://localhost:3000/users");
+    const users = await response.json();
 
-      const foundUser = users.find((user: any) => user.email === email);
+    const foundUser = users.find((user: any) => user.email === email);
 
-      if (foundUser) {
-        const isPasswordValid = await bcrypt.compare(password, foundUser.password);
+    if (foundUser) {
+      const isPasswordValid = await bcrypt.compare(password, foundUser.password);
 
-        if (isPasswordValid) {
-          if (foundUser.role === "admin") {
-            navigate(PATHS.DASHBOARD.path);
-          } else {
-            navigate(PATHS.HOMEPAGE.path);
-          }
+      if (isPasswordValid) {
+        localStorage.setItem("userId", foundUser.id);
+
+        // Navigate based on role
+        if (foundUser.role === "admin") {
+          navigate(PATHS.DASHBOARD.path);
         } else {
-          setError("Invalid email or password.");
+          navigate(PATHS.HOMEPAGE.path);
         }
       } else {
         setError("Invalid email or password.");
       }
-    } catch (err) {
-      setError("Failed to connect to server.");
-      console.error(err);
+    } else {
+      setError("Invalid email or password.");
     }
-  };
+  } catch (err) {
+    setError("Failed to connect to server.");
+    console.error(err);
+  }
+};
+
 
   const handleClickToChangePass = (e: React.MouseEvent) => {
     e.preventDefault();

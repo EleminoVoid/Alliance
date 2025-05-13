@@ -1,109 +1,249 @@
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import ListItemButton from "@mui/material/ListItemButton";
-import { PATHS, SIDE_BAR_MENU } from "../../../../constant";
-import DrawerHeader from "../../../components/DrawerHeader";
+import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../constant";
+import DrawerHeader from "../../components/DrawerHeader";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import CssBaseline from "@mui/material/CssBaseline";
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import ListIcon from "@mui/icons-material/List";
-import MainLayout from "../../../components/Main";
-
-import ListItem from "@mui/material/ListItem";
-import AddIcon from "@mui/icons-material/Add";
-import AppBar from "../../../components/AppBar";
+import AppBar from "../../components/AppBar";
 import Divider from "@mui/material/Divider";
 import Toolbar from "@mui/material/Toolbar";
 import Drawer from "@mui/material/Drawer";
+import ListItem from "@mui/material/ListItem";
 import List from "@mui/material/List";
-import './Main.css';
+import MainLayout from "../../components/Main";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import PeopleIcon from "@mui/icons-material/People";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import "./AdminMain.css";
 
 export const AdminMain = () => {
-  // CURRENT URL/PATH LOCATORS
   const { pathname } = window.location;
-
-  // NAVIGATE TO SPECIFIC USER
-  let navigate = useNavigate();
-
-  // OPEN DRAWER LEFT SIDE
+  const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = React.useState(false);
-
-  // DRAWER CUSTOMIZATION WIDTH
-  const drawerWidth = 240;
-
-  // THEME CUSTOMIZATION
   const theme = useTheme();
+  const [user, setUser] = useState(null);
+  const [adminFeatures, setAdminFeatures] = useState({
+    analytics: true,
+    userManagement: true,
+    contentModeration: true
+  });
 
   useEffect(() => {
-    // AUTO DIRECT USER TO DASHBOARD WHEN PATH IS DEFAULT
-    if (pathname === PATHS.MAIN.path) navigate(PATHS.LOGIN.path);
-  }, [pathname]);
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+
+    fetch(`http://localhost:3000/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.role !== "admin") {
+          navigate("/unauthorized");
+        } else {
+          setUser(data);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch user", err));
+  }, [navigate]);
+
+  useEffect(() => {
+    if (pathname === ADMIN_PATHS.ADMIN_DASHBOARD.path) {
+      navigate(ADMIN_PATHS.ADMIN_DASHBOARD.path);
+    }
+  }, [pathname, navigate]);
+
+  const handleAdminFeatureToggle = (feature) => {
+    setAdminFeatures(prev => ({
+      ...prev,
+      [feature]: !prev[feature]
+    }));
+  };
 
   return (
     <Fragment>
       <CssBaseline />
-      <AppBar position="fixed" open={openDrawer} style={{ }}>
-        <Toolbar style={{ flexGrow: 1 }}>
-          <IconButton color="inherit" aria-label="open drawer" onClick={() => setOpenDrawer(!openDrawer)} edge="start" sx={[{ mr: 2 }, openDrawer && { display: "none" }]}>
+
+      {/* Admin Header */}
+      <AppBar position="fixed" className="admin-app-bar">
+        <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+          <IconButton
+            color="inherit"
+            edge="start"
+            onClick={() => setOpenDrawer(true)}
+            sx={{ mr: 2 }}
+          >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" style={{ marginRight: '3em', fontWeight: '900' }}>
-            MARSHAL
-          </Typography>
-          <div>
-            <a href="/homepage" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
-              Home
-            </a>
-            <a href="/viewRooms" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
-              View Rooms
-            </a>
-            <a href="/faq" style={{ color: "white", textDecoration: "none", margin: "0 15px", fontSize: "16px" }}>
-              FAQ
-            </a>
-        </div>
+
+          <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+            <AdminPanelSettingsIcon sx={{ mr: 1 }} />
+            <Typography variant="h6" noWrap fontWeight={900} sx={{ mr: 4 }}>
+              MARSHAL ADMIN
+            </Typography>
+          </Box>
+
+          <Box display="flex" alignItems="center">
+            <Typography variant="subtitle2" sx={{ mr: 2 }}>
+              Admin Mode
+            </Typography>
+            {user && (
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                {user.username?.charAt(0).toUpperCase()}
+              </Avatar>
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
-      {/* SIDE BAR DRAWER */}
+
+      {/* Admin Sidebar */}
       <Drawer
-        sx={{ width: drawerWidth, flexShrink: 0, "& .MuiDrawer-paper": { width: drawerWidth, boxSizing: "border-box"}}}
-        variant="persistent"
+        variant="temporary"
         anchor="left"
         open={openDrawer}
+        onClose={() => setOpenDrawer(false)}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: 280,
+            boxSizing: "border-box",
+            background: theme.palette.primary.dark,
+            color: theme.palette.common.white,
+          },
+        }}
       >
         <DrawerHeader>
-          <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
+          <IconButton onClick={() => setOpenDrawer(false)} sx={{ color: 'inherit' }}>
+            <ChevronLeftIcon />
           </IconButton>
         </DrawerHeader>
-        <Divider />
-        {/* SIDE BAR MENU ITEMS */}
-        <List>
-          {SIDE_BAR_MENU.map((item) => (
-            <ListItem key={item.path} disablePadding>
-              <ListItemButton component={NavLink} to={item.path}>
-                <ListItemIcon>
-                  {/* Add icons here if needed */}
+        <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
+        
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          {/* Admin User Area */}
+          {user && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'primary.main' }}>
+              <Avatar sx={{ bgcolor: 'secondary.main' }}>
+                {user.username?.charAt(0).toUpperCase()}
+              </Avatar>
+              <Box>
+                <Typography variant="body2" noWrap>{user.email}</Typography>
+                <Typography variant="caption" noWrap sx={{ color: 'secondary.main' }}>
+                  {user.role.toUpperCase()}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+          <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
+
+          {/* Admin Menu Items */}
+          <Box sx={{ flexGrow: 1 }}>
+            <List>
+              {ADMIN_SIDE_BAR_MENU.map((item) => (
+                <ListItem key={item.path} disablePadding>
+                  <ListItemButton 
+                    component={NavLink} 
+                    to={item.path}
+                    sx={{
+                      '&.active': {
+                        bgcolor: 'primary.light',
+                      },
+                      '&:hover': {
+                        bgcolor: 'primary.light',
+                      }
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: 'inherit' }}>
+                      {item.icon || <DashboardIcon />}
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={item.label} 
+                      primaryTypographyProps={{ fontWeight: 'medium' }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+
+          {/* Admin Controls */}
+          <Box sx={{ p: 2 }}>
+            <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)', mb: 2 }} />
+            <Typography variant="subtitle2" gutterBottom>
+              Admin Features
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="body2">Analytics Dashboard</Typography>
+                <IconButton 
+                  size="small" 
+                  color={adminFeatures.analytics ? 'secondary' : 'default'}
+                  onClick={() => handleAdminFeatureToggle('analytics')}
+                >
+                  <DashboardIcon fontSize="small" />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Typography variant="body2">User Management</Typography>
+                <IconButton 
+                  size="small" 
+                  color={adminFeatures.userManagement ? 'secondary' : 'default'}
+                  onClick={() => handleAdminFeatureToggle('userManagement')}
+                >
+                  <PeopleIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Settings at bottom */}
+          <Box>
+            <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
+            <ListItem disablePadding>
+              <ListItemButton 
+                component={NavLink} 
+                to="/admin/settings"
+                sx={{
+                  '&.active': {
+                    bgcolor: 'primary.light',
+                  }
+                }}
+              >
+                <ListItemIcon sx={{ color: 'inherit' }}>
+                  <SettingsIcon />
                 </ListItemIcon>
-                <ListItemText primary={item.label} />
+                <ListItemText 
+                  primary="Admin Settings" 
+                  primaryTypographyProps={{ fontWeight: 'medium' }}
+                />
               </ListItemButton>
             </ListItem>
-          ))}
-        </List>
+          </Box>
+        </Box>
       </Drawer>
-      <MainLayout open={openDrawer} style={{ padding: '0' }}>
+
+      {/* ADMIN MAIN CONTENT */}
+      <MainLayout className="admin-main-content">
         <DrawerHeader />
-        {/* OUTLET DISPLAY THE FOLLOWING SCREEN THAT MATCHES THE ROUTE INSIDE THE PARENT ROUTE*/}
-        <Outlet />
+        <Box sx={{ 
+          p: 3,
+          background: '#f5f7fa',
+          minHeight: 'calc(100vh - 64px)'
+        }}>
+          <Outlet />
+        </Box>
       </MainLayout>
     </Fragment>
   );

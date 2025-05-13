@@ -1,44 +1,64 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./Dashboard.css";
 import {
   PieChart,
   Pie,
   Cell,
   Tooltip,
+  LineChart,
+  Line,
   Legend,
   ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
 } from "recharts";
+import "./Dashboard.css";
+
+interface Room {
+  id: string;
+  name: string;
+  capacity: number;
+  description: string;
+  amenities: string[];
+  image: string;
+}
+
+interface Booking {
+  id: string;
+  roomId: string;
+  // Add other booking properties as needed
+}
+
+const COLORS = [
+  '#8883d8',
+  '#82ca9d',
+  '#ffc658',
+  '#ff8042',
+  '#0088FE',
+  '#00C49F',
+  '#FFBB28',
+  '#FF8042',
+];
 
 export const Dashboard = () => {
   const [timeRange, setTimeRange] = useState("weeks");
-  const [rooms, setRooms] = useState<any[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [mostUsedRoom, setMostUsedRoom] = useState<any>(null);
-  const [bookingsPerRoom, setBookingsPerRoom] = useState<any>({});
-  const [bookingPercentages, setBookingPercentages] = useState<any>({});
-
-  // Array of distinct color class names for legend coloring
-  const legendColors = [
-    "light-blue",
-    "blue",
-    "orange",
-    "light-orange",
-    "green",
-    "purple",
-    "pink",
-    "teal",
-  ];
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [mostUsedRoom, setMostUsedRoom] = useState<Room | null>(null);
+  const [bookingsPerRoom, setBookingsPerRoom] = useState<Record<string, number>>({});
+  const [bookingPercentages, setBookingPercentages] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const roomsRes = await axios.get("http://localhost:3000/rooms");
-        const bookingsRes = await axios.get("http://localhost:3000/bookings");
+        const [roomsRes, bookingsRes] = await Promise.all([
+          axios.get<Room[]>("http://localhost:3000/rooms"),
+          axios.get<Booking[]>("http://localhost:3000/bookings")
+        ]);
 
         setRooms(roomsRes.data);
         setBookings(bookingsRes.data);
-
         calculateMostUsedRoom(roomsRes.data, bookingsRes.data);
         calculateBookingsPerRoom(roomsRes.data, bookingsRes.data);
         calculateBookingPercentages(bookingsRes.data);
@@ -50,25 +70,25 @@ export const Dashboard = () => {
     fetchData();
   }, []);
 
-  const calculateMostUsedRoom = (rooms: any[], bookings: any[]) => {
-    const roomUsage: any = {};
+  const calculateMostUsedRoom = (rooms: Room[], bookings: Booking[]) => {
+    const roomUsage: Record<string, number> = {};
     bookings.forEach((booking) => {
-      const roomId = booking.roomId;
-      roomUsage[roomId] = (roomUsage[roomId] || 0) + 1;
+      roomUsage[booking.roomId] = (roomUsage[booking.roomId] || 0) + 1;
     });
+
     if (Object.keys(roomUsage).length === 0) {
       setMostUsedRoom(null);
       return;
     }
+
     const mostUsedRoomId = Object.keys(roomUsage).reduce((a, b) =>
       roomUsage[a] > roomUsage[b] ? a : b
     );
-    const room = rooms.find((r) => r.id === mostUsedRoomId);
-    setMostUsedRoom(room);
+    setMostUsedRoom(rooms.find((r) => r.id === mostUsedRoomId) || null);
   };
 
-  const calculateBookingsPerRoom = (rooms: any[], bookings: any[]) => {
-    const bookingsCount: any = {};
+  const calculateBookingsPerRoom = (rooms: Room[], bookings: Booking[]) => {
+    const bookingsCount: Record<string, number> = {};
     rooms.forEach((room) => {
       bookingsCount[room.id] = bookings.filter(
         (booking) => booking.roomId === room.id
@@ -77,97 +97,98 @@ export const Dashboard = () => {
     setBookingsPerRoom(bookingsCount);
   };
 
-  const calculateBookingPercentages = (bookings: any[]) => {
+  const calculateBookingPercentages = (bookings: Booking[]) => {
     const totalBookings = bookings.length;
-    const percentages: any = {};
+    const percentages: Record<string, number> = {};
+    
+    if (totalBookings === 0) {
+      setBookingPercentages({});
+      return;
+    }
+
     bookings.forEach((booking) => {
-      const roomId = booking.roomId;
-      percentages[roomId] = (percentages[roomId] || 0) + 1 / totalBookings * 100;
+      percentages[booking.roomId] = (percentages[booking.roomId] || 0) + (1 / totalBookings) * 100;
     });
     setBookingPercentages(percentages);
   };
 
-  // Prepare data for the Pie chart
-  const pieChartData = rooms.map((room) => {
-    const roomId = room.id;
-    const percentage = bookingPercentages[roomId] || 0;
-    return {
-      name: room.name,
-      value: percentage,
-    };
-  });
+const prepareMonthlyBookings = () => {
+    const monthlyData: Record<string, number> = {};
+
+    bookings.forEach(booking => {
+      const date = new Date(booking.startDate);
+      const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+      
+      monthlyData[monthYear] = (monthlyData[monthYear] || 0) + 1;
+    });
+
+    // Convert to array and sort by date
+    return Object.entries(monthlyData)
+      .map(([month, count]) => ({ 
+        month, 
+        bookings: count,
+        monthDisplay: new Date(month + '-01').toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short' 
+        })
+      }))
+      .sort((a, b) => a.month.localeCompare(b.month));
+  };
+
+  const monthlyBookingsData = prepareMonthlyBookings();
+
+  const pieChartData = rooms.map((room) => ({
+    name: room.name,
+    value: parseFloat((bookingPercentages[room.id] || 0).toFixed(2)),
+  }));
 
   return (
     <div className="stats-container">
       <div className="stats-header">
         <h1>Room Management - Stats</h1>
         <div className="time-range-tabs">
-          <button
-            className={`tab ${timeRange === "days" ? "active" : ""}`}
-            onClick={() => setTimeRange("days")}
-          >
-            Days
-          </button>
-          <button
-            className={`tab ${timeRange === "weeks" ? "active" : ""}`}
-            onClick={() => setTimeRange("weeks")}
-          >
-            Weeks
-          </button>
-          <button
-            className={`tab ${timeRange === "months" ? "active" : ""}`}
-            onClick={() => setTimeRange("months")}
-          >
-            Months
-          </button>
-          <button
-            className={`tab ${timeRange === "years" ? "active" : ""}`}
-            onClick={() => setTimeRange("years")}
-          >
-            Years
-          </button>
+          {["days", "weeks", "months", "years"].map((range) => (
+            <button
+              key={range}
+              className={`tab ${timeRange === range ? "active" : ""}`}
+              onClick={() => setTimeRange(range)}
+            >
+              {range.charAt(0).toUpperCase() + range.slice(1)}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="stats-grid">
+        <div className="stats-grid">
         <div className="bookings-chart">
           <div className="chart-header">
             <div className="chart-icon">📦</div>
             <h3>NUMBER OF BOOKINGS PER ROOM</h3>
           </div>
 
-          <div className="donut-chart">
+          <div className="chart-container">
             <ResponsiveContainer width="100%" height={400}>
-              <PieChart>
+              <PieChart margin={{ top: 20, right: 20, bottom: 80, left: 20 }}>
                 <Pie
                   data={pieChartData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={150}
-                  fill="#8884d8"
+                  outerRadius={120}  // Reduced from 150
+                  innerRadius={60}   // Reduced from 70
                   dataKey="value"
                 >
                   {pieChartData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={legendColors[index % legendColors.length]}
-                    />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Legend
                   layout="horizontal"
                   verticalAlign="bottom"
-                  align="center"
-                  payload={pieChartData.map((item, index) => ({
-                    id: item.name,
-                    type: "square",
-                    value: item.name,
-                    color: legendColors[index % legendColors.length],
-                  }))}
+                  wrapperStyle={{ paddingTop: '20px' }}
                 />
-                <Tooltip />
+                <Tooltip formatter={(value: number) => [`${value}%`, 'Percentage']} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -186,7 +207,7 @@ export const Dashboard = () => {
                 <p>Description: {mostUsedRoom.description}</p>
                 <p>
                   Amenities:{" "}
-                  {mostUsedRoom.amenities && mostUsedRoom.amenities.join(", ")}
+                  {mostUsedRoom.amenities?.join(", ") || "No amenities listed"}
                 </p>
                 <img
                   src={mostUsedRoom.image}
@@ -201,23 +222,43 @@ export const Dashboard = () => {
         </div>
 
         <div className="trendline">
-          <h3>Trendline (Bookings Per Month)</h3>
-          <div className="trendline-chart">
-            <ul>
-              {Object.entries(bookingsPerRoom)
-                .sort(
-                  ([a], [b]) =>
-                    new Date(a + " 1") - new Date(b + " 1")
-                )
-                .map(([month, count]) => (
-                  <li key={month}>
-                    {month}: {count} bookings
-                  </li>
-                ))}
-            </ul>
-          </div>
+        <div className="chart-header">
+          <div className="chart-icon">📈</div>
+          <h3>Monthly Bookings Trend</h3>
+        </div>
+        <div className="trendline-chart-container">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart
+              data={monthlyBookingsData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="month" 
+                tickFormatter={(month) => {
+                  const [year, monthNum] = month.split('-');
+                  return `${year}-${monthNum}`; // Or format as you prefer
+                }}
+              />
+              <YAxis />
+              <Tooltip 
+                formatter={(value) => [`${value} bookings`, 'Bookings']}
+                labelFormatter={(month) => `Month: ${month}`}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="bookings"
+                name="Bookings"
+                stroke="#8884d8"
+                strokeWidth={2}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
+    </div>
     </div>
   );
 };

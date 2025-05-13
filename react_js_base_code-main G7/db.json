@@ -5,21 +5,24 @@
       "email": "admin@example.com",
       "username": "admin",
       "password": "$2b$10$Zf7xG2CxjZS4XJC089ejbejswWIx10urF7u1PcLjICW5T9eEPoSjm",
-      "role": "admin"
+      "role": "admin",
+      "avatar": "https://i.pravatar.cc/40" 
     },
     {
       "id": "4bc8",
       "email": "user@example.com",
       "username": "User",
       "password": "$2b$10$EdqvGUuNynCJdAtmXi0uY.eghKiEfDX8HN9d2yDgyY4M3FfNGW992",
-      "role": "user"
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/40" 
     },
     {
       "id": "eeff",
       "email": "test1@email.com",
       "username": "test1",
       "password": "$2b$10$NYx1HC/2UcK9wPA6ORNRlOUpWJ/c.4jrEfPYuw7oX5WkgVhwBbVKK",
-      "role": "user"
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/40" 
     }
   ],
   "rooms": [

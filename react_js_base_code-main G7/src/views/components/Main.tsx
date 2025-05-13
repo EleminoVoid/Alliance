@@ -1,30 +1,23 @@
 import { styled } from "@mui/material/styles";
 
 const drawerWidth = 240;
+
 const MainLayout = styled("main", {
-  shouldForwardProp: (prop) => prop !== "open"
+  shouldForwardProp: (prop) => prop !== "open",
 })<{
   open?: boolean;
-}>(({ theme }) => ({
+}>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
   transition: theme.transitions.create("margin", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
+    easing: open
+      ? theme.transitions.easing.easeOut
+      : theme.transitions.easing.sharp,
+    duration: open
+      ? theme.transitions.duration.enteringScreen
+      : theme.transitions.duration.leavingScreen,
   }),
-  marginLeft: `-${drawerWidth}px`,
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        transition: theme.transitions.create("margin", {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen
-        }),
-        marginLeft: 0
-      }
-    }
-  ]
+  marginLeft: open ? 0 : `-${drawerWidth}px`,
 }));
 
 export default MainLayout;

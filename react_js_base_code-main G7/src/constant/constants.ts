@@ -7,9 +7,25 @@ export const PATHS = {
     label: "Not Found"
   },
   ADMIN_MAIN: {
-    path: "/admin/Main", // New path for Admin Dashboard
-    label: "Admin Dashboard"
+    path: "/admin", // New path for Admin Dashboard
+    label: "Admin Main"
   },
+   USER_MANAGEMENT: {
+     path: "/admin/users", 
+     label: "User Management" 
+    },
+  ROOM_MANAGEMENT: {
+     path: "/admin/rooms",
+      label: "Room Management" 
+    },
+  DASHBOARD: {
+     path: "/admin/Dashboard",
+      label: "Dashboard"
+    },
+  BOOKING_OVERVIEW: {
+     path: "/admin/bookings",
+      label: "Bookings" 
+    },
   LOGIN: {
     path: "/login",
     label: "Login"
@@ -18,10 +34,7 @@ export const PATHS = {
     path: "/register",
     label: "Register"
   },
-  DASHBOARD: {
-    path: "/dashboard",
-    label: "Dashboard"
-  },
+
   FORGOTPASSWORD: {
     path:"/forgotpassword",
     label: "ForgotPassword"
