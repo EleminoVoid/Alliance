@@ -1,271 +1,148 @@
-"use client"
-
-import type React from "react"
-import { useNavigate } from "react-router"
-import { PATHS } from "../../../constant"
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "../../../constant";
+import React, { useState } from "react";
+import bcrypt from "bcryptjs";
+import "./Login.css";
+import { CircularProgress } from "@mui/material";
 
 export const Login = () => {
-  const { pathname } = window.location
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleClickToHomePage = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.HOMEPAGE.path)
-    }
-  }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-  const handleClickToChangePass = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.FORGOTPASSWORD.path)
-    }
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  const handleClickToRegister = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.REGISTER.path)
+    try {
+      const response = await fetch("http://localhost:3000/users");
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const users = await response.json();
+      const foundUser = users.find((user: any) => user.email === formData.email);
+
+      if (!foundUser) {
+        throw new Error("Invalid email or password");
+      }
+
+      const isPasswordValid = await bcrypt.compare(formData.password, foundUser.password);
+      if (!isPasswordValid) {
+        throw new Error("Invalid email or password");
+      }
+
+      // Store both user ID and role in localStorage
+      localStorage.setItem("userId", foundUser.id);
+      localStorage.setItem("userRole", foundUser.role);
+      localStorage.setItem("username", foundUser.username);
+
+      // Redirect based on role
+      if (foundUser.role === "admin") {
+        navigate(PATHS.DASHBOARD.path || PATHS.DASHBOARD.path);
+      } else {
+        navigate(PATHS.HOMEPAGE.path);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to connect to server");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  const navigateTo = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(path);
+  };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        width: "100vw",
-        backgroundColor: "#56697F",
-        fontFamily: "Inter, Arial, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          height: "auto",
-          width: window.innerWidth < 768 ? "90%" : "860px",
-          display: "grid",
-          gridTemplateColumns: window.innerWidth < 768 ? "1fr" : "1fr 1fr",
-          border: "none",
-          borderRadius: "10px",
-          padding: "20px",
-          margin: "20px",
-          backgroundColor: "white",
-          gap: "20px",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            padding: "20px",
-            minHeight: "400px",
-          }}
-        >
-          <h1
-            style={{
-              textAlign: "left",
-              color: "#593F62",
-              marginTop: 0,
-              fontSize: "28px",
-              fontWeight: "600",
-            }}
-          >
-            Sign In
-          </h1>
-          <div>
-            <form
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  position: "relative",
-                  marginBottom: "20px",
-                  width: "100%",
-                  maxWidth: "300px",
-                }}
+    <div className="login-container">
+      <div className="login-wrapper">
+        <div className="login-formContainer">
+          <h1 className="login-title">Sign In</h1>
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="login-inputGroup">
+              <label>
+                <span className="login-label">Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="login-input"
+                  required
+                />
+              </label>
+            </div>
+            <div className="login-inputGroup">
+              <label>
+                <span className="login-label">Password</span>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="login-input"
+                />
+              </label>
+            </div>
+            
+            {error && <p className="login-error">{error}</p>}
+            
+            <p className="login-forgotPassword">
+              Forgot Password?{" "}
+              <button 
+                type="button" 
+                onClick={navigateTo(PATHS.FORGOT_PASSWORD.path)} 
+                className="login-link"
               >
-                <label
-                  style={{
-                    display: "block",
-                    position: "relative",
-                  }}
-                >
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "-4px",
-                      left: "10px",
-                      fontWeight: "bold",
-                      fontStyle: "bold",
-                      color: "#333",
-                      backgroundColor: "white",
-                      padding: "0 5px",
-                      pointerEvents: "none",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Email
-                  </span>
-                  <input
-                    type="text"
-                    style={{
-                      margin: "10px 0",
-                      padding: "12px 10px",
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      borderRadius: "5px",
-                      fontSize: "1em",
-                      outline: "none",
-                      boxSizing: "border-box",
-                      transition: "border-color 0.2s ease",
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = "#593F62")}
-                    onBlur={(e) => (e.target.style.borderColor = "#ccc")}
-                  />
-                </label>
-              </div>
-              <div
-                style={{
-                  position: "relative",
-                  marginBottom: "20px",
-                  width: "100%",
-                  maxWidth: "300px",
-                }}
-              >
-                <label
-                  style={{
-                    display: "block",
-                    position: "relative",
-                  }}
-                >
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: "-4px",
-                      left: "10px",
-                      fontWeight: "bold",
-                      fontStyle: "bold",
-                      color: "#333",
-                      backgroundColor: "white",
-                      padding: "0 5px",
-                      pointerEvents: "none",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Password
-                  </span>
-                  <input
-                    type="password"
-                    style={{
-                      margin: "10px 0",
-                      padding: "12px 10px",
-                      width: "100%",
-                      border: "1px solid #ccc",
-                      borderRadius: "5px",
-                      fontSize: "1em",
-                      outline: "none",
-                      boxSizing: "border-box",
-                      transition: "border-color 0.2s ease",
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = "#593F62")}
-                    onBlur={(e) => (e.target.style.borderColor = "#ccc")}
-                  />
-                </label>
-                <p
-                  style={{
-                    margin: "5px 0 0 0",
-                    fontSize: "14px",
-                    textAlign: "right",
-                  }}
-                >
-                  Forgot Password?
-                  <button
-                    onClick={handleClickToChangePass}
-                    style={{
-                      fontStyle: "italic",
-                      background: "none",
-                      border: "none",
-                      color: "#593F62",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      padding: "0 0 0 5px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Click Here
-                  </button>
-                </p>
-              </div>
-              <button
-                type="submit"
-                onClick={handleClickToHomePage}
-                style={{
-                  fontFamily: "Inter, sans-serif",
-                  alignSelf: "center",
-                  marginTop: "30px",
-                  padding: "12px 40px",
-                  backgroundColor: "#593F62",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                  borderRadius: "5px",
-                  fontSize: "1.1em",
-                  fontWeight: "500",
-                  transition: "background-color 0.2s ease",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#4e3b52")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#593F62")}
-              >
-                Sign In
+                Click Here
               </button>
-            </form>
-          </div>
-          <div style={{ marginTop: "40px", textAlign: "center" }}>
-            <p style={{ marginBottom: 0, fontSize: "14px" }}>
-              Don't have an account?
-              <button
-                onClick={handleClickToRegister}
-                style={{
-                  fontStyle: "italic",
-                  background: "none",
-                  border: "none",
-                  color: "#593F62",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  padding: "0 0 0 5px",
-                  fontWeight: "500",
-                }}
+            </p>
+            
+            <button 
+              type="submit" 
+              className="login-submitButton"
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
+            </button>
+          </form>
+          
+          <div className="login-registerContainer">
+            <p className="login-registerText">
+              Don't have an account?{" "}
+              <button 
+                type="button" 
+                onClick={navigateTo(PATHS.REGISTER.path)} 
+                className="login-link"
               >
                 Sign Up
               </button>
             </p>
           </div>
         </div>
+        
         {window.innerWidth >= 768 && (
-          <div style={{ height: "100%", paddingLeft: "20px" }}>
-            <img
-              src="loginpic.jpg"
-              alt="loginpic"
-              style={{
-                width: "100%",
-                height: "100%",
-                borderRadius: "10px",
-                objectFit: "cover",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-              }}
-            />
+          <div className="login-imageContainer">
+            <img src="loginpic.jpg" alt="login" className="login-image" />
           </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};

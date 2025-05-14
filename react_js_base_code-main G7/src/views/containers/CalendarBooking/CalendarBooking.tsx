@@ -1,193 +1,137 @@
-"use client"
+import React, { useEffect, useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import axios from "axios";
+import "./CalendarBooking.css";
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import FullCalendar from "@fullcalendar/react"
-import dayGridPlugin from "@fullcalendar/daygrid"
-import interactionPlugin from "@fullcalendar/interaction" 
+interface Room {
+  id: string;
+  name: string;
+  image: string;
+}
 
 export function CalendarBooking() {
-  const [selectedRoom, setSelectedRoom] = useState("Room 1")
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [calendarEvents, setCalendarEvents] = useState<any[]>([
+    {
+      id: "1",
+      title: "Team Meeting",
+      start: new Date().toISOString().slice(0, 10),
+      color: "#6b4f6d",
+    },
+    {
+      id: "2",
+      title: "Project Review",
+      start: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().slice(0, 10),
+      color: "#6b4f6d",
+    },
+  ]);
 
   useEffect(() => {
-    // Initialization logic if needed
-  }, [])
+    // Fetch rooms from db.json
+    axios.get("http://localhost:3000/rooms").then((response) => {
+      setRooms(response.data);
+      if (response.data.length > 0) {
+        setSelectedRoom(response.data[0].id); // Set the first room as the default selected room
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (selectedDate) {
+      setCalendarEvents((prevEvents) => [
+        ...prevEvents.filter((event) => event.id !== "selected-date"),
+        {
+          id: "selected-date",
+          start: selectedDate,
+          display: "background",
+          backgroundColor: "#ffcc00",
+        },
+      ]);
+    } else {
+      setCalendarEvents((prevEvents) => prevEvents.filter((event) => event.id !== "selected-date"));
+    }
+  }, [selectedDate]);
+
+  const handleDateClick = (info: { dateStr: string }) => {
+    setSelectedDate(info.dateStr);
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const form = e.currentTarget
-    const date = (form.elements.namedItem("date") as HTMLInputElement).value
-    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement).value
-    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement).value
-    const isRecurring = (form.elements.namedItem("recurring") as HTMLInputElement).checked
+    e.preventDefault();
+    const form = e.currentTarget;
+    const date = (form.elements.namedItem("date") as HTMLInputElement)?.value;
+    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
+    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
+    const isRecurring = (form.elements.namedItem("recurring") as HTMLInputElement)?.checked || false;
 
     if (!date || !startTime || !endTime) {
-      alert("Please fill in all fields.")
-      return
+      alert("Please fill in all fields.");
+      return;
     }
     if (startTime >= endTime) {
-      alert("End time must be after start time.")
-      return
-    }
-
-    alert(`Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`)
+      alert("End time must be after start time.");
+      return;
   }
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+  alert(`Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`);
+  };
 
-  const rooms = ["Room 1", "Room 2", "Room 3", "Conference Hall"]
+  const selectedRoomData = rooms.find((room) => room.id === selectedRoom);
 
   return (
-    <div
-      style={{
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#eef7f8",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <main
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "1rem",
-          flexDirection: window.innerWidth < 768 ? "column" : "row",
-        }}
-      >
-        <section
-          style={{
-            flex: 2,
-            padding: "1rem",
-            backgroundColor: "white",
-            border: "1px solid #ccc",
-            marginRight: window.innerWidth < 768 ? "0" : "1rem",
-            marginBottom: window.innerWidth < 768 ? "1rem" : "0",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "1.5rem",
-              textAlign: "center",
-              backgroundColor: "#b1cddd",
-              padding: "0.5rem 0",
-              fontWeight: 500,
-              marginBottom: "1rem",
-              borderRadius: "4px",
-            }}
-          >
-            Calendar
-          </div>
+    <div className="calendar-booking-container">
+      <main className="calendar-booking-mainContent">
+        <section className="calendar-booking-calendarSection">
+          <div className="calendar-booking-sectionTitle">Calendar</div>
           <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
             height="auto"
             selectable
             dayMaxEvents
-            events={[
-              {
-                id: "1",
-                title: "Team Meeting",
-                start: new Date().toISOString().slice(0, 10),
-                color: "#6b4f6d",
-              },
-              {
-                id: "2",
-                title: "Project Review",
-                start: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString().slice(0, 10),
-                color: "#6b4f6d",
-              },
-            ]}
+            events={calendarEvents}
+            dateClick={handleDateClick}
           />
         </section>
-        <aside
-          style={{
-            flex: 1,
-            backgroundColor: "#f5f7f8",
-            borderLeft: window.innerWidth < 768 ? "none" : "1px solid #ccc",
-            padding: "1.5rem",
-            textAlign: "center",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1rem",
-            }}
-          >
-            <h2 style={{ fontSize: "1.3rem", margin: 0 }}>{selectedRoom}</h2>
+        <aside className="calendar-booking-bookingSection">
+          <div className="calendar-booking-roomHeader">
+            <h2 className="calendar-booking-roomTitle">
+              {selectedRoomData?.name || "Select a Room"}
+            </h2>
             <select
               value={selectedRoom}
               onChange={(e) => setSelectedRoom(e.target.value)}
-              style={{
-                padding: "0.4rem",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                backgroundColor: "white",
-              }}
+              className="calendar-booking-roomSelect"
             >
               {rooms.map((room) => (
-                <option key={room} value={room}>
-                  {room}
+                <option key={room.id} value={room.id}>
+                  {room.name}
                 </option>
               ))}
             </select>
           </div>
-          <img
-            src="https://storage.googleapis.com/a1aa/image/05f97f0f-f572-4254-819e-d8de80ea65ac.jpg"
-            alt="Office room"
-            style={{
-              width: "100%",
-              maxHeight: "200px",
-              objectFit: "cover",
-              borderRadius: "8px",
-              marginBottom: "1rem",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            }}
-          />
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              justifyContent: "center",
-              marginBottom: "1rem",
-              fontSize: "0.95rem",
-            }}
-          >
+          {selectedRoomData?.image && (
+            <img
+              src={selectedRoomData.image}
+              alt={selectedRoomData.name}
+              className="calendar-booking-roomImage"
+            />
+          )}
+          <label className="calendar-booking-toggleLabel">
             <input
               id="recurring"
               name="recurring"
               type="checkbox"
-              style={{
-                width: "16px",
-                height: "16px",
-                accentColor: "#604b66",
-              }}
+              className="calendar-booking-checkbox"
             />
             <span>Recurring Booking</span>
           </label>
-          <form
-            id="bookingForm"
-            onSubmit={handleSubmit}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "stretch",
-              gap: "0.75rem",
-              textAlign: "left",
-            }}
-          >
-            <label htmlFor="date" style={{ fontWeight: 500 }}>
+          <form id="bookingForm" onSubmit={handleSubmit} className="calendar-booking-form">
+            <label htmlFor="date" className="calendar-booking-label">
               Date
             </label>
             <input
@@ -195,70 +139,36 @@ export function CalendarBooking() {
               name="date"
               type="date"
               required
-              style={{
-                padding: "0.4rem",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                width: "100%",
-              }}
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="calendar-booking-input"
             />
 
-            <label style={{ fontWeight: 500 }}>Time</label>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
-            >
+            <label className="calendar-booking-label">Time</label>
+            <div className="calendar-booking-timeInputs">
               <input
                 id="startTime"
                 name="startTime"
                 type="time"
                 required
-                style={{
-                  padding: "0.4rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  width: "100%",
-                }}
+                className="calendar-booking-input"
               />
-              <span style={{ fontWeight: "bold" }}>--</span>
+              <span className="calendar-booking-timeSeparator">--</span>
               <input
                 id="endTime"
                 name="endTime"
                 type="time"
                 required
-                style={{
-                  padding: "0.4rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  width: "100%",
-                }}
+                className="calendar-booking-input"
               />
             </div>
 
-            <button
-              type="submit"
-              style={{
-                backgroundColor: "#604b66",
-                color: "white",
-                padding: "0.6rem",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                transition: "background-color 0.2s ease",
-                marginTop: "0.5rem",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#4e3b52")}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#604b66")}
-            >
+            <button type="submit" className="calendar-booking-submitButton">
               Book
             </button>
           </form>
         </aside>
       </main>
     </div>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-// Settings.tsx different from figma because this is more practical and functional
 import React, { useState } from "react";
+import "./Settings.css";
 
 export const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("account");
@@ -17,7 +17,6 @@ export const Settings: React.FC = () => {
   const [notificationMessage, setNotificationMessage] = useState<string>("");
 
   const handleSaveAccount = (): void => {
-    // Validate passwords
     if (newPassword && newPassword !== confirmPassword) {
       setNotificationMessage("Passwords don't match. Please make sure your new password and confirmation match.");
       setShowNotification(true);
@@ -42,24 +41,18 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <div style={styles.settingsPage}>
-      <h1 style={styles.pageTitle}>Account Settings</h1>
+    <div className="settings-page">
+      <h1 className="page-title">Account Settings</h1>
 
-      <div style={styles.settingsTabs}>
-        <button 
-          style={{
-            ...styles.settingsTab,
-            ...(activeTab === "account" ? styles.settingsTabActive : {})
-          }}
+      <div className="settings-tabs">
+        <button
+          className={`settings-tab ${activeTab === "account" ? "settings-tab-active" : ""}`}
           onClick={() => setActiveTab("account")}
         >
           Account
         </button>
-        <button 
-          style={{
-            ...styles.settingsTab,
-            ...(activeTab === "notifications" ? styles.settingsTabActive : {})
-          }}
+        <button
+          className={`settings-tab ${activeTab === "notifications" ? "settings-tab-active" : ""}`}
           onClick={() => setActiveTab("notifications")}
         >
           Notifications
@@ -67,241 +60,136 @@ export const Settings: React.FC = () => {
       </div>
 
       {activeTab === "account" && (
-        <div style={styles.settingsSection}>
-          <h2 style={styles.sectionTitle}>Account Settings</h2>
-          <p style={styles.sectionDescription}>Update your account information and change your password</p>
-          
-          <div style={styles.formGroup}>
-            <label htmlFor="email" style={styles.label}>Email Address</label>
-            <input 
-              id="email" 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              style={styles.input}
+        <div className="settings-section">
+          <h2 className="section-title">Account Settings</h2>
+          <p className="section-description">Update your account information and change your password</p>
+
+          <div className="form-group">
+            <label htmlFor="email" className="label">Email Address</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input"
             />
           </div>
 
-          <h3 style={styles.subsectionTitle}>Change Password</h3>
+          <h3 className="subsection-title">Change Password</h3>
 
-          <div style={styles.formGroup}>
-            <label htmlFor="current-password" style={styles.label}>Current Password</label>
+          <div className="form-group">
+            <label htmlFor="current-password" className="label">Current Password</label>
             <input
               id="current-password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              style={styles.input}
+              className="input"
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label htmlFor="new-password" style={styles.label}>New Password</label>
+          <div className="form-group">
+            <label htmlFor="new-password" className="label">New Password</label>
             <input
               id="new-password"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              style={styles.input}
+              className="input"
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label htmlFor="confirm-password" style={styles.label}>Confirm New Password</label>
+          <div className="form-group">
+            <label htmlFor="confirm-password" className="label">Confirm New Password</label>
             <input
               id="confirm-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              style={styles.input}
+              className="input"
             />
           </div>
 
-          <button onClick={handleSaveAccount} style={styles.saveButton}>
+          <button onClick={handleSaveAccount} className="save-button">
             Save Changes
           </button>
         </div>
       )}
 
       {activeTab === "notifications" && (
-        <div style={styles.settingsSection}>
-          <h2 style={styles.sectionTitle}>Notification Settings</h2>
-          <p style={styles.sectionDescription}>Configure how and when you receive notifications</p>
-          
-          <div style={styles.notificationOption}>
+        <div className="settings-section">
+          <h2 className="section-title">Notification Settings</h2>
+          <p className="section-description">Configure how and when you receive notifications</p>
+
+          <div className="notification-option">
             <div>
-              <label htmlFor="push-notifications" style={styles.label}>Push Notifications</label>
-              <p style={styles.optionDescription}>Receive notifications in your browser</p>
+              <label htmlFor="push-notifications" className="label">Push Notifications</label>
+              <p className="option-description">Receive notifications in your browser</p>
             </div>
-            <input 
-              id="push-notifications" 
-              type="checkbox" 
-              checked={pushNotifications} 
-              onChange={() => setPushNotifications(!pushNotifications)} 
-              style={styles.checkbox}
+            <input
+              id="push-notifications"
+              type="checkbox"
+              checked={pushNotifications}
+              onChange={() => setPushNotifications(!pushNotifications)}
+              className="checkbox"
             />
           </div>
 
-          <div style={styles.notificationOption}>
+          <div className="notification-option">
             <div>
-              <label htmlFor="email-notifications" style={styles.label}>Email Notifications</label>
-              <p style={styles.optionDescription}>Receive notifications via email</p>
+              <label htmlFor="email-notifications" className="label">Email Notifications</label>
+              <p className="option-description">Receive notifications via email</p>
             </div>
-            <input 
-              id="email-notifications" 
-              type="checkbox" 
-              checked={emailNotifications} 
-              onChange={() => setEmailNotifications(!emailNotifications)} 
-              style={styles.checkbox}
+            <input
+              id="email-notifications"
+              type="checkbox"
+              checked={emailNotifications}
+              onChange={() => setEmailNotifications(!emailNotifications)}
+              className="checkbox"
             />
           </div>
 
-          <h3 style={styles.subsectionTitle}>Notification Types</h3>
+          <h3 className="subsection-title">Notification Types</h3>
 
-          <div style={styles.notificationOption}>
+          <div className="notification-option">
             <div>
-              <label htmlFor="booking-reminders" style={styles.label}>Booking Reminders</label>
-              <p style={styles.optionDescription}>Receive reminders before your scheduled bookings</p>
+              <label htmlFor="booking-reminders" className="label">Booking Reminders</label>
+              <p className="option-description">Receive reminders before your scheduled bookings</p>
             </div>
-            <input 
-              id="booking-reminders" 
-              type="checkbox" 
-              checked={bookingReminders} 
-              onChange={() => setBookingReminders(!bookingReminders)} 
-              style={styles.checkbox}
+            <input
+              id="booking-reminders"
+              type="checkbox"
+              checked={bookingReminders}
+              onChange={() => setBookingReminders(!bookingReminders)}
+              className="checkbox"
             />
           </div>
 
-          <div style={styles.notificationOption}>
+          <div className="notification-option">
             <div>
-              <label htmlFor="system-updates" style={styles.label}>System Updates</label>
-              <p style={styles.optionDescription}>Receive notifications about system updates and new features</p>
+              <label htmlFor="system-updates" className="label">System Updates</label>
+              <p className="option-description">Receive notifications about system updates and new features</p>
             </div>
-            <input 
-              id="system-updates" 
-              type="checkbox" 
-              checked={systemUpdates} 
-              onChange={() => setSystemUpdates(!systemUpdates)} 
-              style={styles.checkbox}
+            <input
+              id="system-updates"
+              type="checkbox"
+              checked={systemUpdates}
+              onChange={() => setSystemUpdates(!systemUpdates)}
+              className="checkbox"
             />
           </div>
 
-          <button onClick={handleSaveNotifications} style={styles.saveButton}>
+          <button onClick={handleSaveNotifications} className="save-button">
             Save Preferences
           </button>
         </div>
       )}
 
       {showNotification && (
-        <div style={styles.notification}>
+        <div className="notification">
           <p>{notificationMessage}</p>
         </div>
       )}
     </div>
   );
 };
-
-// Inline styles
-const styles = {
-  settingsPage: {
-    padding: '20px',
-    maxWidth: '800px',
-    margin: '0 auto',
-    fontFamily: 'Arial, sans-serif',
-  },
-  pageTitle: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-  },
-  settingsTabs: {
-    display: 'flex',
-    borderBottom: '1px solid #ddd',
-    marginBottom: '20px',
-  },
-  settingsTab: {
-    padding: '10px 15px',
-    background: 'none',
-    border: 'none',
-    borderBottom: '2px solid transparent',
-    cursor: 'pointer',
-  },
-  settingsTabActive: {
-    borderBottomColor: '#4a3450',
-    color: '#4a3450',
-  },
-  settingsSection: {
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    padding: '20px',
-  },
-  sectionTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    marginTop: '0',
-    marginBottom: '5px',
-  },
-  sectionDescription: {
-    color: '#666',
-    marginBottom: '20px',
-  },
-  subsectionTitle: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    marginTop: '30px',
-    marginBottom: '15px',
-  },
-  formGroup: {
-    marginBottom: '15px',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '5px',
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '100%',
-    padding: '8px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-  },
-  notificationOption: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '15px',
-    paddingBottom: '15px',
-    borderBottom: '1px solid #eee',
-  },
-  optionDescription: {
-    margin: '0',
-    color: '#666',
-    fontSize: '14px',
-  },
-  checkbox: {
-    width: '20px',
-    height: '20px',
-  },
-  saveButton: {
-    padding: '10px 15px',
-    backgroundColor: '#4a3450',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    marginTop: '20px',
-    fontSize: '16px',
-  },
-  notification: {
-    position: 'fixed' as const,
-    bottom: '20px',
-    right: '20px',
-    backgroundColor: '#4a3450',
-    color: 'white',
-    padding: '15px',
-    borderRadius: '5px',
-    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-  },
-};
-
-export default Settings;

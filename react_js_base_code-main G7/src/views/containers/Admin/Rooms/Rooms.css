@@ -1,0 +1,196 @@
+.room-management-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Arial", sans-serif;
+  background-color: #f5f7fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.room-management-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.room-management-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.room-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.room-count h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.room-count-number {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.add-room-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #5d4b8c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-room-button:hover {
+  background-color: #4a3d70;
+}
+
+.add-room-button span {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.room-table {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.room-table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 100px;
+  padding: 1rem;
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.room-table-body {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.room-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 100px;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.room-table-row:hover {
+  background-color: #f9fafb;
+}
+
+.room-name-column {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.room-avatar {
+  width: 36px;
+  height: 36px;
+  background-color: #e5e7eb;
+  border-radius: 50%;
+}
+
+.edit-button,
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s ease;
+  padding: 0.25rem;
+}
+
+.edit-button:hover {
+  color: #5d4b8c;
+}
+
+.delete-button:hover {
+  color: #ef4444;
+}
+
+.actions-column {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.pagination-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: #e5e7eb;
+  color: #374151;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-button:hover {
+  background-color: #d1d5db;
+}
+
+.pagination-button.active {
+  background-color: #5d4b8c;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .room-management-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .room-table-header,
+  .room-table-row {
+    grid-template-columns: 2fr 1fr 100px;
+  }
+
+  .location-column {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-table-header,
+  .room-table-row {
+    grid-template-columns: 2fr 100px;
+  }
+
+  .capacity-column {
+    display: none;
+  }
+}

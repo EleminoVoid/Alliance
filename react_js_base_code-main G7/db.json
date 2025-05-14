@@ -1,0 +1,115 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "admin@example.com",
+      "username": "admin",
+      "password": "$2b$10$Zf7xG2CxjZS4XJC089ejbejswWIx10urF7u1PcLjICW5T9eEPoSjm",
+      "role": "admin",
+      "avatar": "https://i.pravatar.cc/40" 
+    },
+    {
+      "id": "4bc8",
+      "email": "user@example.com",
+      "username": "User",
+      "password": "$2b$10$EdqvGUuNynCJdAtmXi0uY.eghKiEfDX8HN9d2yDgyY4M3FfNGW992",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/40" 
+    },
+    {
+      "id": "eeff",
+      "email": "test1@email.com",
+      "username": "test1",
+      "password": "$2b$10$NYx1HC/2UcK9wPA6ORNRlOUpWJ/c.4jrEfPYuw7oX5WkgVhwBbVKK",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/40" 
+    }
+  ],
+  "rooms": [
+    {
+      "id": "room-101",
+      "name": "Room 101",
+      "floor": "ground",
+      "capacity": 4,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "monitor"
+      ],
+      "description": "Small meeting room",
+      "image": "room-pic-5.webp"
+    },
+    {
+      "id": "room-102",
+      "name": "Room 102",
+      "floor": "ground",
+      "capacity": 6,
+      "available": false,
+      "amenities": [
+        "wifi",
+        "monitor",
+        "coffee"
+      ],
+      "description": "Medium-sized meeting room",
+      "image": "room-pic-4.jpg"
+    },
+    {
+      "id": "conference-a",
+      "name": "Conference Room A",
+      "floor": "ground",
+      "capacity": 20,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "video"
+      ],
+      "description": "Large conference room",
+      "image": "room-pic-3.jpg"
+    },
+    {
+      "id": "room-201",
+      "name": "Room 201",
+      "floor": "mezzanine",
+      "capacity": 8,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "monitor"
+      ],
+      "description": "Medium-sized meeting room",
+      "image": "room-pic-2.webp"
+    },
+    {
+      "id": "room-301",
+      "name": "Room 301",
+      "floor": "first",
+      "capacity": 10,
+      "available": true,
+      "amenities": [
+        "wifi",
+        "monitor",
+        "video"
+      ],
+      "description": "Large meeting room",
+      "image": "room-pic-1.jpg"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "1",
+      "userId": 2,
+      "roomId": "room-101",
+      "startDate": "2025-05-12T09:00:00",
+      "endDate": "2025-05-12T11:00:00",
+      "type": "single"
+    },
+    {
+      "id": "2",
+      "userId": 2,
+      "roomId": "room-102",
+      "startDate": "2025-05-15T14:00:00",
+      "endDate": "2025-05-15T16:00:00",
+      "type": "recurring"
+    }
+  ]
+}

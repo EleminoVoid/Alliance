@@ -9,25 +9,20 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open"
-})<AppBarProps>(({ theme }) => ({
+  shouldForwardProp: (prop) => prop !== "open",
+})<AppBarProps>(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen
+    easing: open
+      ? theme.transitions.easing.easeOut
+      : theme.transitions.easing.sharp,
+    duration: open
+      ? theme.transitions.duration.enteringScreen
+      : theme.transitions.duration.leavingScreen,
   }),
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
-        transition: theme.transitions.create(["margin", "width"], {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen
-        })
-      }
-    }
-  ], backgroundColor: '#56697F'
+  width: open ? `calc(100% - ${drawerWidth}px)` : "100%",
+  marginLeft: open ? `${drawerWidth}px` : 0,
+  backgroundColor: "#56697F",
 }));
 
 export default AppBar;

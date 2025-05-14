@@ -1,0 +1,123 @@
+.view-bookings-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.view-bookings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.view-bookings-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+.filter-tab {
+    padding: 8px 16px;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.filter-tab.active {
+    background-color: #5a6b81;
+    color: white;
+}
+
+.filter-count {
+    background-color: #593f62;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    margin-left: 8px;
+}
+
+.table-container {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-header {
+    background-color: #56697f;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}
+
+.table-row {
+    border-bottom: 1px solid #eee;
+}
+
+.table-cell {
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+.no-bookings {
+    text-align: center;
+    color: #666;
+}
+
+.edit-button {
+    padding: 6px 12px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.mobile-bookings {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mobile-booking-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-booking-header {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.mobile-booking-details {
+    margin-top: 10px;
+}
+
+.detail-label {
+    font-size: 12px;
+    color: #666;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: #333;
+}
