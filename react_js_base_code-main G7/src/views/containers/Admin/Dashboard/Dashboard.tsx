@@ -106,7 +106,7 @@ export const Dashboard = () => {
   
   setBookingPercentages(percentages);
   return roomsWithBookings; // Return the Set of rooms with bookings
-};
+}; 
   const prepareMonthlyBookings = () => {
     const monthlyCounts: Record<string, number> = {};
 

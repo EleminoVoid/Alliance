@@ -1,6 +1,5 @@
 export * from "./Main";
 export * from "./NotFound";
-export * from "./Admin/Dashboard";
 export * from "./Login";
 export * from "./Register";
 export * from "./ForgotPassword";
@@ -18,3 +17,4 @@ export * from "./Admin/AddUser";
 export * from "./Admin/AddRoom";
 export * from "./Admin/Users";
 export * from "./Admin/Rooms";
+export * from "./Admin/Dashboard";
