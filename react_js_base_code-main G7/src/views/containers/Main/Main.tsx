@@ -50,8 +50,8 @@ useEffect(() => {
       <CssBaseline />
 
       {/* Header */}
-      <AppBar position="fixed">
-       <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+      <AppBar position="fixed" open={openDrawer}>
+        <Toolbar sx={{ display: "flex", alignItems: "center" }}>
           <IconButton
             color="inherit"
             edge="start"
@@ -64,7 +64,7 @@ useEffect(() => {
           <Typography variant="h6" noWrap fontWeight={900} sx={{ mr: 4 }}>
             MARSHAL
           </Typography>
-
+          
           <Box display="flex" alignItems="center">
             <a href="/homepage" className="nav-link">Home</a>
             <a href="/viewRooms" className="nav-link">View Rooms</a>

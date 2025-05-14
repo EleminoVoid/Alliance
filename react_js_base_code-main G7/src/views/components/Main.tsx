@@ -8,7 +8,6 @@ const MainLayout = styled("main", {
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
   transition: theme.transitions.create("margin", {
     easing: open
       ? theme.transitions.easing.easeOut
@@ -17,7 +16,6 @@ const MainLayout = styled("main", {
       ? theme.transitions.duration.enteringScreen
       : theme.transitions.duration.leavingScreen,
   }),
-  marginLeft: open ? 0 : `-${drawerWidth}px`,
 }));
 
 export default MainLayout;
