@@ -1,22 +1,31 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from "react-router-dom";
+import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../../constant";
 import "./Rooms.css";
 
 export const Rooms = () => {
+  const [rooms, setRooms] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
-  // Mock data for rooms
-  const rooms = [
-    { id: 1, name: "First Floor - Backrooms", capacity: 15, location: "Building A" },
-    { id: 2, name: "First Floor - Frontrooms", capacity: 20, location: "Building A" },
-    { id: 3, name: "SCP - 173", capacity: 5, location: "Building B" },
-    { id: 4, name: "Second? Room", capacity: 10, location: "Building C" },
-    { id: 5, name: "Room", capacity: 8, location: "Building A" },
-    { id: 6, name: "mooR", capacity: 12, location: "Building D" },
-    { id: 7, name: "oRoM", capacity: 25, location: "Building B" },
-    { id: 8, name: "mr", capacity: 6, location: "Building C" },
-  ];
+  useEffect(() => {
+    fetch("http://localhost:3000/rooms")
+      .then((res) => res.json())
+      .then((data) => setRooms(data))
+      .catch((err) => console.error("Error fetching rooms:", err));
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredRooms = rooms.filter((room: any) =>
+    room.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="room-management-container">
@@ -24,32 +33,51 @@ export const Rooms = () => {
         <h1>Room Management</h1>
         <div className="room-count">
           <h2>All Rooms</h2>
-          <span className="room-count-number">105</span>
+          <span className="room-count-number">{rooms.length}</span>
         </div>
-        <button className="add-room-button">
-          <span>+</span> Add Room
-        </button>
+        <div className="header-actions">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search room"
+              value={searchQuery}
+              onChange={handleSearch}
+              className="search-input"
+            />
+            <SearchIcon className="search-icon" />
+          </div>
+          <button
+            className="add-room-button"
+            onClick={() => navigate(ADMIN_PATHS.ADD_ROOM.path)}
+          >
+            <span>+</span> Add room
+          </button>
+        </div>
       </div>
 
       <div className="room-table">
         <div className="room-table-header">
-          <div className="room-name-column">Room Name</div>
-          <div className="capacity-column">Capacity</div>
-          <div className="location-column">Location</div>
+          <div className="checkbox-column">
+            <input type="checkbox" />
+          </div>
+          <div className="name-column">Name</div>
+          <div className="date-column">Date Created</div>
           <div className="actions-column">Actions</div>
         </div>
 
         <div className="room-table-body">
-          {rooms.map((room) => (
+          {filteredRooms.map((room: any) => (
             <div key={room.id} className="room-table-row">
-              <div className="room-name-column">
-                <div className="room-avatar"></div>
-                {room.name}
+              <div className="checkbox-column">
+                <input type="checkbox" />
               </div>
-              <div className="capacity-column">{room.capacity}</div>
-              <div className="location-column">{room.location}</div>
+              <div className="name-column">{room.name}</div>
+              <div className="date-column">{room.createdAt}</div>
               <div className="actions-column">
-                <button className="edit-button">
+                <button
+                  className="edit-button"
+                  onClick={() => navigate(`${ADMIN_PATHS.EDIT_ROOM.path}/${room.id}`)}
+                >
                   <EditIcon />
                 </button>
                 <button className="delete-button">
@@ -62,11 +90,24 @@ export const Rooms = () => {
       </div>
 
       <div className="pagination">
-        <button className={`pagination-button ${currentPage === 1 ? "active" : ""}`}>1</button>
-        <button className={`pagination-button ${currentPage === 2 ? "active" : ""}`}>2</button>
-        <button className={`pagination-button ${currentPage === 3 ? "active" : ""}`}>3</button>
-        <button className={`pagination-button ${currentPage === 4 ? "active" : ""}`}>4</button>
-        <button className={`pagination-button ${currentPage === 5 ? "active" : ""}`}>5</button>
+        <button
+          className={`pagination-button ${currentPage === 1 ? "active" : ""}`}
+          onClick={() => setCurrentPage(1)}
+        >
+          1
+        </button>
+        <button
+          className={`pagination-button ${currentPage === 2 ? "active" : ""}`}
+          onClick={() => setCurrentPage(2)}
+        >
+          2
+        </button>
+        <button
+          className={`pagination-button ${currentPage === 3 ? "active" : ""}`}
+          onClick={() => setCurrentPage(3)}
+        >
+          3
+        </button>
       </div>
     </div>
   );
