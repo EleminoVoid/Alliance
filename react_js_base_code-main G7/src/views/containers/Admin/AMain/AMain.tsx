@@ -24,7 +24,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import PeopleIcon from "@mui/icons-material/People";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import "./Main.css";
+import "./AMain.css";
 
 export const AdminMain = () => {
   const { pathname } = window.location;
@@ -72,7 +72,7 @@ export const AdminMain = () => {
 
   return (
     <Fragment>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
 
       {/* Admin Header */}
       <AppBar position="fixed" className="admin-app-bar">

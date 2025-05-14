@@ -4,6 +4,8 @@ body{
     font-family: 'Arial', sans-serif;
     font-weight: 100;
     font-style: normal;
+    position: relative;
+    
 }
 /* Main.css */
 .nav-link {
