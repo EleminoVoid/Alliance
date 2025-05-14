@@ -1,63 +1,72 @@
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../constant";
 import React, { useState } from "react";
 import bcrypt from "bcryptjs";
 import "./Login.css";
+import { CircularProgress } from "@mui/material";
 
 export const Login = () => {
-  const { pathname } = window.location;
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleClickToHomePage = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-  try {
-    const response = await fetch("http://localhost:3000/users");
-    const users = await response.json();
-
-    const foundUser = users.find((user: any) => user.email === email);
-
-    if (foundUser) {
-      const isPasswordValid = await bcrypt.compare(password, foundUser.password);
-
-      if (isPasswordValid) {
-        localStorage.setItem("userId", foundUser.id);
-
-        // Navigate based on role
-        if (foundUser.role === "admin") {
-          navigate(PATHS.DASHBOARD.path);
-        } else {
-          navigate(PATHS.HOMEPAGE.path);
-        }
-      } else {
-        setError("Invalid email or password.");
-      }
-    } else {
-      setError("Invalid email or password.");
-    }
-  } catch (err) {
-    setError("Failed to connect to server.");
-    console.error(err);
-  }
-};
-
-
-  const handleClickToChangePass = (e: React.MouseEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.FORGOTPASSWORD.path);
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/users");
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+
+      const users = await response.json();
+      const foundUser = users.find((user: any) => user.email === formData.email);
+
+      if (!foundUser) {
+        throw new Error("Invalid email or password");
+      }
+
+      const isPasswordValid = await bcrypt.compare(formData.password, foundUser.password);
+      if (!isPasswordValid) {
+        throw new Error("Invalid email or password");
+      }
+
+      // Store both user ID and role in localStorage
+      localStorage.setItem("userId", foundUser.id);
+      localStorage.setItem("userRole", foundUser.role);
+      localStorage.setItem("username", foundUser.username);
+
+      // Redirect based on role
+      if (foundUser.role === "admin") {
+        navigate(PATHS.DASHBOARD.path || PATHS.DASHBOARD.path);
+      } else {
+        navigate(PATHS.HOMEPAGE.path);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to connect to server");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleClickToRegister = (e: React.MouseEvent) => {
+  const navigateTo = (path: string) => (e: React.MouseEvent) => {
     e.preventDefault();
-    if (pathname === PATHS.LOGIN.path) {
-      navigate(PATHS.REGISTER.path);
-    }
+    navigate(path);
   };
 
   return (
@@ -65,54 +74,72 @@ export const Login = () => {
       <div className="login-wrapper">
         <div className="login-formContainer">
           <h1 className="login-title">Sign In</h1>
-          <div>
-            <form className="login-form" onSubmit={handleClickToHomePage}>
-              <div className="login-inputGroup">
-                <label>
-                  <span className="login-label">Email</span>
-                  <input
-                    type="text"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="login-input"
-                  />
-                </label>
-              </div>
-              <div className="login-inputGroup">
-                <label>
-                  <span className="login-label">Password</span>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="login-input"
-                  />
-                </label>
-              </div>
-              {error && <p className="login-error">{error}</p>}
-              <p className="login-forgotPassword">
-                Forgot Password?
-                <button type="button" onClick={handleClickToChangePass} className="login-link">
-                  Click Here
-                </button>
-              </p>
-              <button type="submit" className="login-submitButton">
-                Sign In
+          <form className="login-form" onSubmit={handleSubmit}>
+            <div className="login-inputGroup">
+              <label>
+                <span className="login-label">Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="login-input"
+                  required
+                />
+              </label>
+            </div>
+            <div className="login-inputGroup">
+              <label>
+                <span className="login-label">Password</span>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="login-input"
+                />
+              </label>
+            </div>
+            
+            {error && <p className="login-error">{error}</p>}
+            
+            <p className="login-forgotPassword">
+              Forgot Password?{" "}
+              <button 
+                type="button" 
+                onClick={navigateTo(PATHS.FORGOT_PASSWORD.path)} 
+                className="login-link"
+              >
+                Click Here
               </button>
-            </form>
-          </div>
+            </p>
+            
+            <button 
+              type="submit" 
+              className="login-submitButton"
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
+            </button>
+          </form>
+          
           <div className="login-registerContainer">
             <p className="login-registerText">
-              Don't have an account?
-              <button type="button" onClick={handleClickToRegister} className="login-link">
+              Don't have an account?{" "}
+              <button 
+                type="button" 
+                onClick={navigateTo(PATHS.REGISTER.path)} 
+                className="login-link"
+              >
                 Sign Up
               </button>
             </p>
           </div>
         </div>
+        
         {window.innerWidth >= 768 && (
           <div className="login-imageContainer">
-            <img src="loginpic.jpg" alt="loginpic" className="login-image" />
+            <img src="loginpic.jpg" alt="login" className="login-image" />
           </div>
         )}
       </div>

@@ -129,5 +129,5 @@ export const ADMIN_SIDE_BAR_MENU = [
   { path: ADMIN_PATHS.DASHBOARD.path, label: ADMIN_PATHS.DASHBOARD.label },
   { path: ADMIN_PATHS.USER_MANAGEMENT.path, label: ADMIN_PATHS.USER_MANAGEMENT.label },
   { path: ADMIN_PATHS.ROOM_MANAGEMENT.path, label: ADMIN_PATHS.ROOM_MANAGEMENT.label },
-  { path: ADMIN_PATHS.BOOKING_OVERVIEW.path, label: ADMIN_PATHS.BOOKING_OVERVIEW.label }
+  { path: PUBLIC_PATHS.LOGIN.path, label: "Logout" }
 ];

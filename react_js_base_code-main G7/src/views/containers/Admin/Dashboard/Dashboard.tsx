@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -49,6 +48,7 @@ export const Dashboard = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [mostUsedRoom, setMostUsedRoom] = useState<Room | null>(null);
   const [bookingPercentages, setBookingPercentages] = useState<Record<string, number>>({});
+  const [bookingCounts, setBookingCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +61,8 @@ export const Dashboard = () => {
         setRooms(roomsRes.data);
         setBookings(bookingsRes.data);
         calculateMostUsedRoom(roomsRes.data, bookingsRes.data);
-        calculateBookingPercentages(bookingsRes.data);
+        const counts = calculateBookingPercentages(bookingsRes.data);
+        setBookingCounts(counts);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -89,25 +90,24 @@ export const Dashboard = () => {
   };
 
   const calculateBookingPercentages = (bookings: Booking[]) => {
-  const totalBookings = bookings.length;
-  const percentages: Record<string, number> = {};
-  
-  if (totalBookings === 0) {
-    setBookingPercentages({});
-    return;
-  }
+    const totalBookings = bookings.length;
+    const percentages: Record<string, number> = {};
+    const counts: Record<string, number> = {};
+    
+    if (totalBookings === 0) {
+      setBookingPercentages({});
+      return {};
+    }
 
-  // Create a Set of roomIds that have bookings
-  const roomsWithBookings = new Set<string>();
-  
-  bookings.forEach((booking) => {
-    percentages[booking.roomId] = (percentages[booking.roomId] || 0) + (1 / totalBookings) * 100;
-    roomsWithBookings.add(booking.roomId);
-  });
-  
-  setBookingPercentages(percentages);
-  return roomsWithBookings; // Return the Set of rooms with bookings
-}; 
+    bookings.forEach((booking) => {
+      percentages[booking.roomId] = (percentages[booking.roomId] || 0) + (1 / totalBookings) * 100;
+      counts[booking.roomId] = (counts[booking.roomId] || 0) + 1;
+    });
+    
+    setBookingPercentages(percentages);
+    return counts;
+  };
+
   const prepareMonthlyBookings = () => {
     const monthlyCounts: Record<string, number> = {};
 
@@ -131,10 +131,14 @@ export const Dashboard = () => {
 
   const monthlyBookingsData = prepareMonthlyBookings();
 
-  const pieChartData = rooms.map((room) => ({
-    name: room.name,
-    value: parseFloat((bookingPercentages[room.id] || 0).toFixed(2)),
-  }));
+  const pieChartData = rooms
+    .map((room) => ({
+      id: room.id,
+      name: room.name,
+      percentage: parseFloat((bookingPercentages[room.id] || 0).toFixed(2)),
+      count: bookingCounts[room.id] || 0,
+    }))
+    .filter(item => item.count > 0); // Only include rooms with bookings
 
   return (
     <div className="stats-container">
@@ -160,30 +164,47 @@ export const Dashboard = () => {
             <h3>BOOKINGS PER ROOM</h3>
           </div>
           <div className="chart-container">
-            <ResponsiveContainer width="100%" height={400}>
-              <PieChart margin={{ top: 20, right: 20, bottom: 80, left: 20 }}>
-                <Pie
-                  data={pieChartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={120}
-                  innerRadius={60}
-                  dataKey="value"
-                >
-                  {pieChartData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Legend
-                  layout="horizontal"
-                  verticalAlign="bottom"
-                  wrapperStyle={{ paddingTop: '20px' }}
-                />
-                <Tooltip formatter={(value: number) => [`${value}%`, 'Percentage']} />
-              </PieChart>
-            </ResponsiveContainer>
+            {pieChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={400}>
+                <PieChart margin={{ top: 20, right: 20, bottom: 80, left: 20 }}>
+                  <Pie
+                    data={pieChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percentage, count }) => 
+                      `${name}\n${count} booking${count !== 1 ? 's' : ''}\n(${percentage}%)`
+                    }
+                    outerRadius={120}
+                    innerRadius={60}
+                    dataKey="percentage"
+                  >
+                    {pieChartData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    wrapperStyle={{ paddingTop: '40px' }}
+                    formatter={(value, entry, index) => {
+                      const data = pieChartData[index];
+                      return `${data.name}: ${data.count} (${data.percentage}%)`;
+                    }}
+                  />
+                  <Tooltip 
+                    formatter={(value: number, name: string, props: any) => [
+                      `${props.payload.count} booking${props.payload.count !== 1 ? 's' : ''}`,
+                      `${props.payload.name} (${value}%)`
+                    ]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="no-data-message">
+                <p>No booking data available for any rooms.</p>
+              </div>
+            )}
           </div>
         </div>
 

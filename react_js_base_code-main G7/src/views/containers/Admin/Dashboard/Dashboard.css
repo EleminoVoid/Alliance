@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: "Inter", sans-serif;
+  font-family: "Arial", sans-serif;
   background-color: #f5f7fa;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -77,6 +77,12 @@
   padding: 1.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
+.chart-container {
+  width: 100%;
+  height: 400px;
+  overflow: visible; /* Allow chart to overflow */
+  margin-bottom: 40px; /* Add space for legend */
+}
 
 .chart-header {
   display: flex;
@@ -103,6 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
 
 .donut-center {
@@ -122,6 +129,8 @@
   font-size: 0.75rem;
   color: #d1d5db;
 }
+
+
 
 .donut-total {
   font-size: 0.875rem;

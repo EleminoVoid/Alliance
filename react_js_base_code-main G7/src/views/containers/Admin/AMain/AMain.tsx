@@ -37,38 +37,32 @@ export const AdminMain = () => {
     userManagement: true,
     contentModeration: true
   });
-
-  useEffect(() => {
+useEffect(() => {
+  const verifyAdmin = async () => {
     const userId = localStorage.getItem("userId");
-    if (!userId) {
+    const userRole = localStorage.getItem("userRole");
+
+    if (!userId || userRole !== "admin") {
       navigate("/login");
       return;
     }
 
-    fetch(`http://localhost:3000/users/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.role !== "admin") {
-          navigate("/unauthorized");
-        } else {
-          setUser(data);
-        }
-      })
-      .catch((err) => console.error("Failed to fetch user", err));
-  }, [navigate]);
-
-  useEffect(() => {
-    if (pathname === ADMIN_PATHS.DASHBOARD.path) {
-      navigate(ADMIN_PATHS.DASHBOARD.path);
+    try {
+      const response = await fetch(`http://localhost:3000/users/${userId}`);
+      if (!response.ok) throw new Error("Failed to verify user");
+      
+      const userData = await response.json();
+      setUser(userData);
+    } catch (error) {
+      console.error("Admin verification failed:", error);
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userRole");
+      navigate("/login");
     }
-  }, [pathname, navigate]);
-
-  const handleAdminFeatureToggle = (feature) => {
-    setAdminFeatures(prev => ({
-      ...prev,
-      [feature]: !prev[feature]
-    }));
   };
+
+  verifyAdmin();
+}, [navigate]);
 
   return (
     <Fragment>
