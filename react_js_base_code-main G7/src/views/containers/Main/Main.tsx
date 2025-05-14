@@ -46,9 +46,17 @@ export const Main = () => {
 
   return (
     <Fragment>
+<<<<<<< Updated upstream
       <CssBaseline />
       <AppBar position="fixed" open={openDrawer}>
         <Toolbar>
+=======
+      {/* <CssBaseline /> */}
+
+      {/* Header */}
+      <AppBar position="fixed">
+       <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+>>>>>>> Stashed changes
           <IconButton
             color="inherit"
             aria-label="open drawer"

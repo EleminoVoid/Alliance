@@ -1,0 +1,156 @@
+.calendar-booking-container {
+    font-family: Arial, sans-serif;
+    background-color: #eef7f8;
+    height: calc(100vh - 64px);
+    /* Ensure the container fits the viewport height */
+    display: flex;
+    flex-direction: column;
+    padding-left: 240px;
+    /* Prevent scrolling */
+}
+
+.calendar-booking-mainContent {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+    /* Take full height of the container */
+    box-sizing: border-box;
+    /* Include padding in height calculation */
+}
+
+@media (min-width: 768px) {
+    .calendar-booking-mainContent {
+        flex-direction: row;
+        gap: 2rem;
+    }
+}
+
+.calendar-booking-calendarSection {
+    flex: 2;
+    padding: 1rem;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    /* Prevent scrolling within the calendar section */
+    margin-bottom: 1rem;
+    height: 100%;
+    /* Ensure it fits within the container */
+}
+
+@media (min-width: 768px) {
+    .calendar-booking-calendarSection {
+        margin-bottom: 0;
+    }
+}
+
+.calendar-booking-sectionTitle {
+    font-size: 1.5rem;
+    text-align: center;
+    background-color: #b1cddd;
+    padding: 0.5rem 0;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.calendar-booking-bookingSection {
+    flex: 1;
+    background-color: #f5f7f8;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    /* Prevent scrolling within the booking section */
+    height: 100%;
+    /* Ensure it fits within the container */
+}
+
+.calendar-booking-roomHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-booking-roomTitle {
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.calendar-booking-roomSelect {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.calendar-booking-roomImage {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-booking-toggleLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.calendar-booking-checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: #604b66;
+}
+
+.calendar-booking-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    text-align: left;
+}
+
+.calendar-booking-label {
+    font-weight: 500;
+}
+
+.calendar-booking-input {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.calendar-booking-timeInputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.calendar-booking-timeSeparator {
+    font-weight: bold;
+}
+
+.calendar-booking-submitButton {
+    background-color: #604b66;
+    color: white;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    margin-top: 0.5rem;
+}

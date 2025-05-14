@@ -1,0 +1,13 @@
+body{
+    background-color: #eef7f8;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+/* Main.css */
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
