@@ -37,7 +37,7 @@ export const USER_PATHS = {
     label: "Homepage"
   },
   VIEW_ROOMS: {
-    path: "/rooms",
+    path: "/viewRooms",
     label: "View Rooms"
   },
   BOOKINGS: {
@@ -122,7 +122,7 @@ export const PATHS = {
 export const USER_SIDE_BAR_MENU = [
   { path: USER_PATHS.BOOKINGS.path, label: USER_PATHS.BOOKINGS.label },
   { path: USER_PATHS.CALENDAR.path, label: USER_PATHS.CALENDAR.label },
-  { path: USER_PATHS.SETTINGS.path, label: USER_PATHS.SETTINGS.label }
+  { path: PUBLIC_PATHS.LOGIN.path, label: "Logout" }
 ];
 
 export const ADMIN_SIDE_BAR_MENU = [

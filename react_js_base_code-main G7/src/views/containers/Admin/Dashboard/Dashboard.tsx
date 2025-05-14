@@ -27,7 +27,8 @@ interface Room {
 interface Booking {
   id: string;
   roomId: string;
-  // Add other booking properties as needed
+  startDate: string;
+  type: "single" | "recurring";
 }
 
 const COLORS = [
@@ -42,11 +43,10 @@ const COLORS = [
 ];
 
 export const Dashboard = () => {
-  const [timeRange, setTimeRange] = useState("weeks");
+  const [timeRange, setTimeRange] = useState("months"); // Default to months
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [mostUsedRoom, setMostUsedRoom] = useState<Room | null>(null);
-  const [bookingsPerRoom, setBookingsPerRoom] = useState<Record<string, number>>({});
   const [bookingPercentages, setBookingPercentages] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -60,7 +60,6 @@ export const Dashboard = () => {
         setRooms(roomsRes.data);
         setBookings(bookingsRes.data);
         calculateMostUsedRoom(roomsRes.data, bookingsRes.data);
-        calculateBookingsPerRoom(roomsRes.data, bookingsRes.data);
         calculateBookingPercentages(bookingsRes.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -72,6 +71,7 @@ export const Dashboard = () => {
 
   const calculateMostUsedRoom = (rooms: Room[], bookings: Booking[]) => {
     const roomUsage: Record<string, number> = {};
+    
     bookings.forEach((booking) => {
       roomUsage[booking.roomId] = (roomUsage[booking.roomId] || 0) + 1;
     });
@@ -87,45 +87,38 @@ export const Dashboard = () => {
     setMostUsedRoom(rooms.find((r) => r.id === mostUsedRoomId) || null);
   };
 
-  const calculateBookingsPerRoom = (rooms: Room[], bookings: Booking[]) => {
-    const bookingsCount: Record<string, number> = {};
-    rooms.forEach((room) => {
-      bookingsCount[room.id] = bookings.filter(
-        (booking) => booking.roomId === room.id
-      ).length;
-    });
-    setBookingsPerRoom(bookingsCount);
-  };
-
   const calculateBookingPercentages = (bookings: Booking[]) => {
-    const totalBookings = bookings.length;
-    const percentages: Record<string, number> = {};
-    
-    if (totalBookings === 0) {
-      setBookingPercentages({});
-      return;
-    }
+  const totalBookings = bookings.length;
+  const percentages: Record<string, number> = {};
+  
+  if (totalBookings === 0) {
+    setBookingPercentages({});
+    return;
+  }
 
-    bookings.forEach((booking) => {
-      percentages[booking.roomId] = (percentages[booking.roomId] || 0) + (1 / totalBookings) * 100;
-    });
-    setBookingPercentages(percentages);
-  };
-
-const prepareMonthlyBookings = () => {
-    const monthlyData: Record<string, number> = {};
+  // Create a Set of roomIds that have bookings
+  const roomsWithBookings = new Set<string>();
+  
+  bookings.forEach((booking) => {
+    percentages[booking.roomId] = (percentages[booking.roomId] || 0) + (1 / totalBookings) * 100;
+    roomsWithBookings.add(booking.roomId);
+  });
+  
+  setBookingPercentages(percentages);
+  return roomsWithBookings; // Return the Set of rooms with bookings
+};
+  const prepareMonthlyBookings = () => {
+    const monthlyCounts: Record<string, number> = {};
 
     bookings.forEach(booking => {
       const date = new Date(booking.startDate);
       const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-      
-      monthlyData[monthYear] = (monthlyData[monthYear] || 0) + 1;
+      monthlyCounts[monthYear] = (monthlyCounts[monthYear] || 0) + 1;
     });
 
-    // Convert to array and sort by date
-    return Object.entries(monthlyData)
-      .map(([month, count]) => ({ 
-        month, 
+    return Object.entries(monthlyCounts)
+      .map(([month, count]) => ({
+        month,
         bookings: count,
         monthDisplay: new Date(month + '-01').toLocaleDateString('en-US', { 
           year: 'numeric', 
@@ -159,13 +152,12 @@ const prepareMonthlyBookings = () => {
         </div>
       </div>
 
-        <div className="stats-grid">
+      <div className="stats-grid">
         <div className="bookings-chart">
           <div className="chart-header">
             <div className="chart-icon">📦</div>
-            <h3>NUMBER OF BOOKINGS PER ROOM</h3>
+            <h3>BOOKINGS PER ROOM</h3>
           </div>
-
           <div className="chart-container">
             <ResponsiveContainer width="100%" height={400}>
               <PieChart margin={{ top: 20, right: 20, bottom: 80, left: 20 }}>
@@ -175,11 +167,11 @@ const prepareMonthlyBookings = () => {
                   cy="50%"
                   labelLine={false}
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={120}  // Reduced from 150
-                  innerRadius={60}   // Reduced from 70
+                  outerRadius={120}
+                  innerRadius={60}
                   dataKey="value"
                 >
-                  {pieChartData.map((entry, index) => (
+                  {pieChartData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -222,43 +214,37 @@ const prepareMonthlyBookings = () => {
         </div>
 
         <div className="trendline">
-        <div className="chart-header">
-          <div className="chart-icon">📈</div>
-          <h3>Monthly Bookings Trend</h3>
-        </div>
-        <div className="trendline-chart-container">
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart
-              data={monthlyBookingsData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="month" 
-                tickFormatter={(month) => {
-                  const [year, monthNum] = month.split('-');
-                  return `${year}-${monthNum}`; // Or format as you prefer
-                }}
-              />
-              <YAxis />
-              <Tooltip 
-                formatter={(value) => [`${value} bookings`, 'Bookings']}
-                labelFormatter={(month) => `Month: ${month}`}
-              />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="bookings"
-                name="Bookings"
-                stroke="#8884d8"
-                strokeWidth={2}
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="chart-header">
+            <div className="chart-icon">📈</div>
+            <h3>Monthly Bookings</h3>
+          </div>
+          <div className="trendline-chart-container">
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart
+                data={monthlyBookingsData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="monthDisplay" />
+                <YAxis />
+                <Tooltip 
+                  formatter={(value) => [`${value} bookings`, 'Bookings']}
+                  labelFormatter={(month) => `Month: ${month}`}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="bookings"
+                  name="Bookings"
+                  stroke="#8884d8"
+                  strokeWidth={2}
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

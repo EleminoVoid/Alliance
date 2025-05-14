@@ -63,10 +63,10 @@ export function CalendarBooking() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const date = (form.elements.namedItem("date") as HTMLInputElement).value;
-    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement).value;
-    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement).value;
-    const isRecurring = (form.elements.namedItem("recurring") as HTMLInputElement).checked;
+    const date = (form.elements.namedItem("date") as HTMLInputElement)?.value;
+    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
+    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
+    const isRecurring = (form.elements.namedItem("recurring") as HTMLInputElement)?.checked || false;
 
     if (!date || !startTime || !endTime) {
       alert("Please fill in all fields.");
@@ -75,9 +75,9 @@ export function CalendarBooking() {
     if (startTime >= endTime) {
       alert("End time must be after start time.");
       return;
-    }
+  }
 
-    alert(`Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`);
+  alert(`Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`);
   };
 
   const selectedRoomData = rooms.find((room) => room.id === selectedRoom);
