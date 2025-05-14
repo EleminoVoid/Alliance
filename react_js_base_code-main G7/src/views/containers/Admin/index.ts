@@ -1,4 +1,4 @@
-export * from "./Main";
+export * from "./AMain";
 export * from "./Dashboard";
 export * from "./EditUser";
 export * from "./EditRoom";
