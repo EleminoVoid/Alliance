@@ -96,7 +96,7 @@ export const ViewBookings: React.FC = () => {
   }, []);
 
   const handleEditBooking = (bookingId: string) => {
-    navigate(PATHS.EDIT_BOOKING.path);
+    navigate(PATHS.EDIT_BOOKINGS.path);
   };
 
   const handleAddUser = () => {
