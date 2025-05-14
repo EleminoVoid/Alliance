@@ -1,5 +1,5 @@
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
@@ -8,22 +8,32 @@ import "./Users.css";
 export const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
+    const [users, setUsers] = useState<any[]>([]); // you can create a proper type later
 
-    // Mock data for users
-    const users = [
-        { id: 1, name: "Name", role: "Admin", dateCreated: "2023-05-15" },
-        { id: 2, name: "Name", role: "User", dateCreated: "2023-06-20" },
-        { id: 3, name: "Name", role: "User", dateCreated: "2023-07-10" },
-        { id: 4, name: "Name", role: "Manager", dateCreated: "2023-08-05" },
-        { id: 5, name: "Name", role: "User", dateCreated: "2023-09-12" },
-        { id: 6, name: "Name", role: "User", dateCreated: "2023-10-18" },
-        { id: 7, name: "Name", role: "Admin", dateCreated: "2023-11-22" },
-        { id: 8, name: "Name", role: "User", dateCreated: "2023-12-30" },
-    ];
+    // Fetch users from backend
+    useEffect(() => {
+        fetch("http://localhost:3000/users")
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("Fetched users:", data);
+                if (Array.isArray(data)) {
+                    setUsers(data);
+                } else if (Array.isArray(data.users)) {
+                    setUsers(data.users);
+                } else {
+                    setUsers([]);
+                }
+            })
+            .catch((error) => console.error("Error fetching users:", error));
+    }, []);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
     };
+
+    const filteredUsers = users.filter(user =>
+        user.username?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="user-management-container">
@@ -31,7 +41,7 @@ export const Users = () => {
                 <h1>User Management</h1>
                 <div className="user-count">
                     <h2>All Users</h2>
-                    <span className="user-count-number">105</span>
+                    <span className="user-count-number">{users.length}</span>
                 </div>
                 <div className="header-actions">
                     <div className="search-container">
@@ -57,26 +67,28 @@ export const Users = () => {
                     </div>
                     <div className="name-column">Name</div>
                     <div className="role-column">Role / Access</div>
-                    <div className="date-column">Date Created</div>
+                    <div className="date-column">Email</div>
                     <div className="actions-column">Actions</div>
                 </div>
 
                 <div className="user-table-body">
-                    {users.map((user) => (
+                    {filteredUsers.map((user) => (
                         <div key={user.id} className="user-table-row">
                             <div className="checkbox-column">
                                 <input type="checkbox" />
                             </div>
                             <div className="name-column">
-                                <div className="user-avatar"></div>
-                                {user.name}
+                                <div className="user-avatar">
+                                    <img src={user.avatar} alt="avatar" />
+                                </div>
+                                {user.username}
                             </div>
                             <div className="role-column">
-                                {user.role === "Admin" && <span className="role-badge admin">{user.role}</span>}
-                                {user.role === "Manager" && <span className="role-badge manager">{user.role}</span>}
-                                {user.role === "User" && <span className="role-badge user">{user.role}</span>}
+                                {user.role === "admin" && <span className="role-badge admin">Admin</span>}
+                                {user.role === "manager" && <span className="role-badge manager">Manager</span>}
+                                {user.role === "user" && <span className="role-badge user">User</span>}
                             </div>
-                            <div className="date-column">{user.dateCreated}</div>
+                            <div className="date-column">{user.email}</div>
                             <div className="actions-column">
                                 <button className="edit-button">
                                     <EditIcon />
@@ -94,8 +106,6 @@ export const Users = () => {
                 <button className={`pagination-button ${currentPage === 1 ? "active" : ""}`}>1</button>
                 <button className={`pagination-button ${currentPage === 2 ? "active" : ""}`}>2</button>
                 <button className={`pagination-button ${currentPage === 3 ? "active" : ""}`}>3</button>
-                <button className={`pagination-button ${currentPage === 4 ? "active" : ""}`}>4</button>
-                <button className={`pagination-button ${currentPage === 5 ? "active" : ""}`}>5</button>
             </div>
         </div>
     );
