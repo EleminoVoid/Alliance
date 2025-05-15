@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "./CalendarBooking.css";
 
@@ -69,21 +71,24 @@ export function CalendarBooking() {
     const isRecurring = (form.elements.namedItem("recurring") as HTMLInputElement)?.checked || false;
 
     if (!date || !startTime || !endTime) {
-      alert("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
       return;
     }
     if (startTime >= endTime) {
-      alert("End time must be after start time.");
+      toast.error("End time must be after start time.");
       return;
-  }
+    }
 
-  alert(`Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`);
+    toast.success(
+      `Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${isRecurring ? " (recurring)" : ""}`
+    );
   };
 
   const selectedRoomData = rooms.find((room) => room.id === selectedRoom);
 
   return (
     <div className="calendar-booking-container">
+      <ToastContainer />
       <main className="calendar-booking-mainContent">
         <section className="calendar-booking-calendarSection">
           <div className="calendar-booking-sectionTitle">Calendar</div>
