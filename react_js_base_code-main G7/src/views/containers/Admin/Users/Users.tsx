@@ -1,14 +1,17 @@
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Users.css";
+import { ADMIN_PATHS } from "../../../../constant/constants";
 
 export const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState<any[]>([]); // you can create a proper type later
+    const navigate = useNavigate();
 
     // Fetch users from backend
     useEffect(() => {
@@ -90,7 +93,12 @@ export const Users = () => {
                             </div>
                             <div className="date-column">{user.email}</div>
                             <div className="actions-column">
-                                <button className="edit-button">
+                                <button
+                                    className="edit-button"
+                                    onClick={() =>
+                                        navigate(ADMIN_PATHS.EDIT_USER.path.replace(":id", user.id))
+                                    }
+                                >
                                     <EditIcon />
                                 </button>
                                 <button className="delete-button">

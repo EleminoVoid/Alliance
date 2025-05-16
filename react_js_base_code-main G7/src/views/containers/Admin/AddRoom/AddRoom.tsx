@@ -171,7 +171,7 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="whiteboard"
-                  checked={roomData.features.whiteBoard}
+                  checked={roomData.features.whiteboard}
                   onChange={() => handleFeatureToggle("whiteboard")}
                 />
                 <label htmlFor="whiteboard">White Board</label>

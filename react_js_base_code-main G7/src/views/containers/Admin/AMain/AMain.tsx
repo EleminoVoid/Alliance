@@ -66,9 +66,6 @@ useEffect(() => {
 
   return (
     <Fragment>
-      {/* <CssBaseline /> */}
-
-      {/* Admin Header */}
       <AppBar position="fixed" className="admin-app-bar">
         <Toolbar sx={{ display: "flex", alignItems: "center" }}>
           <IconButton
@@ -79,14 +76,12 @@ useEffect(() => {
           >
             <MenuIcon />
           </IconButton>
-
           <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
             <AdminPanelSettingsIcon sx={{ mr: 1 }} />
             <Typography variant="h6" noWrap fontWeight={900} sx={{ mr: 4 }}>
               MARSHAL ADMIN
             </Typography>
           </Box>
-
           <Box display="flex" alignItems="center">
             <Typography variant="subtitle2" sx={{ mr: 2 }}>
               Admin Mode
@@ -113,8 +108,9 @@ useEffect(() => {
           "& .MuiDrawer-paper": {
             width: 280,
             boxSizing: "border-box",
-            background: theme.palette.primary.dark,
-            color: theme.palette.common.white,
+            background: "#fff", // Match user sidebar background
+            color: "#222",      // Match user sidebar text color
+            borderRight: "1px solid #eee",
           },
         }}
       >
@@ -123,115 +119,95 @@ useEffect(() => {
             <ChevronLeftIcon />
           </IconButton>
         </DrawerHeader>
-        <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
-        
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {/* Admin User Area */}
-          {user && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, p: 2, bgcolor: 'primary.main' }}>
-              <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                {user.username?.charAt(0).toUpperCase()}
-              </Avatar>
-              <Box>
-                <Typography variant="body2" noWrap>{user.email}</Typography>
-                <Typography variant="caption" noWrap sx={{ color: 'secondary.main' }}>
-                  {user.role.toUpperCase()}
-                </Typography>
-              </Box>
-            </Box>
-          )}
-          <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
+        <Divider />
 
-          {/* Admin Menu Items */}
-          <Box sx={{ flexGrow: 1 }}>
-            <List>
-              {ADMIN_SIDE_BAR_MENU.map((item) => (
-                <ListItem key={item.path} disablePadding>
-                  <ListItemButton 
-                    component={NavLink} 
-                    to={item.path}
-                    sx={{
-                      '&.active': {
-                        bgcolor: 'primary.light',
-                      },
-                      '&:hover': {
-                        bgcolor: 'primary.light',
-                      }
-                    }}
-                  >
-                    <ListItemIcon sx={{ color: 'inherit' }}>
-                      {item.icon || <DashboardIcon />}
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={item.label} 
-                      primaryTypographyProps={{ fontWeight: 'medium' }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-
-          {/* Admin Controls */}
-          <Box sx={{ p: 2 }}>
-            <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)', mb: 2 }} />
-            <Typography variant="subtitle2" gutterBottom>
-              Admin Features
+        {/* Admin User Area */}
+        {user && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3 }}>
+            <Avatar
+              src={user.avatar || "https://i.pravatar.cc/40"}
+              sx={{ width: 64, height: 64, mb: 1, bgcolor: 'primary.main' }}
+            >
+              {user.username?.charAt(0).toUpperCase()}
+            </Avatar>
+            <Typography variant="subtitle1" fontWeight={700}>
+              {user.username}
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography variant="body2">Analytics Dashboard</Typography>
-                <IconButton 
-                  size="small" 
-                  color={adminFeatures.analytics ? 'secondary' : 'default'}
-                  onClick={() => handleAdminFeatureToggle('analytics')}
-                >
-                  <DashboardIcon fontSize="small" />
-                </IconButton>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography variant="body2">User Management</Typography>
-                <IconButton 
-                  size="small" 
-                  color={adminFeatures.userManagement ? 'secondary' : 'default'}
-                  onClick={() => handleAdminFeatureToggle('userManagement')}
-                >
-                  <PeopleIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </Box>
+            <Typography variant="body2" color="text.secondary">
+              {user.email}
+            </Typography>
+            <Typography variant="caption" color="primary" sx={{ mt: 0.5 }}>
+              {user.role?.toUpperCase()}
+            </Typography>
           </Box>
+        )}
 
-          {/* Settings at bottom */}
-          <Box>
-            <Divider sx={{ bgcolor: 'rgba(255,255,255,0.2)' }} />
-            <ListItem disablePadding>
-              <ListItemButton 
-                component={NavLink} 
-                to="/admin/settings"
+        <Divider sx={{ mb: 1 }} />
+
+        {/* Admin Menu Items */}
+        <List>
+          {ADMIN_SIDE_BAR_MENU.map((item) => (
+            <ListItem key={item.path} disablePadding>
+              <ListItemButton
+                component={NavLink}
+                to={item.path}
                 sx={{
                   '&.active': {
                     bgcolor: 'primary.light',
-                  }
+                    color: 'primary.main',
+                  },
+                  '&:hover': {
+                    bgcolor: 'primary.light',
+                  },
+                  px: 3,
+                  py: 1.5,
                 }}
               >
-                <ListItemIcon sx={{ color: 'inherit' }}>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText 
-                  primary="Admin Settings" 
-                  primaryTypographyProps={{ fontWeight: 'medium' }}
+                {/* Remove this block to hide the icon */}
+                {/* <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+                  {item.icon || <DashboardIcon />}
+                </ListItemIcon> */}
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{ fontWeight: 500 }}
                 />
               </ListItemButton>
             </ListItem>
-          </Box>
-        </Box>
+          ))}
+        </List>
+
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* Settings at bottom */}
+        <Divider sx={{ mt: 2 }} />
+        <ListItem disablePadding>
+          <ListItemButton
+            component={NavLink}
+            to="/admin/settings"
+            sx={{
+              '&.active': {
+                bgcolor: 'primary.light',
+                color: 'primary.main',
+              },
+              px: 3,
+              py: 1.5,
+            }}
+          >
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary="Admin Settings"
+              primaryTypographyProps={{ fontWeight: 500 }}
+            />
+          </ListItemButton>
+        </ListItem>
       </Drawer>
 
       {/* ADMIN MAIN CONTENT */}
       <MainLayout className="admin-main-content">
         <DrawerHeader />
-        <Box sx={{ 
+        <Box sx={{
           p: 3,
           background: '#f5f7fa',
           minHeight: 'calc(100vh - 64px)'

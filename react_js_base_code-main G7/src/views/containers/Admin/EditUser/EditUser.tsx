@@ -1,114 +1,146 @@
-import type React from "react"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
-import "./EditUser.css"
+import bcrypt from "bcryptjs";
+import "./EditUser.css";
 
 interface UserData {
-  id: number
-  firstName: string
-  lastName: string
-  email: string
-  role: string
-  password: string
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  password: string;
+  avatar?: string;
 }
 
-export const EditUser = ({ userId = 1 }: { userId?: number }) => {
-  const [userData, setUserData] = useState<UserData>({
-    id: userId,
-    firstName: "John",
-    lastName: "Doe",
-    email: "john_doe@gmail.com",
-    role: "Admin",
-    password: "Testing!23$",
-  })
+export const EditUser: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [passwordInput, setPasswordInput] = useState("");
 
   useEffect(() => {
-    // Fetch user data based on userId
-    // This would be an API call in a real application
-    console.log(`Fetching user data for user ID: ${userId}`)
-  }, [userId])
+    if (!id) return;
+    fetch(`http://localhost:3000/users/${id}`)
+      .then((res) => res.json())
+      .then((data: UserData) => {
+        setUserData(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
+    if (!userData) return;
+    const { name, value } = e.target;
     setUserData({
       ...userData,
       [name]: value,
-    })
-  }
+    });
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("User data updated:", userData)
-    // Add API call here
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userData) return;
+    let updatedUser = { ...userData };
+    if (passwordInput) {
+      // Hash the new password
+      updatedUser.password = await bcrypt.hash(passwordInput, 10);
+    }
+    // else, keep the old hash
+    fetch(`http://localhost:3000/users/${userData.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedUser),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update user");
+        alert("User updated!");
+        navigate(-1);
+      })
+      .catch(() => alert("Error updating user"));
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (!userData) return <div>User not found</div>;
 
   return (
     <div className="user-form-container">
       <h1>Edit user</h1>
-
       <form onSubmit={handleSubmit}>
         <div className="avatar-section">
           <div className="user-avatar">
+            <img src={userData.avatar || "https://i.pravatar.cc/40"} alt="avatar" />
             <EditIcon />
           </div>
         </div>
-
         <div className="form-fields">
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="firstName">First Name</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
-                id="firstName"
-                name="firstName"
-                value={userData.firstName}
+                id="username"
+                name="username"
+                value={userData.username}
                 onChange={handleInputChange}
+                required
               />
             </div>
-
-            <div className="form-field">
-              <label htmlFor="lastName">Last Name</label>
-              <input type="text" id="lastName" name="lastName" value={userData.lastName} onChange={handleInputChange} />
-            </div>
           </div>
-
           <div className="form-field">
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" value={userData.email} onChange={handleInputChange} />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={userData.email}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-
           <div className="form-row">
             <div className="form-field">
               <label htmlFor="role">Role</label>
-              <select id="role" name="role" value={userData.role} onChange={handleInputChange}>
-                <option value="Admin">Admin</option>
-                <option value="Manager">Manager</option>
-                <option value="User">User</option>
+              <select
+                id="role"
+                name="role"
+                value={userData.role}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="user">User</option>
               </select>
             </div>
-
             <div className="form-field">
               <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
-                value={userData.password}
-                onChange={handleInputChange}
+                value={passwordInput}
+                onChange={e => setPasswordInput(e.target.value)}
+                placeholder="Enter new password to change"
               />
             </div>
           </div>
         </div>
-
         <div className="form-actions">
           <button type="submit" className="submit-button">
             Save
           </button>
-          <button type="button" className="cancel-button">
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => navigate(-1)}
+          >
             Cancel
           </button>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};
