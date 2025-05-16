@@ -16,7 +16,7 @@ interface Room {
 
 interface Booking {
   id: string
-  userId: number
+  userId: string
   roomId: string
   startDate: string
   endDate: string
@@ -65,19 +65,31 @@ export const CalendarBooking = () => {
 
     // Fetch bookings
     fetch("http://localhost:3000/bookings")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch bookings")
+    .then((response) => {
+      if (!response.ok) throw new Error("Failed to fetch bookings")
+      return response.json()
+    })
+    .then((data) => {
+      // Flatten bookings
+      const flatBookings: Booking[] = [];
+      data.forEach((entry: any) => {
+        // If entry has numeric keys, it's a group (recurring or batch)
+        const keys = Object.keys(entry).filter(k => !isNaN(Number(k)));
+        if (keys.length > 0) {
+          keys.forEach(k => {
+            flatBookings.push(entry[k]);
+          });
+        } else {
+          // Single booking object
+          flatBookings.push(entry);
         }
-        return response.json()
-      })
-      .then((data) => {
-        setBookings(data)
-      })
-      .catch((error) => {
-        console.error("Error fetching bookings:", error)
-        toast.error("Failed to load bookings data")
-      })
+      });
+      setBookings(flatBookings);
+    })
+    .catch((error) => {
+      console.error("Error fetching bookings:", error)
+      toast.error("Failed to load bookings data")
+    })
   }, [])
 
   // Update sidebar height when recurring toggle changes
@@ -155,55 +167,63 @@ export const CalendarBooking = () => {
 
   // Handle booking submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
-    const form = e.currentTarget
-    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value
-    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value
+    const form = e.currentTarget;
+    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
+    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
 
-    if (!selectedDate || !startTime || !endTime) {
-      toast.error("Please fill in all fields.")
-      setIsLoading(false)
-      return
+    if (!selectedRoom || !startTime || !endTime || (isRecurring && (!recurringStartDate || !recurringEndDate || selectedWeekdays.length === 0))) {
+      toast.error("Please fill in all fields.");
+      setIsLoading(false);
+      return;
     }
 
     if (startTime >= endTime) {
-      toast.error("End time must be after start time.")
-      setIsLoading(false)
-      return
+      toast.error("End time must be after start time.");
+      setIsLoading(false);
+      return;
     }
 
-    const userId = localStorage.getItem("id") ? Number.parseInt(localStorage.getItem("id") as string) : 1 // Default to user 1 if not logged in
-    const startDateToUse = isRecurring ? recurringStartDate : selectedDate;
-    const endDateToUse = isRecurring ? recurringEndDate : selectedDate;
-    // Create the base booking
-    const newBooking: Omit<Booking, "id"> = {
-      userId,
-      roomId: selectedRoom,
-      startDate: `${startDateToUse}T${startTime}:00`,
-      endDate: `${endDateToUse}T${endTime}:00`,
-      type: isRecurring ? "recurring" : "single",
-    }
-
-    // If recurring, create bookings for selected weekdays
-    let allBookings = []
+    const userId = localStorage.getItem("id") || "1";
+    
+    let allBookings: Omit<Booking, "id">[] = [];
 
     if (isRecurring && selectedWeekdays.length > 0) {
-      // For simplicity, we'll use the same date but mark it as recurring
-      // In a real app, you'd generate actual dates for each weekday
-      allBookings = selectedWeekdays.map((day, index) => ({
-        ...newBooking,
-        id: `${Date.now()}-${index}`,
-        type: "recurring",
-      }))
+      // Map weekday labels to JS Date weekday numbers
+      const weekdayMap: Record<string, number> = {
+        "Su": 0, "M": 1, "T": 2, "W": 3, "Th": 4, "F": 5, "S": 6
+      };
+      const selectedWeekdayNumbers = selectedWeekdays.map(day => weekdayMap[day]);
+
+      const start = new Date(recurringStartDate);
+      const end = new Date(recurringEndDate);
+      let current = new Date(start);
+
+      while (current <= end) {
+        if (selectedWeekdayNumbers.includes(current.getDay())) {
+          const dateStr = current.toISOString().slice(0, 10);
+          allBookings.push({
+            userId,
+            roomId: selectedRoom,
+            startDate: `${dateStr}T${startTime}:00`,
+            endDate: `${dateStr}T${endTime}:00`,
+            type: "recurring"
+          });
+        }
+        current.setDate(current.getDate() + 1);
+      }
     } else {
       allBookings = [
         {
-          ...newBooking,
-          id: Date.now().toString(),
-        },
-      ]
+          userId,
+          roomId: selectedRoom,
+          startDate: `${selectedDate}T${startTime}:00`,
+          endDate: `${selectedDate}T${endTime}:00`,
+          type: "single"
+        }
+      ];
     }
 
     // Post bookings to the server
@@ -216,31 +236,29 @@ export const CalendarBooking = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to create booking")
+          throw new Error("Failed to create booking");
         }
-        return response.json()
+        return response.json();
       })
       .then(() => {
-        setBookings((prev) => [...prev, ...allBookings])
+        setBookings((prev) => [...prev, ...allBookings.map((b, i) => ({ ...b, id: `${Date.now()}-${i}` }))]);
         toast.success(
-          `Room booked: ${selectedRoom} on ${selectedDate} from ${startTime} to ${endTime}${
-            isRecurring ? " (recurring)" : ""
-          }`,
-        )
-
-        // Reset form
-        form.reset()
-        setSelectedWeekdays([])
-        setIsRecurring(false)
+          `Room booked: ${selectedRoom} ${isRecurring ? " (recurring)" : ""}`
+        );
+        form.reset();
+        setSelectedWeekdays([]);
+        setIsRecurring(false);
+        setRecurringStartDate("");
+        setRecurringEndDate("");
       })
       .catch((error) => {
-        console.error("Error creating booking:", error)
-        toast.error("Failed to create booking. Please try again.")
+        console.error("Error creating booking:", error);
+        toast.error("Failed to create booking. Please try again.");
       })
       .finally(() => {
-        setIsLoading(false)
-      })
-  }
+        setIsLoading(false);
+      });
+  };
 
   // Format bookings for FullCalendar
   const formattedEvents = bookings.map((booking) => ({
@@ -261,9 +279,12 @@ export const CalendarBooking = () => {
 
   // Filter events for the time view
   const filteredEvents = formattedEvents.filter((event) => {
-    const eventDate = event.start ? event.start.toString().slice(0, 10) : ""
-    return eventDate === selectedDate
-  })
+    const eventDate = event.start ? event.start.toString().slice(0, 10) : "";
+    return (
+      event.extendedProps.roomId === selectedRoom &&
+      eventDate === selectedDate
+    );
+  });
 
   // Handle closing the time view
   const handleCloseTimeView = () => {
@@ -289,7 +310,7 @@ export const CalendarBooking = () => {
           initialView="dayGridMonth"
           height="auto"
           dateClick={handleDateClick}
-          events={formattedEvents}
+          events={formattedEvents.filter(event => event.extendedProps.roomId === selectedRoom)} // <-- Only show selected room
           headerToolbar={{
             left: "",
             center: "title",
