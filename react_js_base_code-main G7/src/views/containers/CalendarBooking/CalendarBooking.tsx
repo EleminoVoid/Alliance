@@ -3,6 +3,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import "./CalendarBooking.css";
 
@@ -64,7 +66,6 @@ export function CalendarBooking() {
   const [recurringDays, setRecurringDays] = useState<string[]>([]);
 
   useEffect(() => {
-    // Fetch rooms from db.json
     axios.get("http://localhost:3000/rooms").then((response) => {
       setRooms(response.data);
       if (response.data.length > 0) {
@@ -95,11 +96,11 @@ export function CalendarBooking() {
     const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
 
     if (!date || !startTime || !endTime) {
-      alert("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
       return;
     }
     if (startTime >= endTime) {
-      alert("End time must be after start time.");
+      toast.error("End time must be after start time.");
       return;
     }
 
@@ -111,7 +112,6 @@ export function CalendarBooking() {
       roomId: selectedRoom,
     };
 
-    // Add recurring bookings if applicable
     const recurringBookings = recurringDays.map((day) => ({
       ...newBooking,
       id: `${newBooking.id}-${day}`,
@@ -121,17 +121,24 @@ export function CalendarBooking() {
 
     const allBookings = [newBooking, ...recurringBookings];
 
-    // Save bookings to db.json
     axios.post("http://localhost:3000/bookings", allBookings).then(() => {
       setCalendarEvents((prev) => [...prev, ...allBookings]);
       alert("Booking successfully created!");
     });
+
+    toast.success(
+      `Room booked: ${selectedRoom} on ${date} from ${startTime} to ${endTime}${
+        recurringDays.length > 0 ? " (recurring)" : ""
+      }`
+    );
   };
 
   const selectedRoomData = rooms.find((room) => room.id === selectedRoom);
 
   return (
     <div className="calendar-booking-container">
+      <ToastContainer />
+      
       <aside className="calendar-booking-leftSidebar">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
@@ -145,6 +152,7 @@ export function CalendarBooking() {
           }}
         />
       </aside>
+
       <main className="calendar-booking-mainContent">
         <section className="calendar-booking-calendarSection">
           <FullCalendar
@@ -152,7 +160,6 @@ export function CalendarBooking() {
             initialView="timeGridDay"
             height="auto"
             selectable
-            // this is suppposed to display the events but its not working
             events={calendarEvents.filter((event) => {
               const eventDate = event.start ? event.start.slice(0, 10) : "";
               return event.roomId === selectedRoom && eventDate === selectedDate;
@@ -171,6 +178,7 @@ export function CalendarBooking() {
           />
         </section>
       </main>
+
       <aside className="calendar-booking-rightSidebar">
         <div className="calendar-booking-roomHeader">
           <h2 className="calendar-booking-roomTitle">
@@ -188,6 +196,7 @@ export function CalendarBooking() {
             ))}
           </select>
         </div>
+
         {selectedRoomData?.image && (
           <img
             src={selectedRoomData.image}
@@ -195,6 +204,7 @@ export function CalendarBooking() {
             className="calendar-booking-roomImage"
           />
         )}
+
         <form id="bookingForm" onSubmit={handleSubmit} className="calendar-booking-form">
           <label htmlFor="date" className="calendar-booking-label">
             Date

@@ -13,7 +13,8 @@ const MainLayout = styled("main", {
     duration: open
       ? theme.transitions.duration.enteringScreen
       : theme.transitions.duration.leavingScreen,
-  })
+
+  }),
 }));
 
 export default MainLayout;
