@@ -174,15 +174,16 @@ export const Main = () => {
           <Box>
             <Divider />
             <ListItem disablePadding>
-              <ListItemButton 
-                component={NavLink} 
-                to="/settings"
-                onClick={() => setOpenDrawer(false)}
+              <ListItemButton
+                onClick={() => {
+                  localStorage.clear();
+                  navigate(PATHS.LOGIN.path);
+                }}
               >
                 <ListItemIcon>
                   <SettingsIcon />
                 </ListItemIcon>
-                <ListItemText primary="Settings" />
+                <ListItemText primary="Logout" />
               </ListItemButton>
             </ListItem>
           </Box>

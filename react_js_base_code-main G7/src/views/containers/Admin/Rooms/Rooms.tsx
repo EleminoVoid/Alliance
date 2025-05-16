@@ -27,6 +27,11 @@ export const Rooms = () => {
     room.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // For editing a room by its roomId
+  const handleEditRoom = (roomId: string) => {
+    navigate(ADMIN_PATHS.EDIT_ROOM.path.replace(":id", roomId));
+  };
+
   return (
     <div className="room-management-container">
       <div className="room-management-header">
@@ -76,7 +81,7 @@ export const Rooms = () => {
               <div className="actions-column">
                 <button
                   className="edit-button"
-                  onClick={() => navigate(`${ADMIN_PATHS.EDIT_ROOM.path}/${room.id}`)}
+                  onClick={() => handleEditRoom(room.id)}
                 >
                   <EditIcon />
                 </button>

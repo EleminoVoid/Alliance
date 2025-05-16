@@ -186,12 +186,12 @@ export const CalendarBooking = () => {
       return;
     }
 
-    const userId = localStorage.getItem("id") || "1";
-    
+    // Always read the userId from localStorage
+    const userId = localStorage.getItem("userId") || "1";
+
     let allBookings: Omit<Booking, "id">[] = [];
 
     if (isRecurring && selectedWeekdays.length > 0) {
-      // Map weekday labels to JS Date weekday numbers
       const weekdayMap: Record<string, number> = {
         "Su": 0, "M": 1, "T": 2, "W": 3, "Th": 4, "F": 5, "S": 6
       };

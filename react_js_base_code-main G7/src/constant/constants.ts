@@ -45,7 +45,7 @@ export const USER_PATHS = {
     label: "My Bookings"
   },
   EDIT_BOOKINGS: {
-    path: "/edit/bookings",
+    path: "/edit-booking/:id",
     label: "My Bookings"
   },
   CALENDAR: {
@@ -94,11 +94,11 @@ export const ADMIN_PATHS = {
     icon: "Settings"
   },
   EDIT_USER:{
-    path: `${BASE.ADMIN}/EditUser`,
+    path: `${BASE.ADMIN}/EditUser/:id`,
     label: "Edit User"
   },
   EDIT_ROOM:{
-    path: `${BASE.ADMIN}/editRoom`,
+    path: `${BASE.ADMIN}/EditRoom/:id`,
     label: "Edit Room"
   },
   ADD_USER:{

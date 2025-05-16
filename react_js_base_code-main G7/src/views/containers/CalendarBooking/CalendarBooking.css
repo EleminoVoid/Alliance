@@ -619,7 +619,6 @@
     max-width: 100%;
     margin: 0 20px 20px;
     border-radius: 12px;
-    transition: ;
     /* Ensure content is fully visible on tablet */
     height: auto;
     overflow: scroll;

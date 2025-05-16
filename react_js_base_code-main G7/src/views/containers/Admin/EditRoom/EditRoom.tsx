@@ -1,97 +1,126 @@
-import type React from "react"
-
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
-import "./EditRoom.css"
+import "./EditRoom.css";
 
-interface RoomData {
-  id: number
-  name: string
-  location: string
-  capacity: string
-  features: {
-    airCondition: boolean
-    projector: boolean
-    whiteBoard: boolean
-    tv: boolean
-    speaker: boolean
-    wifi: boolean
-    powerOutlets: boolean
-    videoConferencing: boolean
-  }
+interface Room {
+  id: string;
+  name: string;
+  floor: string;
+  capacity: number;
+  available: boolean;
+  amenities: string[];
+  description: string;
+  image: string;
 }
 
-export const EditRoom = ({ roomId = 1 }: { roomId?: number }) => {
-  const [roomData, setRoomData] = useState<RoomData>({
-    id: roomId,
-    name: "Room Name 101",
-    location: "First Floor",
-    capacity: "20",
-    features: {
-      airCondition: true,
-      projector: true,
-      whiteBoard: true,
-      tv: true,
-      speaker: true,
-      wifi: true,
-      powerOutlets: true,
-      videoConferencing: true,
-    },
-  })
+// Use the same static list as AddRoom
+const AMENITIES_LIST = [
+  { key: "airCondition", label: "Air Condition" },
+  { key: "speaker", label: "Speaker" },
+  { key: "projector", label: "Projector" },
+  { key: "wifi", label: "WIFI" },
+  { key: "whiteboard", label: "White Board" },
+  { key: "powerOutlets", label: "Power Outlets" },
+  { key: "tv", label: "TV" },
+  { key: "videoConferencing", label: "Video Conferencing Setup" },
+];
 
+export const EditRoom: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const [roomData, setRoomData] = useState<Room | null>(null);
+  const [amenitiesState, setAmenitiesState] = useState<Record<string, boolean>>({});
+
+  // Fetch this room's data
   useEffect(() => {
-    // Fetch room data based on roomId
-    // This would be an API call in a real application
-    console.log(`Fetching room data for room ID: ${roomId}`)
-  }, [roomId])
+    if (!id) return;
+    fetch(`http://localhost:3000/rooms/${id}`)
+      .then((res) => res.json())
+      .then((room: Room) => {
+        setRoomData(room);
+        // Set amenities state for checkboxes
+        const state: Record<string, boolean> = {};
+        AMENITIES_LIST.forEach((a) => {
+          state[a.key] = room.amenities?.includes(a.key) ?? false;
+        });
+        setAmenitiesState(state);
+      });
+  }, [id]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setRoomData({
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    if (!roomData) return;
+    const { name, value } = e.target;
+    setRoomData({ ...roomData, [name]: name === "capacity" ? Number(value) : value });
+  };
+
+  const handleAmenityToggle = (amenity: string) => {
+    setAmenitiesState((prev) => ({
+      ...prev,
+      [amenity]: !prev[amenity],
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roomData) return;
+    const updatedRoom = {
       ...roomData,
-      [name]: value,
-    })
-  }
+      amenities: AMENITIES_LIST.filter((a) => amenitiesState[a.key]).map((a) => a.key),
+    };
+    try {
+      const res = await fetch(`http://localhost:3000/rooms/${roomData.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedRoom),
+      });
+      if (!res.ok) throw new Error("Failed to update room");
+      alert("Room updated successfully!");
+      navigate(-1);
+    } catch (err) {
+      alert("Error updating room");
+    }
+  };
 
-  const handleFeatureToggle = (feature: string) => {
-    setRoomData({
-      ...roomData,
-      features: {
-        ...roomData.features,
-        [feature]: !roomData.features[feature as keyof typeof roomData.features],
-      },
-    })
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Room data updated:", roomData)
-    // Add API call here
-  }
+  if (!roomData) return <div>Loading...</div>;
 
   return (
     <div className="room-form-container">
       <h1>Edit room</h1>
-
       <form onSubmit={handleSubmit}>
         <div className="avatar-section">
           <div className="room-avatar">
             <EditIcon />
           </div>
         </div>
-
         <div className="form-fields">
           <div className="form-field">
             <label htmlFor="name">Room Name</label>
-            <input type="text" id="name" name="name" value={roomData.name} onChange={handleInputChange} />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={roomData.name}
+              onChange={handleInputChange}
+              required
+            />
           </div>
-
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="location">Location</label>
-              <input type="text" id="location" name="location" value={roomData.location} onChange={handleInputChange} />
+              <label htmlFor="floor">Location</label>
+              <select
+                id="floor"
+                name="floor"
+                value={roomData.floor}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="ground">Ground Floor</option>
+                <option value="mezzanine">Mezzanine Floor</option>
+                <option value="first">First Floor</option>
+              </select>
             </div>
-
             <div className="form-field">
               <label htmlFor="capacity">Capacity</label>
               <input
@@ -100,98 +129,40 @@ export const EditRoom = ({ roomId = 1 }: { roomId?: number }) => {
                 name="capacity"
                 value={roomData.capacity}
                 onChange={handleInputChange}
+                required
               />
             </div>
           </div>
-
           <div className="features-section">
-            <label>Features</label>
+            <label>Amenities</label>
             <div className="features-grid">
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="airCondition"
-                  checked={roomData.features.airCondition}
-                  onChange={() => handleFeatureToggle("airCondition")}
-                />
-                <label htmlFor="airCondition">Air Condition</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="speaker"
-                  checked={roomData.features.speaker}
-                  onChange={() => handleFeatureToggle("speaker")}
-                />
-                <label htmlFor="speaker">Speaker</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="projector"
-                  checked={roomData.features.projector}
-                  onChange={() => handleFeatureToggle("projector")}
-                />
-                <label htmlFor="projector">Projector</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="wifi"
-                  checked={roomData.features.wifi}
-                  onChange={() => handleFeatureToggle("wifi")}
-                />
-                <label htmlFor="wifi">WIFI</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="whiteBoard"
-                  checked={roomData.features.whiteBoard}
-                  onChange={() => handleFeatureToggle("whiteBoard")}
-                />
-                <label htmlFor="whiteBoard">White Board</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="powerOutlets"
-                  checked={roomData.features.powerOutlets}
-                  onChange={() => handleFeatureToggle("powerOutlets")}
-                />
-                <label htmlFor="powerOutlets">Power Outlets</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="tv"
-                  checked={roomData.features.tv}
-                  onChange={() => handleFeatureToggle("tv")}
-                />
-                <label htmlFor="tv">TV</label>
-              </div>
-              <div className="feature-item">
-                <input
-                  type="checkbox"
-                  id="videoConferencing"
-                  checked={roomData.features.videoConferencing}
-                  onChange={() => handleFeatureToggle("videoConferencing")}
-                />
-                <label htmlFor="videoConferencing">Video Conferencing Setup</label>
-              </div>
+              {AMENITIES_LIST.map((amenity) => (
+                <div className="feature-item" key={amenity.key}>
+                  <input
+                    type="checkbox"
+                    id={amenity.key}
+                    checked={!!amenitiesState[amenity.key]}
+                    onChange={() => handleAmenityToggle(amenity.key)}
+                  />
+                  <label htmlFor={amenity.key}>{amenity.label}</label>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-
         <div className="form-actions">
           <button type="submit" className="submit-button">
             Save
           </button>
-          <button type="button" className="cancel-button">
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => navigate(-1)}
+          >
             Cancel
           </button>
         </div>
       </form>
     </div>
-  )
-}
+  );
+};

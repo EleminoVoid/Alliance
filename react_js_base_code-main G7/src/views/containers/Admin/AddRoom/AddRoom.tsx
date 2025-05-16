@@ -12,7 +12,7 @@ export const AddRoom = () => {
     features: {
       airCondition: false,
       projector: false,
-      whiteBoard: false,
+      whiteboard: false,
       tv: false,
       speaker: false,
       wifi: false,
@@ -21,12 +21,14 @@ export const AddRoom = () => {
     },
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
     setRoomData({
       ...roomData,
       [name]: value,
-    })
+    });
   }
 
   const handleFeatureToggle = (feature: string) => {
@@ -39,10 +41,37 @@ export const AddRoom = () => {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Room data submitted:", roomData)
-    // Add API call here
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const amenities = Object.entries(roomData.features)
+      .filter(([_, checked]) => checked)
+      .map(([feature]) => feature);
+
+    // Create the room object matching db.json structure
+    const newRoom = {
+      id: `room-${Date.now()}`,
+      name: roomData.name,
+      floor: roomData.location,
+      capacity: Number(roomData.capacity),
+      available: true,
+      amenities,
+      description: "",
+      image: ""
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/rooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newRoom)
+      });
+      if (!res.ok) throw new Error("Failed to add room");
+      alert("Room added successfully!");
+      // Optionally reset form or redirect
+    } catch (err) {
+      alert("Error adding room");
+    }
   }
 
   return (
@@ -72,14 +101,18 @@ export const AddRoom = () => {
           <div className="form-row">
             <div className="form-field">
               <label htmlFor="location">Location</label>
-              <input
-                type="text"
+              <select
                 id="location"
                 name="location"
-                placeholder="First Floor"
                 value={roomData.location}
                 onChange={handleInputChange}
-              />
+                required
+              >
+                <option value="" disabled>Select Floor</option>
+                <option value="ground">Ground Floor</option>
+                <option value="mezzanine">Mezzanine Floor</option>
+                <option value="first">First Floor</option>
+              </select>
             </div>
 
             <div className="form-field">
@@ -137,11 +170,11 @@ export const AddRoom = () => {
               <div className="feature-item">
                 <input
                   type="checkbox"
-                  id="whiteBoard"
+                  id="whiteboard"
                   checked={roomData.features.whiteBoard}
-                  onChange={() => handleFeatureToggle("whiteBoard")}
+                  onChange={() => handleFeatureToggle("whiteboard")}
                 />
-                <label htmlFor="whiteBoard">White Board</label>
+                <label htmlFor="whiteboard">White Board</label>
               </div>
               <div className="feature-item">
                 <input

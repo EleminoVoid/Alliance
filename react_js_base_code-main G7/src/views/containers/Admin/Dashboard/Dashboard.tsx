@@ -55,13 +55,15 @@ export const Dashboard = () => {
       try {
         const [roomsRes, bookingsRes] = await Promise.all([
           axios.get<Room[]>("http://localhost:3000/rooms"),
-          axios.get<Booking[]>("http://localhost:3000/bookings")
+          axios.get<any[]>("http://localhost:3000/bookings")
         ]);
 
         setRooms(roomsRes.data);
-        setBookings(bookingsRes.data);
-        calculateMostUsedRoom(roomsRes.data, bookingsRes.data);
-        const counts = calculateBookingPercentages(bookingsRes.data);
+        // FLATTEN BOOKINGS HERE
+        const flatBookings = flattenBookings(bookingsRes.data);
+        setBookings(flatBookings);
+        calculateMostUsedRoom(roomsRes.data, flatBookings);
+        const counts = calculateBookingPercentages(flatBookings);
         setBookingCounts(counts);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -270,5 +272,21 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+function flattenBookings(rawBookings: any[]): Booking[] {
+  const flat: Booking[] = [];
+  rawBookings.forEach((entry) => {
+    const keys = Object.keys(entry).filter((k) => !isNaN(Number(k)));
+    if (keys.length > 0) {
+      keys.forEach((k) => {
+        flat.push({
+          ...entry[k],
+          id: entry[k].id || entry.id, // use child id or parent id
+        });
+      });
+    }
+  });
+  return flat;
+}
 
 export default Dashboard;
