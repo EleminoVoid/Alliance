@@ -1,7 +1,5 @@
-"use client"
-
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
@@ -25,15 +23,24 @@ interface Booking {
   type: "single" | "recurring"
 }
 
-export function CalendarBooking() {
+export const CalendarBooking = () => {
   const [rooms, setRooms] = useState<Room[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [selectedRoom, setSelectedRoom] = useState<string>("")
   const [selectedDate, setSelectedDate] = useState<string>("")
   const [showTimeView, setShowTimeView] = useState<boolean>(false)
   const [isRecurring, setIsRecurring] = useState<boolean>(false)
+  const [recurringStartDate, setRecurringStartDate] = useState<string>("");
+  const [recurringEndDate, setRecurringEndDate] = useState<string>("");
   const [selectedWeekdays, setSelectedWeekdays] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [calendarKey, setCalendarKey] = useState<number>(0)
+  const [sidebarHeight, setSidebarHeight] = useState<string>("auto")
+
+  const calendarRef = useRef<any>(null)
+  const timeViewRef = useRef<any>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const sidebarRef = useRef<HTMLElement>(null)
 
   // Fetch rooms and bookings from db.json
   useEffect(() => {
@@ -73,6 +80,68 @@ export function CalendarBooking() {
       })
   }, [])
 
+  // Update sidebar height when recurring toggle changes
+  useEffect(() => {
+    // Allow time for DOM to update
+    const timer = setTimeout(() => {
+      if (sidebarRef.current) {
+        // Force a reflow to ensure the sidebar height is calculated correctly
+        setSidebarHeight(`${sidebarRef.current.scrollHeight}px`)
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [isRecurring, selectedWeekdays])
+
+  // Handle resize when time view is toggled
+  useEffect(() => {
+    // Force calendar to re-render when time view is toggled
+    setCalendarKey((prev) => prev + 1)
+
+    // Allow time for DOM to update
+    const timer = setTimeout(() => {
+      if (calendarRef.current?.getApi) {
+        const api = calendarRef.current.getApi()
+        api.updateSize()
+      }
+
+      if (timeViewRef.current?.getApi) {
+        const api = timeViewRef.current.getApi()
+        api.updateSize()
+      }
+
+      if (sidebarRef.current) {
+        // Force a reflow to ensure the sidebar height is calculated correctly
+        setSidebarHeight(`${sidebarRef.current.scrollHeight}px`)
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [showTimeView, selectedDate])
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (calendarRef.current?.getApi) {
+        const api = calendarRef.current.getApi()
+        api.updateSize()
+      }
+
+      if (timeViewRef.current?.getApi) {
+        const api = timeViewRef.current.getApi()
+        api.updateSize()
+      }
+
+      if (sidebarRef.current) {
+        // Force a reflow to ensure the sidebar height is calculated correctly
+        setSidebarHeight(`${sidebarRef.current.scrollHeight}px`)
+      }
+    }
+
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
   // Handle date click in the calendar
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr)
@@ -105,14 +174,15 @@ export function CalendarBooking() {
       return
     }
 
-    const userId = localStorage.getItem("userId") ? Number.parseInt(localStorage.getItem("userId") as string) : 1 // Default to user 1 if not logged in
-
+    const userId = localStorage.getItem("id") ? Number.parseInt(localStorage.getItem("id") as string) : 1 // Default to user 1 if not logged in
+    const startDateToUse = isRecurring ? recurringStartDate : selectedDate;
+    const endDateToUse = isRecurring ? recurringEndDate : selectedDate;
     // Create the base booking
     const newBooking: Omit<Booking, "id"> = {
       userId,
       roomId: selectedRoom,
-      startDate: `${selectedDate}T${startTime}:00`,
-      endDate: `${selectedDate}T${endTime}:00`,
+      startDate: `${startDateToUse}T${startTime}:00`,
+      endDate: `${endDateToUse}T${endTime}:00`,
       type: isRecurring ? "recurring" : "single",
     }
 
@@ -161,6 +231,7 @@ export function CalendarBooking() {
         // Reset form
         form.reset()
         setSelectedWeekdays([])
+        setIsRecurring(false)
       })
       .catch((error) => {
         console.error("Error creating booking:", error)
@@ -177,6 +248,7 @@ export function CalendarBooking() {
     title: booking.type === "recurring" ? "🔄 Recurring Booking" : "Booking",
     start: booking.startDate,
     end: booking.endDate,
+    color: '#604b66',
     extendedProps: {
       userId: booking.userId,
       roomId: booking.roomId,
@@ -190,15 +262,29 @@ export function CalendarBooking() {
   // Filter events for the time view
   const filteredEvents = formattedEvents.filter((event) => {
     const eventDate = event.start ? event.start.toString().slice(0, 10) : ""
-    return event.extendedProps.roomId === selectedRoom && eventDate === selectedDate
+    return eventDate === selectedDate
   })
 
+  // Handle closing the time view
+  const handleCloseTimeView = () => {
+    setShowTimeView(false)
+    // Force calendar to re-render after closing time view
+    setTimeout(() => {
+      if (calendarRef.current?.getApi) {
+        const api = calendarRef.current.getApi()
+        api.updateSize()
+      }
+    }, 300)
+  }
+
   return (
-    <div className={`calendar-booking-container ${showTimeView ? "show-time-view" : ""}`}>
+    <div className={`calendar-booking-container ${showTimeView ? "show-time-view" : ""}`} ref={containerRef}>
       <ToastContainer />
 
       <div className={`calendar-booking-main ${showTimeView ? "shifted" : ""}`}>
         <FullCalendar
+          ref={calendarRef}
+          key={`calendar-${calendarKey}`}
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           height="auto"
@@ -219,18 +305,20 @@ export function CalendarBooking() {
         <div className="calendar-booking-time-view">
           <div className="calendar-booking-time-header">
             <h2>Schedule for {selectedDate}</h2>
-            <button className="calendar-booking-close-btn" onClick={() => setShowTimeView(false)}>
+            <button className="calendar-booking-close-btn" onClick={handleCloseTimeView}>
               ×
             </button>
           </div>
           <FullCalendar
+            ref={timeViewRef}
+            key={`timeview-${calendarKey}`}
             plugins={[timeGridPlugin, interactionPlugin]}
             initialView="timeGridDay"
             height="auto"
             selectable
             events={filteredEvents}
             headerToolbar={false}
-            slotDuration="00:30:00"  
+            slotDuration="00:30:00"
             slotMinTime="08:00:00"
             slotMaxTime="20:00:00"
             allDaySlot={false}
@@ -239,7 +327,7 @@ export function CalendarBooking() {
         </div>
       )}
 
-      <aside className="calendar-booking-rightSidebar">
+      <aside className="calendar-booking-rightSidebar" ref={sidebarRef} style={{ minHeight: sidebarHeight }}>
         <div className="calendar-booking-roomHeader">
           <h2 className="calendar-booking-roomTitle">{selectedRoomData?.name || "Select a Room"}</h2>
           <select
@@ -264,14 +352,14 @@ export function CalendarBooking() {
         )}
 
         <form id="bookingForm" onSubmit={handleSubmit} className="calendar-booking-form">
-         <div className="calendar-booking-recurring-toggle">
+          <div className="calendar-booking-recurring-toggle">
             <label className="calendar-booking-toggle">
               <span className="calendar-booking-toggle-label">Recurring Booking</span>
               <input type="checkbox" checked={isRecurring} onChange={() => setIsRecurring(!isRecurring)} />
               <span className="calendar-booking-toggle-slider"></span>
             </label>
           </div>
-          
+
           {isRecurring && (
             <div className="calendar-booking-weekday-buttons">
               {["M", "T", "W", "Th", "F", "S", "Su"].map((day) => (
@@ -287,39 +375,36 @@ export function CalendarBooking() {
             </div>
           )}
 
-         
-        
-
           {!isRecurring && (
-              <div>
-               <label htmlFor="date" className="calendar-booking-label">
-                  Date
-                </label>
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  required
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="calendar-booking-input"
-                />
-          </div>
+            <div>
+              <label htmlFor="date" className="calendar-booking-label">
+                Date
+              </label>
+              <input
+                id="date"
+                name="date"
+                type="date"
+                required
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="calendar-booking-input"
+              />
+            </div>
           )}
 
-           {isRecurring && (
+          {isRecurring && (
             <>
               <div>
                 <label htmlFor="start-date" className="calendar-booking-label">
                   Start Date
                 </label>
                 <input
-                  id="date"
-                  name="date"
+                  id="start-date"
+                  name="start-date"
                   type="date"
                   required
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={recurringStartDate}
+                  onChange={(e) => setRecurringStartDate(e.target.value)}
                   className="calendar-booking-input"
                 />
               </div>
@@ -328,49 +413,46 @@ export function CalendarBooking() {
                   End Date
                 </label>
                 <input
-                  id="date"
-                  name="date"
+                  id="end-date"
+                  name="end-date"
                   type="date"
                   required
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={recurringEndDate}
+                  onChange={(e) => setRecurringEndDate(e.target.value)}
                   className="calendar-booking-input"
                 />
               </div>
             </>
           )}
 
-
           <div>
             <label className="calendar-booking-label">Time</label>
             <div className="calendar-booking-timeInputs">
               <div className="calendar-booking-timeInputs">
-              <input 
-                id="startTime" 
-                name="startTime" 
-                type="time" 
-                required 
-                className="calendar-booking-input" 
-                step="1800"
-                min="08:00"
-                max="19:30"
-              />
-              <span className="calendar-booking-timeSeparator">--</span>
-              <input 
-                id="endTime" 
-                name="endTime" 
-                type="time" 
-                required 
-                className="calendar-booking-input" 
-                step="1800"
-                min="08:30"
-                max="20:00"
-              />
-            </div>
+                <input
+                  id="startTime"
+                  name="startTime"
+                  type="time"
+                  required
+                  className="calendar-booking-input"
+                  step="1800"
+                  min="08:00"
+                  max="19:30"
+                />
+                <span className="calendar-booking-timeSeparator">--</span>
+                <input
+                  id="endTime"
+                  name="endTime"
+                  type="time"
+                  required
+                  className="calendar-booking-input"
+                  step="1800"
+                  min="08:30"
+                  max="20:00"
+                />
+              </div>
             </div>
           </div>
-
-          
 
           <button type="submit" className="calendar-booking-submitButton" disabled={isLoading}>
             {isLoading ? "Booking..." : "Book"}
