@@ -54,12 +54,11 @@ const faqItems: FAQItem[] = [
       <div>
         <p>To book a room, follow these steps:</p>
         <ol>
-          <li>Navigate to the Calendar page</li>
-          <li>Select your desired date</li>
-          <li>Choose a room from the dropdown menu</li>
-          <li>Select your start and end times</li>
-          <li>Toggle the recurring option if needed</li>
-          <li>Click the "Book Room" button to confirm</li>
+          <li>Go to the <b>Calendar</b> page.</li>
+          <li>Select a room from the dropdown at the top right of the calendar.</li>
+          <li>Click on your desired date in the calendar.</li>
+          <li>In the sidebar, fill in the time, and (optionally) enable "Recurring Booking" and select days/range.</li>
+          <li>Click <b>Book</b>. Your booking will appear on the calendar and in your bookings list.</li>
         </ol>
       </div>
     ),
@@ -68,30 +67,30 @@ const faqItems: FAQItem[] = [
     question: "What is the difference between single and recurring bookings?",
     answer: (
       <p>
-        A single booking reserves a room for one specific date and time. A
-        recurring booking automatically reserves the room for multiple
-        instances following a pattern (daily, weekly, bi-weekly, or monthly)
-        starting from the selected date.
+        <b>Single booking:</b> Reserves a room for one specific date and time.<br />
+        <b>Recurring booking:</b> Reserves the room for multiple dates based on the days and date range you select (e.g., every Monday and Wednesday for a month).
       </p>
     ),
   },
   {
     question: "How can I modify or cancel my booking?",
     answer: (
-      <p>
-        To modify or cancel a booking, go to the "My Bookings" page where you'll
-        see all your current reservations. Each booking has a cancel button
-        that allows you to remove the reservation. To modify a booking, you'll
-        need to cancel it and create a new one with the updated details.
-      </p>
+      <div>
+        <p>
+          Go to the <b>Your Bookings</b> page. Find your booking in the table or mobile list.
+        </p>
+        <ul>
+          <li>Click <b>Edit booking</b> to change details, or <b>Delete</b> (trash icon) to remove it.</li>
+          <li>To change a booking, edit and save; to cancel, just delete.</li>
+        </ul>
+      </div>
     ),
   },
   {
     question: "How far in advance can I book a room?",
     answer: (
       <p>
-        Rooms can be booked up to 3 months in advance. This policy helps ensure
-        fair access to meeting spaces for all team members.
+        There is no strict limit enforced in the code, but you can select any future date using the calendar and date pickers.
       </p>
     ),
   },
@@ -99,10 +98,7 @@ const faqItems: FAQItem[] = [
     question: "What if I need to extend my meeting?",
     answer: (
       <p>
-        If you need to extend your meeting, check the room's availability for
-        the additional time on the Calendar page. If the room is available, you
-        can create a new booking for the extended time. If the room is already
-        booked, you may need to find an alternative space.
+        Check the room’s availability for the extra time on the Calendar page. If available, create a new booking for the additional time. If not available, you may need to choose another room or time.
       </p>
     ),
   },
@@ -110,10 +106,7 @@ const faqItems: FAQItem[] = [
     question: "How do I report issues with a room?",
     answer: (
       <p>
-        If you encounter any issues with a room (equipment not working,
-        cleanliness concerns, etc.), please contact the facilities team at
-        facilities@company.com or call extension 1234. Please provide the room
-        number, date, time, and a description of the issue.
+        There is no in-app reporting feature. Please contact your facilities team directly (e.g., by email or phone) as listed in your company directory.
       </p>
     ),
   },
@@ -121,8 +114,7 @@ const faqItems: FAQItem[] = [
     question: "Can I book multiple rooms for the same time?",
     answer: (
       <p>
-        Yes, you can book multiple rooms for the same time period. Simply create
-        separate bookings for each room you need.
+        Yes. You can create separate bookings for different rooms at the same time by repeating the booking process for each room.
       </p>
     ),
   },
@@ -130,13 +122,11 @@ const faqItems: FAQItem[] = [
     question: "Who should I contact for support?",
     answer: (
       <div>
-        <p>For support with the room booking system, please contact:</p>
-        <ul>
-          <li>Technical issues: helpdesk@company.com or ext. 5678</li>
-          <li>Booking policies: office-admin@company.com or ext. 5432</li>
-          <li>Room equipment: facilities@company.com or ext. 1234</li>
-        </ul>
-        <p>For urgent matters, please call the front desk at extension 1000.</p>
+        <p>
+          For technical issues with the booking system, contact your IT/helpdesk team.<br />
+          For booking policies or room equipment, contact your office admin or facilities team.<br />
+          There are no in-app support or chat features; use your organization’s standard support channels.
+        </p>
       </div>
     ),
   },
