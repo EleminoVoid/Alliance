@@ -7,7 +7,7 @@ export const ForgotPassword = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    if (pathname === PATHS.FORGOTPASSWORD.path) {
+    if (pathname === PATHS.FORGOT_PASSWORD.path) {
       navigate(PATHS.LOGIN.path);
     }
   };
