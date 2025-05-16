@@ -29,21 +29,33 @@ export const Main = () => {
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const theme = useTheme();
   const [user, setUser] = useState(null);
+  const [activeLink, setActiveLink] = useState("");
 
-useEffect(() => {
-  const userId = localStorage.getItem("userId");
-  if (!userId) return;
+  useEffect(() => {
+    // Set active link based on current pathname
+    const path = pathname.split("/").pop();
+    setActiveLink(path || "homepage");
+  }, [pathname]);
 
-  fetch(`http://localhost:3000/users/${userId}`)
-    .then((res) => res.json())
-    .then((data) => setUser(data))
-    .catch((err) => console.error("Failed to fetch user", err));
-}, []);
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
 
+    fetch(`http://localhost:3000/users/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setUser(data))
+      .catch((err) => console.error("Failed to fetch user", err));
+  }, []);
 
   useEffect(() => {
     if (pathname === PATHS.MAIN.path) navigate(PATHS.LOGIN.path);
   }, [pathname]);
+
+  // Handle navigation link clicks
+  const handleNavLinkClick = (path) => {
+    setActiveLink(path);
+    navigate(`/${path}`);
+  };
 
   return (
     <Fragment>
@@ -51,25 +63,55 @@ useEffect(() => {
 
       {/* Header */}
       <AppBar position="fixed" open={openDrawer}>
-        <Toolbar sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={() => setOpenDrawer(true)}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-
-          <Typography variant="h6" noWrap fontWeight={900} sx={{ mr: 4 }}>
-            MARSHAL
-          </Typography>
-          
+        <Toolbar sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Box display="flex" alignItems="center">
-            <a href="/homepage" className="nav-link">Home</a>
-            <a href="/viewRooms" className="nav-link">View Rooms</a>
-            <a href="/faq" className="nav-link">FAQ</a>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={() => setOpenDrawer(true)}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+
+            <Typography variant="h6" noWrap fontWeight={900} sx={{ mr: 4 }}>
+              MARSHAL
+            </Typography>
+            
+            <Box display="flex" alignItems="center">
+              <a 
+                href="#" 
+                className={`nav-link ${activeLink === "homepage" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavLinkClick("homepage");
+                }}
+              >
+                Home
+              </a>
+              <a 
+                href="#" 
+                className={`nav-link ${activeLink === "viewRooms" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavLinkClick("viewRooms");
+                }}
+              >
+                View Rooms
+              </a>
+              <a 
+                href="#" 
+                className={`nav-link ${activeLink === "faq" ? "active" : ""}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavLinkClick("faq");
+                }}
+              >
+                FAQ
+              </a>
+            </Box>
           </Box>
+
         </Toolbar>
       </AppBar>
 
@@ -113,7 +155,11 @@ useEffect(() => {
             <List>
               {USER_SIDE_BAR_MENU.map((item) => (
                 <ListItem key={item.path} disablePadding>
-                  <ListItemButton component={NavLink} to={item.path}>
+                  <ListItemButton 
+                    component={NavLink} 
+                    to={item.path}
+                    onClick={() => setOpenDrawer(false)}
+                  >
                     <ListItemIcon>
                       {item.icon || <ListItemIcon />}
                     </ListItemIcon>
@@ -128,7 +174,11 @@ useEffect(() => {
           <Box>
             <Divider />
             <ListItem disablePadding>
-              <ListItemButton component={NavLink} to="/settings">
+              <ListItemButton 
+                component={NavLink} 
+                to="/settings"
+                onClick={() => setOpenDrawer(false)}
+              >
                 <ListItemIcon>
                   <SettingsIcon />
                 </ListItemIcon>
@@ -137,7 +187,6 @@ useEffect(() => {
             </ListItem>
           </Box>
         </Box>
-
       </Drawer>
 
       {/* MAIN CONTENT */}

@@ -6,7 +6,7 @@
       "username": "admin",
       "password": "$2b$10$Zf7xG2CxjZS4XJC089ejbejswWIx10urF7u1PcLjICW5T9eEPoSjm",
       "role": "admin",
-      "avatar": "https://i.pravatar.cc/40" 
+      "avatar": "https://i.pravatar.cc/40"
     },
     {
       "id": "4bc8",
@@ -14,7 +14,7 @@
       "username": "User",
       "password": "$2b$10$EdqvGUuNynCJdAtmXi0uY.eghKiEfDX8HN9d2yDgyY4M3FfNGW992",
       "role": "user",
-      "avatar": "https://i.pravatar.cc/40" 
+      "avatar": "https://i.pravatar.cc/40"
     },
     {
       "id": "eeff",
@@ -22,7 +22,14 @@
       "username": "test1",
       "password": "$2b$10$NYx1HC/2UcK9wPA6ORNRlOUpWJ/c.4jrEfPYuw7oX5WkgVhwBbVKK",
       "role": "user",
-      "avatar": "https://i.pravatar.cc/40" 
+      "avatar": "https://i.pravatar.cc/40"
+    },
+    {
+      "id": "1fc3",
+      "email": "me@me",
+      "username": "me",
+      "password": "$2b$10$xr7yaBqArYLaSvWPNaRS6.pKxgMO79MELjH5566mDDGYj2cZ0zUy.",
+      "role": "user"
     }
   ],
   "rooms": [
@@ -111,5 +118,6 @@
       "endDate": "2025-05-15T16:00:00",
       "type": "recurring"
     }
+    
   ]
 }

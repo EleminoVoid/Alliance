@@ -10,42 +10,79 @@
   position: relative;
 }
 
-.calendar-booking-leftSidebar {
-  width: 20%;
-  min-width: 240px;
-  padding: 20px;
-  background-color: #ffffff;
-  border-right: 1px solid rgba(226, 232, 240, 0.6);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-  overflow-y: visible;
-  transition: all 0.3s ease;
-  border-radius: 0 12px 12px 0;
-  height: fit-content;
-}
-
-.calendar-booking-mainContent {
-  width: 50%;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  overflow-y: visible;
-}
-
-.calendar-booking-calendarSection {
+.calendar-booking-main {
   flex: 1;
+  padding: 20px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  margin: 20px;
+  transition: all 0.3s ease;
+}
+
+.calendar-booking-main.shifted {
+  flex: 0.5;
+  margin-right: 0;
+}
+
+.calendar-booking-time-view {
+  flex: 0.5;
   padding: 20px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  min-height: 600px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  margin: 20px 20px 20px 0;
+  transition: all 0.3s ease;
+  animation: slideIn 0.3s ease-out;
 }
 
-.calendar-booking-calendarSection:hover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
+.calendar-booking-time-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.calendar-booking-time-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.calendar-booking-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.calendar-booking-close-btn:hover {
+  color: #334155;
+}
+.calendar-booking-time-view {
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1rem;
+}
 .calendar-booking-rightSidebar {
   width: 30%;
   min-width: 300px;
@@ -59,6 +96,7 @@
   transition: all 0.3s ease;
   border-radius: 12px 0 0 12px;
   height: fit-content;
+  margin: 20px 20px 20px 0;
 }
 
 .calendar-booking-roomHeader {
@@ -178,41 +216,114 @@
   transition: color 0.2s ease;
 }
 
-.calendar-booking-recurringDays {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 8px;
-  transition: all 0.3s ease;
-}
-
-.calendar-booking-recurringDay {
+/* Toggle switch for recurring bookings */
+.calendar-booking-recurring-toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: #334155;
+  margin-bottom: 5px;
+}
+
+.calendar-booking-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+}
+
+.calendar-booking-toggle-label {
+  font-weight: 600;
+  color: #1e293b;
   font-size: 14px;
-  transition: all 0.2s ease;
-  padding: 6px 8px;
-  border-radius: 6px;
+  transition: color 0.2s ease;
+  letter-spacing: -0.01em;
 }
 
-.calendar-booking-recurringDay:hover {
-  background-color: #f8fafc;
+.calendar-booking-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-.calendar-booking-recurringDay input[type="checkbox"] {
-  width: 18px;
+.calendar-booking-toggle-slider {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  background-color: #e2e8f0;
+  border-radius: 24px;
+  transition: all 0.4s ease;
+}
+
+.calendar-booking-toggle-slider:before {
+  position: absolute;
+  content: "";
   height: 18px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  accent-color: #10b981;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-booking-toggle input:checked + .calendar-booking-toggle-slider {
+  background-color: #10b981;
+}
+
+.calendar-booking-toggle input:checked + .calendar-booking-toggle-slider:before {
+  transform: translateX(24px);
+}
+
+/* Weekday buttons */
+.calendar-booking-weekday-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 5px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calendar-booking-weekday-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.calendar-booking-recurringDay input[type="checkbox"]:checked {
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+.calendar-booking-weekday-button:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.calendar-booking-weekday-button.selected {
+  background-color: #10b981;
+  color: white;
+  border-color: #10b981;
 }
 
 .calendar-booking-submitButton {
@@ -239,6 +350,13 @@
 .calendar-booking-submitButton:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+}
+
+.calendar-booking-submitButton:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* full calendar styles */
@@ -428,72 +546,28 @@
 }
 
 @media (max-width: 1200px) {
-  .calendar-booking-leftSidebar {
-    width: 25%;
-  }
-
-  .calendar-booking-mainContent {
-    width: 45%;
-  }
-
-  .calendar-booking-rightSidebar {
-    width: 30%;
-  }
-}
-
-@media (max-width: 992px) {
-  .calendar-booking-leftSidebar {
-    min-width: 220px;
-    padding: 16px;
-  }
-
-  .calendar-booking-mainContent {
-    padding: 16px;
-  }
-
-  .calendar-booking-rightSidebar {
-    min-width: 280px;
-    padding: 16px;
-  }
-
-  .calendar-booking-roomImage {
-    height: 150px;
-  }
-
-  .calendar-booking-submitButton {
-    padding: 12px;
-  }
-}
-
-@media (max-width: 768px) {
   .calendar-booking-container {
-    flex-direction: column;
-    height: auto;
-    overflow-y: auto;
+    flex-wrap: wrap;
   }
 
-  .calendar-booking-leftSidebar,
-  .calendar-booking-mainContent,
+  .calendar-booking-main {
+    flex: 1 1 100%;
+    margin-right: 20px;
+  }
+
+  .calendar-booking-main.shifted {
+    flex: 1 1 60%;
+  }
+
+  .calendar-booking-time-view {
+    flex: 1 1 40%;
+  }
+
   .calendar-booking-rightSidebar {
-    width: 100%;
+    flex: 1 1 100%;
     min-width: 100%;
-    border: none;
-    border-radius: 0;
-  }
-
-  .calendar-booking-leftSidebar {
-    height: auto;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
-  }
-
-  .calendar-booking-mainContent {
-    height: auto;
-    min-height: 500px;
-  }
-
-  .calendar-booking-rightSidebar {
-    height: auto;
-    border-top: 1px solid rgba(226, 232, 240, 0.6);
+    margin: 0 20px 20px;
+    border-radius: 12px;
   }
 }
 
@@ -502,20 +576,23 @@
     flex-direction: column;
   }
 
-  .calendar-booking-leftSidebar,
-  .calendar-booking-mainContent,
+  .calendar-booking-main,
+  .calendar-booking-main.shifted,
+  .calendar-booking-time-view,
   .calendar-booking-rightSidebar {
+    flex: 1 1 100%;
     width: 100%;
     min-width: 100%;
-    border: none;
-    border-radius: 0;
+    margin: 10px;
+    border-radius: 12px;
   }
 
-  .calendar-booking-leftSidebar {
-    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  .calendar-booking-weekday-buttons {
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
-  .calendar-booking-rightSidebar {
-    border-top: 1px solid rgba(226, 232, 240, 0.6);
+  .calendar-booking-weekday-button {
+    margin-bottom: 5px;
   }
 }
