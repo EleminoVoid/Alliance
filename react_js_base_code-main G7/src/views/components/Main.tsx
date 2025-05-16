@@ -1,7 +1,5 @@
 import { styled } from "@mui/material/styles";
 
-const drawerWidth = 240;
-
 const MainLayout = styled("main", {
   shouldForwardProp: (prop) => prop !== "open",
 })<{
@@ -15,6 +13,7 @@ const MainLayout = styled("main", {
     duration: open
       ? theme.transitions.duration.enteringScreen
       : theme.transitions.duration.leavingScreen,
+
   }),
 }));
 
