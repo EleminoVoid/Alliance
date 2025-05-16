@@ -117,7 +117,55 @@
       "startDate": "2025-05-15T14:00:00",
       "endDate": "2025-05-15T16:00:00",
       "type": "recurring"
+    },
+    {
+      "0": {
+        "userId": null,
+        "roomId": "room-101",
+        "startDate": "2025-05-15T11:00:00",
+        "endDate": "2025-05-15T13:00:00",
+        "type": "single",
+        "id": "1747404508901"
+      },
+      "id": "3168"
+    },
+    {
+      "0": {
+        "userId": 1,
+        "roomId": "room-101",
+        "startDate": "2025-05-16T08:00:00",
+        "endDate": "2025-05-16T10:30:00",
+        "type": "single",
+        "id": "1747405151782"
+      },
+      "id": "c665"
+    },
+    {
+      "0": {
+        "userId": 1,
+        "roomId": "room-101",
+        "startDate": "2025-05-16T08:00:00",
+        "endDate": "2025-05-30T09:00:00",
+        "type": "recurring",
+        "id": "1747405356717-0"
+      },
+      "1": {
+        "userId": 1,
+        "roomId": "room-101",
+        "startDate": "2025-05-16T08:00:00",
+        "endDate": "2025-05-30T09:00:00",
+        "type": "recurring",
+        "id": "1747405356717-1"
+      },
+      "2": {
+        "userId": 1,
+        "roomId": "room-101",
+        "startDate": "2025-05-16T08:00:00",
+        "endDate": "2025-05-30T09:00:00",
+        "type": "recurring",
+        "id": "1747405356717-2"
+      },
+      "id": "9a77"
     }
-    
   ]
 }
