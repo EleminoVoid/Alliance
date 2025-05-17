@@ -260,19 +260,64 @@ export const CalendarBooking = () => {
       });
   };
 
-  // Format bookings for FullCalendar
-  const formattedEvents = bookings.map((booking) => ({
-    id: booking.id,
-    title: booking.type === "recurring" ? "🔄 Recurring Booking" : "Booking",
-    start: booking.startDate,
-    end: booking.endDate,
-    color: '#604b66',
-    extendedProps: {
-      userId: booking.userId,
-      roomId: booking.roomId,
-      type: booking.type,
-    },
-  }))
+  // Helper to get all dates for recurring bookings
+  function getRecurringDates(startDate: string, endDate: string, weekdays: number[]) {
+    const dates: string[] = [];
+    let current = new Date(startDate);
+    const end = new Date(endDate);
+    while (current <= end) {
+      if (weekdays.includes(current.getDay())) {
+        dates.push(current.toISOString().slice(0, 10));
+      }
+      current.setDate(current.getDate() + 1);
+    }
+    return dates;
+  }
+
+  // Map bookings to FullCalendar events
+  const formattedEvents = bookings.flatMap((booking) => {
+    if (booking.type === "single") {
+      // For single bookings, use date/startTime/endTime
+      const date = (booking as any).date || booking.startDate?.slice(0, 10);
+      const startTime = (booking as any).startTime || booking.startDate?.slice(11, 16);
+      const endTime = (booking as any).endTime || booking.endDate?.slice(11, 16);
+      if (!date || !startTime || !endTime) return [];
+      return [{
+        id: booking.id,
+        title: "Booking",
+        start: `${date}T${startTime}`,
+        end: `${date}T${endTime}`,
+        color: '#604b66',
+        extendedProps: {
+          userId: booking.userId,
+          roomId: booking.roomId,
+          type: booking.type,
+        },
+      }];
+    } else if (booking.type === "recurring") {
+      // For recurring, generate events for each matching weekday
+      const startDate = (booking as any).startDate?.slice(0, 10);
+      const endDate = (booking as any).endDate?.slice(0, 10);
+      const startTime = (booking as any).startTime || booking.startDate?.slice(11, 16);
+      const endTime = (booking as any).endTime || booking.endDate?.slice(11, 16);
+      const weekdays = (booking as any).weekdays || [1,2,3,4,5,6,0]; // fallback: all days
+      if (!startDate || !endDate || !startTime || !endTime) return [];
+      const dates = getRecurringDates(startDate, endDate, weekdays);
+      return dates.map(date => ({
+        id: `${booking.id}-${date}`,
+        title: "🔄 Recurring Booking",
+        start: `${date}T${startTime}`,
+        end: `${date}T${endTime}`,
+        color: '#604b66',
+        extendedProps: {
+          userId: booking.userId,
+          roomId: booking.roomId,
+          type: booking.type,
+        },
+      }));
+    }
+    return [];
+  });
 
   // Get the selected room data
   const selectedRoomData = rooms.find((room) => room.id === selectedRoom)
