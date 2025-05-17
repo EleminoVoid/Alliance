@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { PATHS } from "../../../constant";
+import { ToastContainer, toast } from "react-toastify"
 import "./ForgotPassword.css";
 
 export const ForgotPassword = () => {
@@ -14,14 +15,13 @@ export const ForgotPassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
 
     if (!email || !newPassword || !confirmPassword) {
-      setMessage("All fields are required.");
+      toast.info("All fields are required.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setMessage("Passwords do not match.");
+      toast.error("Passwords do not match");
       return;
     }
 
@@ -30,7 +30,7 @@ export const ForgotPassword = () => {
     const users = await res.json();
 
     if (users.length === 0) {
-      setMessage("Email not found.");
+      toast.error("Email not found");
       return;
     }
 
@@ -42,7 +42,7 @@ export const ForgotPassword = () => {
       body: JSON.stringify({ password: newPassword })
     });
 
-    setMessage("Password changed successfully.");
+    toast.success("Password changed successfully.");
     setTimeout(() => {
       if (pathname === PATHS.FORGOT_PASSWORD.path) {
         navigate(PATHS.LOGIN.path);
@@ -52,6 +52,7 @@ export const ForgotPassword = () => {
 
   return (
     <div className="forgot-password-wrapper">
+      <ToastContainer />
       <div className="forgot-password-container">
         <h2 className="forgot-password-title">Forgot Password</h2>
         <form className="forgot-password-form" onSubmit={handleSubmit}>
