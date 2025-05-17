@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Settings.css";
+import { ToastContainer, toast } from "react-toastify";
 
 export const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("account");
@@ -30,30 +31,20 @@ export const Settings: React.FC = () => {
 
   const handleSaveAccount = (): void => {
     if (newPassword && newPassword !== confirmPassword) {
-      setNotificationMessage("Passwords don't match. Please make sure your new password and confirmation match.");
-      setShowNotification(true);
+      toast.error("Passwords don't match. Please make sure your new password and confirmation match.");
       return;
     }
 
-    setNotificationMessage("Account information updated successfully.");
-    setShowNotification(true);
-
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000);
+    toast.success("Account information updated successfully.");
   };
 
   const handleSaveNotifications = (): void => {
-    setNotificationMessage("Notification preferences saved successfully.");
-    setShowNotification(true);
-
-    setTimeout(() => {
-      setShowNotification(false);
-    }, 3000);
+    toast.success("Notification preferences saved successfully.");
   };
 
   return (
     <div className="settings-page">
+      <ToastContainer />
       <h1 className="page-title">Account Settings</h1>
 
       <div className="settings-tabs">
