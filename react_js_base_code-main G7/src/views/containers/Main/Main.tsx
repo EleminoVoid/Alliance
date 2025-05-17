@@ -48,6 +48,7 @@ export const Main = () => {
   }, []);
 
   useEffect(() => {
+    
     if (pathname === PATHS.MAIN.path) navigate(PATHS.LOGIN.path);
   }, [pathname]);
 
@@ -176,14 +177,13 @@ export const Main = () => {
             <ListItem disablePadding>
               <ListItemButton
                 onClick={() => {
-                  localStorage.clear();
-                  navigate(PATHS.LOGIN.path);
+                  navigate(PATHS.SETTINGS.path);
                 }}
               >
                 <ListItemIcon>
                   <SettingsIcon />
                 </ListItemIcon>
-                <ListItemText primary="Logout" />
+                <ListItemText primary="Settings" />
               </ListItemButton>
             </ListItem>
           </Box>

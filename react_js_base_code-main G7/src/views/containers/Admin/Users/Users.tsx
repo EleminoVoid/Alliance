@@ -57,7 +57,10 @@ export const Users = () => {
                         />
                         <SearchIcon className="search-icon" />
                     </div>
-                    <button className="add-user-button">
+                    <button
+                        className="add-user-button"
+                        onClick={() => navigate(ADMIN_PATHS.ADD_USER.path)}
+                    >
                         <span>+</span> Add user
                     </button>
                 </div>

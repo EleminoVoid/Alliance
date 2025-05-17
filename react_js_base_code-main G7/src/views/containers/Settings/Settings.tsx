@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Settings.css";
 
 export const Settings: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("account");
-  const [email, setEmail] = useState<string>("user@example.com");
+  const [email, setEmail] = useState<string>("");
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -15,6 +15,18 @@ export const Settings: React.FC = () => {
 
   const [showNotification, setShowNotification] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>("");
+
+  // Fetch user info from db.json using userId from localStorage
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    fetch(`http://localhost:3000/users/${userId}`)
+      .then(res => res.json())
+      .then(user => {
+        if (user && user.email) setEmail(user.email);
+      })
+      .catch(() => setEmail(""));
+  }, []);
 
   const handleSaveAccount = (): void => {
     if (newPassword && newPassword !== confirmPassword) {
