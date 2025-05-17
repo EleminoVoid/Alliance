@@ -3,6 +3,7 @@ import { PATHS } from "../../../constant";
 import React, { useState } from "react";
 import bcrypt from "bcryptjs";
 import "./Register.css";
+import { ToastContainer, toast } from "react-toastify";
 
 export const Register = () => {
   const { pathname } = window.location;
@@ -17,7 +18,7 @@ export const Register = () => {
     e.preventDefault();
 
     if (!email || !username || !password) {
-      setError("All fields are required.");
+      toast.error("All field are required.");
       return;
     }
 
@@ -33,10 +34,10 @@ export const Register = () => {
       if (response.ok) {
         navigate(PATHS.LOGIN.path);
       } else {
-        setError("Failed to register. Please try again.");
+        toast.error("Failed to register. Please try again.");
       }
     } catch (err) {
-      setError("Failed to connect to server.");
+      toast.error("Failed to connect to server.");
       console.error(err);
     }
   };
@@ -50,6 +51,7 @@ export const Register = () => {
 
   return (
     <div className="register-container">
+      <ToastContainer />
       <div className="register-wrapper">
         <div className="register-formContainer">
           <h1 className="register-title">Sign Up</h1>
