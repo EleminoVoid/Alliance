@@ -49,7 +49,7 @@ export const USER_PATHS = {
     label: "My Bookings"
   },
   CALENDAR: {
-    path: "/calendar",
+    path: "/calendar/:id",
     label: "Calendar"
   },
   SETTINGS: {

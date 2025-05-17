@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PATHS } from "../../../constant";
+import { useNavigate } from "react-router-dom";
 import "./ViewRooms.css";
 
 interface Room {
@@ -17,6 +18,7 @@ export const ViewRooms: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFloor, setActiveFloor] = useState("ground");
   const [rooms, setRooms] = useState<Room[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch("http://localhost:3000/rooms")
@@ -32,7 +34,7 @@ export const ViewRooms: React.FC = () => {
   );
 
   const handleBookNow = (roomId: string) => {
-    window.location.href = `${PATHS.CALENDAR.path}?room=${roomId}`;
+    navigate(`/calendar/${roomId}`);
   };
 
   return (

@@ -1,5 +1,6 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
+import { useParams } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import timeGridPlugin from "@fullcalendar/timegrid"
@@ -24,6 +25,7 @@ interface Booking {
 }
 
 export const CalendarBooking = () => {
+  const { id: roomIdFromUrl } = useParams<{ id: string }>();
   const [rooms, setRooms] = useState<Room[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [selectedRoom, setSelectedRoom] = useState<string>("")
@@ -53,15 +55,18 @@ export const CalendarBooking = () => {
         return response.json()
       })
       .then((data) => {
-        setRooms(data)
-        if (data.length > 0) {
-          setSelectedRoom(data[0].id)
+        setRooms(data);
+        // If roomIdFromUrl exists and is valid, use it, else default to first room
+        if (roomIdFromUrl && data.some((room: Room) => room.id === roomIdFromUrl)) {
+          setSelectedRoom(roomIdFromUrl);
+        } else if (data.length > 0) {
+          setSelectedRoom(data[0].id);
         }
       })
       .catch((error) => {
         console.error("Error fetching rooms:", error)
         toast.error("Failed to load rooms data")
-      })
+      });
 
     // Fetch bookings
     fetch("http://localhost:3000/bookings")
@@ -90,7 +95,7 @@ export const CalendarBooking = () => {
       console.error("Error fetching bookings:", error)
       toast.error("Failed to load bookings data")
     })
-  }, [])
+  }, [roomIdFromUrl])
 
   // Update sidebar height when recurring toggle changes
   useEffect(() => {
@@ -453,7 +458,13 @@ export const CalendarBooking = () => {
 
         {selectedRoomData?.image && (
           <img
-            src={selectedRoomData.image || "/placeholder.svg"}
+            src={
+              selectedRoomData.image
+                ? selectedRoomData.image.startsWith("/") || selectedRoomData.image.startsWith("http")
+                  ? selectedRoomData.image
+                  : "/" + selectedRoomData.image
+                : "/placeholder.svg"
+            }
             alt={selectedRoomData.name}
             className="calendar-booking-roomImage"
           />

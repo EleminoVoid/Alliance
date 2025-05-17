@@ -169,6 +169,16 @@
         "type": "single"
       },
       "id": "07b0"
+    },
+    {
+      "0": {
+        "userId": "1fc3",
+        "roomId": "room-102",
+        "startDate": "2025-05-20T09:00:00",
+        "endDate": "2025-05-20T10:30:00",
+        "type": "single"
+      },
+      "id": "f36d"
     }
   ]
 }
