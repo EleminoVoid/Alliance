@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { PATHS } from "../../../constant";
 import "./ViewRooms.css";
 
@@ -20,9 +19,9 @@ export const ViewRooms: React.FC = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3000/rooms").then((response) => {
-      setRooms(response.data);
-    });
+    fetch("http://localhost:3000/rooms")
+      .then((response) => response.json())
+      .then((data) => setRooms(data));
   }, []);
 
   const filteredRooms = rooms.filter(
@@ -44,7 +43,7 @@ export const ViewRooms: React.FC = () => {
           className="rooms-book-button"
           onClick={() => (window.location.href = PATHS.CALENDAR.path)}
         >
-          Book a Room
+          Book a Room Book a Room
         </button>
       </div>
 
@@ -61,9 +60,7 @@ export const ViewRooms: React.FC = () => {
           {["ground", "mezzanine", "first"].map((floor) => (
             <button
               key={floor}
-              className={`rooms-tabs-button ${
-                activeFloor === floor ? "active" : ""
-              }`}
+              className={`rooms-tabs-button ${activeFloor === floor ? "active" : ""}`}
               onClick={() => setActiveFloor(floor)}
             >
               {floor.charAt(0).toUpperCase() + floor.slice(1)} Floor
@@ -83,9 +80,7 @@ export const ViewRooms: React.FC = () => {
                   <p>Capacity: {room.capacity}</p>
                 </div>
                 <span
-                  className={`room-badge ${
-                    room.available ? "available" : "booked"
-                  }`}
+                  className={`room-badge ${room.available ? "available" : "booked"}`}
                 >
                   {room.available ? "Available" : "Booked"}
                 </span>

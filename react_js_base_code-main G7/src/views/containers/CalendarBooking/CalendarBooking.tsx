@@ -191,12 +191,19 @@ export const CalendarBooking = () => {
 
     let allBookings: Omit<Booking, "id">[] = [];
 
+    // Helper to check for overlap
+    function isOverlap(startA: string, endA: string, startB: string, endB: string) {
+      return startA < endB && endA > startB;
+    }
+
+    // Prepare new booking(s) for overlap check
+    let newBookingTimes: { date: string, start: string, end: string }[] = [];
+
     if (isRecurring && selectedWeekdays.length > 0) {
       const weekdayMap: Record<string, number> = {
         "Su": 0, "M": 1, "T": 2, "W": 3, "Th": 4, "F": 5, "S": 6
       };
       const selectedWeekdayNumbers = selectedWeekdays.map(day => weekdayMap[day]);
-
       const start = new Date(recurringStartDate);
       const end = new Date(recurringEndDate);
       let current = new Date(start);
@@ -204,6 +211,11 @@ export const CalendarBooking = () => {
       while (current <= end) {
         if (selectedWeekdayNumbers.includes(current.getDay())) {
           const dateStr = current.toISOString().slice(0, 10);
+          newBookingTimes.push({
+            date: dateStr,
+            start: startTime,
+            end: endTime
+          });
           allBookings.push({
             userId,
             roomId: selectedRoom,
@@ -215,6 +227,11 @@ export const CalendarBooking = () => {
         current.setDate(current.getDate() + 1);
       }
     } else {
+      newBookingTimes = [{
+        date: selectedDate,
+        start: startTime,
+        end: endTime
+      }];
       allBookings = [
         {
           userId,
@@ -224,6 +241,31 @@ export const CalendarBooking = () => {
           type: "single"
         }
       ];
+    }
+
+    // Check for overlap with existing bookings for the same room
+    const hasOverlap = newBookingTimes.some(newBooking => {
+      return bookings.some(existing => {
+        if (existing.roomId !== selectedRoom) return false;
+        // Get date and times for existing booking
+        let existingDate = (existing as any).date || existing.startDate?.slice(0, 10);
+        let existingStart = (existing as any).startTime || existing.startDate?.slice(11, 16);
+        let existingEnd = (existing as any).endTime || existing.endDate?.slice(11, 16);
+        if (!existingDate || !existingStart || !existingEnd) return false;
+        if (existingDate !== newBooking.date) return false;
+        return isOverlap(
+          `${existingDate}T${existingStart}`,
+          `${existingDate}T${existingEnd}`,
+          `${newBooking.date}T${newBooking.start}`,
+          `${newBooking.date}T${newBooking.end}`
+        );
+      });
+    });
+
+    if (hasOverlap) {
+      toast.error("There is already a booking for this room within the selected time period.");
+      setIsLoading(false);
+      return;
     }
 
     // Post bookings to the server

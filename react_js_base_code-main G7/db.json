@@ -117,176 +117,58 @@
   "bookings": [
     {
       "0": {
-        "userId": null,
-        "roomId": "room-101",
-        "startDate": "2025-05-15T11:00:00",
-        "endDate": "2025-05-15T13:00:00",
-        "type": "single",
-        "id": "1747404508901"
-      },
-      "id": "3168"
-    },
-    {
-      "0": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-16T08:00:00",
-        "endDate": "2025-05-16T10:30:00",
-        "type": "single",
-        "id": "1747405151782"
-      },
-      "id": "c665"
-    },
-    {
-      "0": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-19T11:00:00",
-        "endDate": "2025-05-19T13:00:00",
-        "type": "recurring"
-      },
-      "1": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-21T11:00:00",
-        "endDate": "2025-05-21T13:00:00",
-        "type": "recurring"
-      },
-      "2": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-23T11:00:00",
-        "endDate": "2025-05-23T13:00:00",
-        "type": "recurring"
-      },
-      "3": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-26T11:00:00",
-        "endDate": "2025-05-26T13:00:00",
-        "type": "recurring"
-      },
-      "4": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-28T11:00:00",
-        "endDate": "2025-05-28T13:00:00",
-        "type": "recurring"
-      },
-      "5": {
-        "userId": 1,
-        "roomId": "room-101",
-        "startDate": "2025-05-30T11:00:00",
-        "endDate": "2025-05-30T13:00:00",
-        "type": "recurring"
-      },
-      "id": "499f"
-    },
-    {
-      "0": {
-        "userId": 1,
-        "roomId": "room-102",
-        "startDate": "2025-05-19T11:00:00",
-        "endDate": "2025-05-19T13:00:00",
-        "type": "single"
-      },
-      "id": "2cd7"
-    },
-    {
-      "0": {
-        "userId": "1",
-        "roomId": "room-101",
-        "startDate": "2025-05-17T08:00:00",
-        "endDate": "2025-05-17T10:00:00",
-        "type": "single"
-      },
-      "id": "06a9"
-    },
-    {
-      "0": {
         "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-22T13:30:00",
-        "endDate": "2025-05-22T14:30:00",
-        "type": "single"
-      },
-      "id": "ee2b"
-    },
-    {
-      "0": {
-        "userId": "1fc3",
-        "roomId": "room-101",
-        "startDate": "2025-05-13T08:30:00",
-        "endDate": "2025-05-13T14:30:00",
+        "startDate": "2025-05-16T10:30:00",
+        "endDate": "2025-05-16T14:00:00",
         "type": "recurring"
       },
       "1": {
         "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-14T08:30:00",
-        "endDate": "2025-05-14T14:30:00",
+        "startDate": "2025-05-19T10:30:00",
+        "endDate": "2025-05-19T14:00:00",
         "type": "recurring"
       },
       "2": {
         "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-15T08:30:00",
-        "endDate": "2025-05-15T14:30:00",
+        "startDate": "2025-05-21T10:30:00",
+        "endDate": "2025-05-21T14:00:00",
         "type": "recurring"
       },
       "3": {
         "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-20T08:30:00",
-        "endDate": "2025-05-20T14:30:00",
+        "startDate": "2025-05-23T10:30:00",
+        "endDate": "2025-05-23T14:00:00",
         "type": "recurring"
       },
       "4": {
         "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-21T08:30:00",
-        "endDate": "2025-05-21T14:30:00",
+        "startDate": "2025-05-26T10:30:00",
+        "endDate": "2025-05-26T14:00:00",
         "type": "recurring"
       },
       "5": {
         "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-22T08:30:00",
-        "endDate": "2025-05-22T14:30:00",
+        "startDate": "2025-05-28T10:30:00",
+        "endDate": "2025-05-28T14:00:00",
         "type": "recurring"
       },
-      "6": {
-        "userId": "1fc3",
-        "roomId": "room-101",
-        "startDate": "2025-05-27T08:30:00",
-        "endDate": "2025-05-27T14:30:00",
-        "type": "recurring"
-      },
-      "7": {
-        "userId": "1fc3",
-        "roomId": "room-101",
-        "startDate": "2025-05-28T08:30:00",
-        "endDate": "2025-05-28T14:30:00",
-        "type": "recurring"
-      },
-      "8": {
-        "userId": "1fc3",
-        "roomId": "room-101",
-        "startDate": "2025-05-29T08:30:00",
-        "endDate": "2025-05-29T14:30:00",
-        "type": "recurring"
-      },
-      "id": "7252"
+      "id": "837e"
     },
     {
       "0": {
-        "userId": "eeff",
+        "userId": "1fc3",
         "roomId": "room-101",
-        "startDate": "2025-05-17T10:00:00",
-        "endDate": "2025-05-17T11:00:00",
+        "startDate": "2025-05-16T15:00:00",
+        "endDate": "2025-05-16T16:00:00",
         "type": "single"
       },
-      "id": "f719"
+      "id": "07b0"
     }
   ]
 }
