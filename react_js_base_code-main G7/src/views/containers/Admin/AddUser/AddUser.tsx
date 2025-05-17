@@ -3,6 +3,7 @@ import { useState } from "react"
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import "./AddUser.css"
+import { ADMIN_PATHS } from "../../../../constant/constants";
 
 export const AddUser = () => {
   const [userData, setUserData] = useState({
@@ -56,6 +57,8 @@ export const AddUser = () => {
         role: "",
         password: "",
       })
+      // Redirect to User Management after submit
+      navigate(ADMIN_PATHS.USER_MANAGEMENT.path)
     } catch (err: any) {
       setError(err.message || "Error adding user")
     } finally {

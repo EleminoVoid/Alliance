@@ -30,6 +30,14 @@
       "username": "me",
       "password": "$2b$10$xr7yaBqArYLaSvWPNaRS6.pKxgMO79MELjH5566mDDGYj2cZ0zUy.",
       "role": "user"
+    },
+    {
+      "id": "196dc357525",
+      "email": "tes@re",
+      "username": "tes 1",
+      "password": "1",
+      "role": "admin",
+      "avatar": "https://i.pravatar.cc/40"
     }
   ],
   "rooms": [
@@ -112,6 +120,20 @@
       ],
       "description": "",
       "image": ""
+    },
+    {
+      "id": "room-1747451136846",
+      "name": "tes2",
+      "floor": "ground",
+      "capacity": 10,
+      "available": true,
+      "amenities": [
+        "projector",
+        "whiteboard"
+      ],
+      "description": "",
+      "image": "",
+      "createdAt": "2025-05-17T03:05:36.846Z"
     }
   ],
   "bookings": [

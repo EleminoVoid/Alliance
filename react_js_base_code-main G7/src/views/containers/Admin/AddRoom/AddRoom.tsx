@@ -1,10 +1,11 @@
 import type React from "react"
-
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import "./AddRoom.css"
 
 export const AddRoom = () => {
+  const navigate = useNavigate();
   const [roomData, setRoomData] = useState({
     name: "",
     location: "",
@@ -57,7 +58,8 @@ export const AddRoom = () => {
       available: true,
       amenities,
       description: "",
-      image: ""
+      image: "",
+      createdAt: new Date().toISOString() // Optionally add createdAt
     };
 
     try {
@@ -67,8 +69,8 @@ export const AddRoom = () => {
         body: JSON.stringify(newRoom)
       });
       if (!res.ok) throw new Error("Failed to add room");
-      alert("Room added successfully!");
-      // Optionally reset form or redirect
+      // Optionally show a toast here
+      navigate("/admin/rooms"); // Redirect to Room Management after submit
     } catch (err) {
       alert("Error adding room");
     }

@@ -56,7 +56,6 @@ export const CalendarBooking = () => {
       })
       .then((data) => {
         setRooms(data);
-        // If roomIdFromUrl exists and is valid, use it, else default to first room
         if (roomIdFromUrl && data.some((room: Room) => room.id === roomIdFromUrl)) {
           setSelectedRoom(roomIdFromUrl);
         } else if (data.length > 0) {
@@ -187,6 +186,12 @@ export const CalendarBooking = () => {
 
     if (startTime >= endTime) {
       toast.error("End time must be after start time.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (isRecurring && new Date(recurringStartDate) > new Date(recurringEndDate)) {
+      toast.error("Recurring end date must be after start date.");
       setIsLoading(false);
       return;
     }
