@@ -207,8 +207,8 @@ export const ViewBookings: React.FC = () => {
                 <th className="table-header">Type</th>
                 <th className="table-header">Date/s</th>
                 <th className="table-header">Time</th>
-                <th className="table-header"></th>
-                <th className="table-header"></th>
+                <th className="table-header">Edit</th>
+                <th className="table-header">Delete</th>
               </tr>
             </thead>
             <tbody>

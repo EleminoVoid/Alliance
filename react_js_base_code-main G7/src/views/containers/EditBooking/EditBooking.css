@@ -1,127 +1,146 @@
+/* Main container */
 .edit-booking-container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f5f7fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.edit-booking-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 20px;
-    color: #593f62;
+/* Heading */
+.edit-booking-container h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
 }
 
-.edit-booking-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #56697f;
+/* Form */
+.edit-booking-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.edit-booking-buttonGroup {
-    display: flex;
-    gap: 10px;
+/* Form field containers */
+.edit-booking-form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.edit-booking-backButton,
-.edit-booking-editButton,
-.edit-booking-cancelButton {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
+/* Labels */
+.edit-booking-form label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
 }
 
-.edit-booking-backButton {
-    background-color: #5a6b81;
-    color: white;
+/* Inputs and selects */
+.edit-booking-form input,
+.edit-booking-form select {
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: white;
 }
 
-.edit-booking-editButton {
-    background-color: #593f62;
-    color: white;
+.edit-booking-form input:focus,
+.edit-booking-form select:focus {
+  outline: none;
+  border-color: #5d4b8c;
+  box-shadow: 0 0 0 2px rgba(93, 75, 140, 0.2);
 }
 
-.edit-booking-cancelButton {
-    background-color: #d32f2f;
-    color: white;
+/* Buttons */
+.edit-booking-form button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
 }
 
-.edit-booking-card {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+.edit-booking-form button[type="submit"] {
+  background-color: #5d4b8c;
+  color: white;
+  border: none;
 }
 
-.edit-booking-purpose {
-    margin: 0;
-    font-size: 20px;
+.edit-booking-form button[type="submit"]:hover {
+  background-color: #4a3d70;
 }
 
-.edit-booking-status {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    margin-left: 10px;
+.edit-booking-form button[type="button"] {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
 }
 
-.edit-booking-status.confirmed {
-    background-color: #4caf50;
-    color: white;
+.edit-booking-form button[type="button"]:hover {
+  background-color: #f3f4f6;
 }
 
-.edit-booking-status.pending {
-    background-color: #ff9800;
-    color: white;
+/* Button container - add this to the form */
+.edit-booking-form .button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-.edit-booking-status.cancelled {
-    background-color: #f44336;
-    color: white;
+/* Error message */
+.edit-booking-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  font-weight: 500;
+  border-left: 4px solid #ef4444;
 }
 
-.edit-booking-content {
-    padding: 20px;
+/* Loading state */
+.edit-booking-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.1rem;
+  color: #6b7280;
 }
 
-.edit-booking-section {
-    margin-bottom: 20px;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .edit-booking-container {
+    padding: 1.5rem;
+  }
+
+  .edit-booking-form .button-group {
+    flex-direction: column;
+  }
 }
 
-.edit-booking-sectionTitle {
-    font-size: 16px;
-    font-weight: bold;
-    color: #593f62;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+/* Animation for loading state */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
-.edit-booking-infoGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.edit-booking-infoItem {
-    margin-bottom: 10px;
-}
-
-.edit-booking-infoLabel {
-    font-weight: bold;
-    color: #666;
-    margin-bottom: 5px;
-    font-size: 14px;
-}
-
-.edit-booking-infoValue {
-    color: #333;
-    font-size: 16px;
+.edit-booking-loading p {
+  animation: pulse 1.5s infinite ease-in-out;
 }

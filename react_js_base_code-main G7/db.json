@@ -277,6 +277,16 @@
         "type": "recurring"
       },
       "id": "7252"
+    },
+    {
+      "0": {
+        "userId": "eeff",
+        "roomId": "room-101",
+        "startDate": "2025-05-17T10:00:00",
+        "endDate": "2025-05-17T11:00:00",
+        "type": "single"
+      },
+      "id": "f719"
     }
   ]
 }
