@@ -6,11 +6,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import "./Users.css";
 import { ADMIN_PATHS } from "../../../../constant/constants";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const Users = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
-    const [users, setUsers] = useState<any[]>([]); // you can create a proper type later
+    const [users, setUsers] = useState<any[]>([]);
     const navigate = useNavigate();
 
     // Fetch users from backend
@@ -18,7 +20,6 @@ export const Users = () => {
         fetch("http://localhost:3000/users")
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched users:", data);
                 if (Array.isArray(data)) {
                     setUsers(data);
                 } else if (Array.isArray(data.users)) {
@@ -34,12 +35,29 @@ export const Users = () => {
         setSearchQuery(e.target.value);
     };
 
+    const handleDeleteUser = (userId: string) => {
+        if (!window.confirm("Are you sure you want to delete this user?")) return;
+        fetch(`http://localhost:3000/users/${userId}`, {
+            method: "DELETE",
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error("Failed to delete user");
+                setUsers((prev) => prev.filter((user) => user.id !== userId));
+                toast.success("User deleted successfully!");
+            })
+            .catch((err) => {
+                toast.error("Error deleting user.");
+                console.error(err);
+            });
+    };
+
     const filteredUsers = users.filter(user =>
         user.username?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
         <div className="user-management-container">
+            <ToastContainer />
             <div className="user-management-header">
                 <h1>User Management</h1>
                 <div className="user-count">
@@ -69,7 +87,7 @@ export const Users = () => {
             <div className="user-table">
                 <div className="user-table-header">
                     <div className="checkbox-column">
-                        <input type="checkbox" />
+                        {/* <input type="checkbox" /> */}
                     </div>
                     <div className="name-column">Name</div>
                     <div className="role-column">Role / Access</div>
@@ -81,7 +99,7 @@ export const Users = () => {
                     {filteredUsers.map((user) => (
                         <div key={user.id} className="user-table-row">
                             <div className="checkbox-column">
-                                <input type="checkbox" />
+                                {/* <input type="checkbox" /> */}
                             </div>
                             <div className="name-column">
                                 <div className="user-avatar">
@@ -104,7 +122,10 @@ export const Users = () => {
                                 >
                                     <EditIcon />
                                 </button>
-                                <button className="delete-button">
+                                <button
+                                    className="delete-button"
+                                    onClick={() => handleDeleteUser(user.id)}
+                                >
                                     <DeleteIcon />
                                 </button>
                             </div>

@@ -27,9 +27,23 @@ export const Rooms = () => {
     room.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // For editing a room by its roomId
   const handleEditRoom = (roomId: string) => {
     navigate(ADMIN_PATHS.EDIT_ROOM.path.replace(":id", roomId));
+  };
+
+  const handleDeleteRoom = (roomId: string) => {
+    if (!window.confirm("Are you sure you want to delete this room?")) return;
+    fetch(`http://localhost:3000/rooms/${roomId}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete room");
+        setRooms((prev) => prev.filter((room: any) => room.id !== roomId));
+      })
+      .catch((err) => {
+        alert("Error deleting room.");
+        console.error(err);
+      });
   };
 
   return (
@@ -62,9 +76,9 @@ export const Rooms = () => {
 
       <div className="room-table">
         <div className="room-table-header">
-          <div className="checkbox-column">
+          {/* <div className="checkbox-column">
             <input type="checkbox" />
-          </div>
+          </div> */}
           <div className="name-column">Name</div>
           <div className="date-column">Date Created</div>
           <div className="actions-column">Actions</div>
@@ -73,9 +87,9 @@ export const Rooms = () => {
         <div className="room-table-body">
           {filteredRooms.map((room: any) => (
             <div key={room.id} className="room-table-row">
-              <div className="checkbox-column">
+              {/* <div className="checkbox-column">
                 <input type="checkbox" />
-              </div>
+              </div> */}
               <div className="name-column">{room.name}</div>
               <div className="date-column">{room.createdAt}</div>
               <div className="actions-column">
@@ -85,7 +99,10 @@ export const Rooms = () => {
                 >
                   <EditIcon />
                 </button>
-                <button className="delete-button">
+                <button
+                  className="delete-button"
+                  onClick={() => handleDeleteRoom(room.id)}
+                >
                   <DeleteIcon />
                 </button>
               </div>
