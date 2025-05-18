@@ -45,7 +45,7 @@ export const ViewRooms: React.FC = () => {
           className="rooms-book-button"
           onClick={() => (window.location.href = PATHS.CALENDAR.path)}
         >
-          Book a Room Book a Room
+          Book a Room
         </button>
       </div>
 

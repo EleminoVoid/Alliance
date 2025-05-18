@@ -3,6 +3,12 @@
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  height: calc(100vh - 64px);
+  overflow: scroll;
+}
+
+.rooms-page-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .rooms-page-header {

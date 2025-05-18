@@ -416,6 +416,9 @@ export const CalendarBooking = () => {
           dayCellClassNames={(arg) => {
             return arg.dateStr === selectedDate ? "selected-date" : ""
           }}
+          validRange={{
+            start: new Date().toISOString().slice(0, 10) // disables days before today
+          }}
         />
       </div>
 
