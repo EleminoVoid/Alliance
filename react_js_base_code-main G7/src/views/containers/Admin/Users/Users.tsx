@@ -92,7 +92,8 @@ export const Users = () => {
                     <div className="name-column">Name</div>
                     <div className="role-column">Role / Access</div>
                     <div className="date-column">Email</div>
-                    <div className="actions-column">Actions</div>
+                    <div className="actions-column">Edit</div>
+                    <div className="actions-column">Delete</div>
                 </div>
 
                 <div className="user-table-body">
@@ -120,13 +121,15 @@ export const Users = () => {
                                         navigate(ADMIN_PATHS.EDIT_USER.path.replace(":id", user.id))
                                     }
                                 >
-                                    <EditIcon />
+                                    <EditIcon style={{ color: "green" }} />
                                 </button>
+                            </div>
+                            <div className="actions-column">
                                 <button
                                     className="delete-button"
                                     onClick={() => handleDeleteUser(user.id)}
                                 >
-                                    <DeleteIcon />
+                                    <DeleteIcon style={{ color: "red" }} />
                                 </button>
                             </div>
                         </div>

@@ -66,32 +66,48 @@
 }
 
 .room-table {
+  width: 100%;
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+  display: table;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.room-table-header,
+.room-table-row {
+  display: table-row;
+}
+
+.room-table-header>div,
+.room-table-row>div {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .room-table-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 100px;
-  padding: 1rem;
-  background-color: #f3f4f6;
+  background-color: #56697f;
   font-weight: 600;
-  color: #374151;
+  color: white;
+}
+
+.room-table-header>div {
+  border-bottom: none;
 }
 
 .room-table-body {
+  display: table-row-group;
+  width: 100%;
   max-height: 500px;
   overflow-y: auto;
 }
 
 .room-table-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 100px;
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  align-items: center;
   transition: background-color 0.2s ease;
 }
 
@@ -99,17 +115,22 @@
   background-color: #f9fafb;
 }
 
-.room-name-column {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.name-column {
+  min-width: 120px;
+  width: 2fr;
 }
 
-.room-avatar {
-  width: 36px;
-  height: 36px;
-  background-color: #e5e7eb;
-  border-radius: 50%;
+.amenities-column {
+  min-width: 160px;
+  width: 1fr;
+}
+
+.actions-column {
+  min-width: 100px;
+  width: 100px;
+  text-align: center;
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .edit-button,
@@ -120,20 +141,18 @@
   color: #6b7280;
   transition: color 0.2s ease;
   padding: 0.25rem;
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edit-button:hover {
-  color: #5d4b8c;
+  color: #22c55e;
 }
 
 .delete-button:hover {
   color: #ef4444;
-}
-
-.actions-column {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
 }
 
 .pagination {
@@ -167,6 +186,15 @@
   color: white;
 }
 
+@media (max-width: 1024px) {
+
+  .room-table-header>div,
+  .room-table-row>div {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 768px) {
   .room-management-header {
     flex-direction: column;
@@ -177,20 +205,19 @@
   .room-table-header,
   .room-table-row {
     grid-template-columns: 2fr 1fr 100px;
+    display: grid;
   }
 
-  .location-column {
+  .amenities-column {
     display: none;
   }
 }
 
 @media (max-width: 480px) {
+
   .room-table-header,
   .room-table-row {
     grid-template-columns: 2fr 100px;
-  }
-
-  .capacity-column {
-    display: none;
+    display: grid;
   }
 }

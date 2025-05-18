@@ -6,7 +6,8 @@
   background-color: #f5f7fa;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  overflow: visible;
+  height: calc(100vh - 128px);
+  overflow: scroll;
 }
 
 .stats-header {

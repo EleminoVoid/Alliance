@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../constant";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import "./ViewBooking.css";
 
 interface Room {
@@ -185,17 +187,6 @@ export const ViewBookings: React.FC = () => {
     <div className="view-bookings-container">
       <div className="view-bookings-header">
         <h1 className="view-bookings-title">Your Bookings</h1>
-        <div className="view-bookings-filter">
-          <button
-            className={`filter-tab ${
-              activeFilter === "All Users" ? "active" : ""
-            }`}
-            onClick={() => setActiveFilter("All Users")}
-          >
-            All Users
-            <span className="filter-count">{bookings.length}</span>
-          </button>
-        </div>
       </div>
 
       {!isMobile ? (
@@ -229,7 +220,7 @@ export const ViewBookings: React.FC = () => {
                       className="edit-button"
                       onClick={() => handleEditBooking(booking.id)}
                     >
-                      Edit booking
+                      <EditIcon style={{ color: "green" }} />
                     </button>
                   </td>
                   <td className="table-cell">
@@ -247,19 +238,7 @@ export const ViewBookings: React.FC = () => {
                       }}
                       title="Delete"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="#d9534f"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm2 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zm-3-1a.5.5 0 0 0-.5-.5h-3A.5.5 0 0 0 7 2h2a.5.5 0 0 0 .5-.5zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"
-                        />
-                      </svg>
+                      <DeleteIcon style={{ color: "red" }} />
                     </button>
                   </td>
                 </tr>

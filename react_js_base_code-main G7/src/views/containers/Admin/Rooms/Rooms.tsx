@@ -76,34 +76,35 @@ export const Rooms = () => {
 
       <div className="room-table">
         <div className="room-table-header">
-          {/* <div className="checkbox-column">
-            <input type="checkbox" />
-          </div> */}
           <div className="name-column">Name</div>
-          <div className="date-column">Date Created</div>
-          <div className="actions-column">Actions</div>
+          <div className="amenities-column">Amenities</div>
+          <div className="actions-column">Edit</div>
+          <div className="actions-column">Delete</div>
         </div>
 
         <div className="room-table-body">
           {filteredRooms.map((room: any) => (
             <div key={room.id} className="room-table-row">
-              {/* <div className="checkbox-column">
-                <input type="checkbox" />
-              </div> */}
               <div className="name-column">{room.name}</div>
-              <div className="date-column">{room.createdAt}</div>
+              <div className="amenities-column">
+                {Array.isArray(room.amenities)
+                ? room.amenities.join(", ")
+                : room.amenities || "-"}
+              </div>
               <div className="actions-column">
                 <button
                   className="edit-button"
                   onClick={() => handleEditRoom(room.id)}
                 >
-                  <EditIcon />
+                  <EditIcon style={{color: 'green'}} />
                 </button>
+              </div>
+              <div className="actions-column">
                 <button
                   className="delete-button"
                   onClick={() => handleDeleteRoom(room.id)}
                 >
-                  <DeleteIcon />
+                  <DeleteIcon style={{color: 'red'}} />
                 </button>
               </div>
             </div>
