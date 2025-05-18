@@ -10,6 +10,10 @@
   overflow: scroll;
 }
 
+.stats-container::-webkit-scrollbar {
+  display: none;
+}
+
 .stats-header {
   display: flex;
   align-items: center;
