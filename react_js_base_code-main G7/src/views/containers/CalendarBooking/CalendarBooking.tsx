@@ -515,6 +515,7 @@ export const CalendarBooking = () => {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="calendar-booking-input"
+                min={new Date().toISOString().slice(0, 10)}
               />
             </div>
           )}
@@ -533,6 +534,7 @@ export const CalendarBooking = () => {
                   value={recurringStartDate}
                   onChange={(e) => setRecurringStartDate(e.target.value)}
                   className="calendar-booking-input"
+                  min={new Date().toISOString().slice(0, 10)}
                 />
               </div>
               <div>
@@ -547,6 +549,7 @@ export const CalendarBooking = () => {
                   value={recurringEndDate}
                   onChange={(e) => setRecurringEndDate(e.target.value)}
                   className="calendar-booking-input"
+                  min={new Date().toISOString().slice(0, 10)}
                 />
               </div>
             </>
