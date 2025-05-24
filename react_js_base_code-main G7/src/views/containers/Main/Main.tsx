@@ -1,5 +1,5 @@
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { NavLink, Outlet, useNavigate } from "react-router";
+import { NavLink, Outlet, useNavigate, useLocation } from "react-router";
 import ListItemButton from "@mui/material/ListItemButton";
 import { PATHS, USER_SIDE_BAR_MENU } from "../../../constant";
 import DrawerHeader from "../../components/DrawerHeader";
@@ -26,6 +26,7 @@ import "./Main.css";
 export const Main = () => {
   const { pathname } = window.location;
   const navigate = useNavigate();
+  const location = useLocation();
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const theme = useTheme();
   const [user, setUser] = useState(null);
@@ -47,13 +48,26 @@ export const Main = () => {
   }, []);
 
   useEffect(() => {
-    
-    if (pathname === PATHS.MAIN.path) navigate(PATHS.LOGIN.path);
-  }, [pathname]);
+    // Check for authentication token or userId in localStorage
+    const authToken = localStorage.getItem("authToken");
+    const userId = localStorage.getItem("userId");
+    // If not authenticated and not already on login/register, redirect to login
+    if ((!authToken && !userId) && location.pathname !== "/login" && location.pathname !== "/register") {
+      navigate("/login");
+    }
+  }, [location, navigate]);
 
   const handleNavLinkClick = (path) => {
     setActiveLink(path);
     navigate(`/${path}`);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken"); // or whatever key you use for auth
+    localStorage.removeItem("user");      // remove user info if stored
+    // Optionally clear all localStorage:
+    // localStorage.clear();
+    navigate("/login");
   };
 
   return (
@@ -76,10 +90,10 @@ export const Main = () => {
             <Typography variant="h6" noWrap fontWeight={900} sx={{ mr: 4 }}>
               MARSHAL
             </Typography>
-            
+
             <Box display="flex" alignItems="center">
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className={`nav-link ${activeLink === "homepage" ? "active" : ""}`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -88,8 +102,8 @@ export const Main = () => {
               >
                 Home
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className={`nav-link ${activeLink === "viewRooms" ? "active" : ""}`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -98,8 +112,8 @@ export const Main = () => {
               >
                 View Rooms
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className={`nav-link ${activeLink === "faq" ? "active" : ""}`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -152,20 +166,36 @@ export const Main = () => {
           {/* Menu Items */}
           <Box sx={{ flexGrow: 1 }}>
             <List>
-              {USER_SIDE_BAR_MENU.map((item) => (
-                <ListItem key={item.path} disablePadding>
-                  <ListItemButton 
-                    component={NavLink} 
-                    to={item.path}
-                    onClick={() => setOpenDrawer(false)}
-                  >
-                    <ListItemIcon>
-                      {item.icon || <ListItemIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={item.label} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
+              {USER_SIDE_BAR_MENU.map((item) =>
+                item.label === "Logout" ? (
+                  <ListItem key={item.path} disablePadding>
+                    <ListItemButton
+                      onClick={() => {
+                        localStorage.clear(); // Clear all local storage
+                        navigate("/login");
+                      }}
+                    >
+                      <ListItemIcon>
+                        {item.icon || <ListItemIcon />}
+                      </ListItemIcon>
+                      <ListItemText primary={item.label} />
+                    </ListItemButton>
+                  </ListItem>
+                ) : (
+                  <ListItem key={item.path} disablePadding>
+                    <ListItemButton
+                      component={NavLink}
+                      to={item.path}
+                      onClick={() => setOpenDrawer(false)}
+                    >
+                      <ListItemIcon>
+                        {item.icon || <ListItemIcon />}
+                      </ListItemIcon>
+                      <ListItemText primary={item.label} />
+                    </ListItemButton>
+                  </ListItem>
+                )
+              )}
             </List>
           </Box>
 

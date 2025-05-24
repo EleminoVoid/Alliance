@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../constant";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import bcrypt from "bcryptjs";
 import "./Login.css";
 import { CircularProgress } from "@mui/material";
@@ -13,6 +13,11 @@ export const Login = () => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Clear all local storage when the login page loads
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -99,35 +104,35 @@ export const Login = () => {
                 />
               </label>
             </div>
-            
+
             {error && <p className="login-error">{error}</p>}
-            
+
             <p className="login-forgotPassword">
               Forgot Password?{" "}
-              <button 
-                type="button" 
-                onClick={navigateTo(PATHS.FORGOT_PASSWORD.path)} 
+              <button
+                type="button"
+                onClick={navigateTo(PATHS.FORGOT_PASSWORD.path)}
                 className="login-link"
               >
                 Click Here
               </button>
             </p>
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               className="login-submitButton"
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
             </button>
           </form>
-          
+
           <div className="login-registerContainer">
             <p className="login-registerText">
               Don't have an account?{" "}
-              <button 
-                type="button" 
-                onClick={navigateTo(PATHS.REGISTER.path)} 
+              <button
+                type="button"
+                onClick={navigateTo(PATHS.REGISTER.path)}
                 className="login-link"
               >
                 Sign Up
@@ -135,7 +140,7 @@ export const Login = () => {
             </p>
           </div>
         </div>
-        
+
         {window.innerWidth >= 768 && (
           <div className="login-imageContainer">
             <img src="loginpic.jpg" alt="login" className="login-image" />
