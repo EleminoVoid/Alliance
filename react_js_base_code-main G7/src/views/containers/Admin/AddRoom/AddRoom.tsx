@@ -90,7 +90,7 @@ export const AddRoom = () => {
       if (!response.ok) throw new Error("Failed to add room");
 
       // Optionally redirect or reset form here
-      navigate(ADMIN_PATHS.ROOM_MANAGEMENT.path);
+      // navigate(ADMIN_PATHS.ROOM_MANAGEMENT.path);
     } catch (err: any) {
       setError(err.message || "Error adding room");
     }
