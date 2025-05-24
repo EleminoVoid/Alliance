@@ -69,31 +69,31 @@ export const CalendarBooking = () => {
 
     // Fetch bookings
     fetch("http://localhost:3000/bookings")
-    .then((response) => {
-      if (!response.ok) throw new Error("Failed to fetch bookings")
-      return response.json()
-    })
-    .then((data) => {
-      // Flatten bookings
-      const flatBookings: Booking[] = [];
-      data.forEach((entry: any) => {
-        // If entry has numeric keys, it's a group (recurring or batch)
-        const keys = Object.keys(entry).filter(k => !isNaN(Number(k)));
-        if (keys.length > 0) {
-          keys.forEach(k => {
-            flatBookings.push(entry[k]);
-          });
-        } else {
-          // Single booking object
-          flatBookings.push(entry);
-        }
-      });
-      setBookings(flatBookings);
-    })
-    .catch((error) => {
-      console.error("Error fetching bookings:", error)
-      toast.error("Failed to load bookings data")
-    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch bookings")
+        return response.json()
+      })
+      .then((data) => {
+        // Flatten bookings
+        const flatBookings: Booking[] = [];
+        data.forEach((entry: any) => {
+          // If entry has numeric keys, it's a group (recurring or batch)
+          const keys = Object.keys(entry).filter(k => !isNaN(Number(k)));
+          if (keys.length > 0) {
+            keys.forEach(k => {
+              flatBookings.push(entry[k]);
+            });
+          } else {
+            // Single booking object
+            flatBookings.push(entry);
+          }
+        });
+        setBookings(flatBookings);
+      })
+      .catch((error) => {
+        console.error("Error fetching bookings:", error)
+        toast.error("Failed to load bookings data")
+      })
   }, [roomIdFromUrl])
 
   // Update sidebar height when recurring toggle changes
@@ -169,6 +169,14 @@ export const CalendarBooking = () => {
     setSelectedWeekdays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]))
   }
 
+  // Helper to check if selected date/time is in the past
+  function isDateTimeInPast(date: string, time: string) {
+    if (!date || !time) return false;
+    const selected = new Date(`${date}T${time}:00`);
+    const now = new Date();
+    return selected < now;
+  }
+
   // Handle booking submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -177,6 +185,35 @@ export const CalendarBooking = () => {
     const form = e.currentTarget;
     const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
     const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
+
+    // --- Add this block for single booking ---
+    if (!isRecurring) {
+      if (isDateTimeInPast(selectedDate, startTime)) {
+        toast.error("You cannot book a time in the past.");
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    // --- Add this block for recurring booking ---
+    if (isRecurring) {
+      // Check if any selected recurring date/time is in the past
+      const weekdayMap: Record<string, number> = {
+        "Su": 0, "M": 1, "T": 2, "W": 3, "Th": 4, "F": 5, "S": 6
+      };
+      const selectedWeekdayNumbers = selectedWeekdays.map(day => weekdayMap[day]);
+      const dates = getRecurringDates(recurringStartDate, recurringEndDate, selectedWeekdayNumbers);
+      const now = new Date();
+      const hasPast = dates.some(date => {
+        const dt = new Date(`${date}T${startTime}:00`);
+        return dt < now;
+      });
+      if (hasPast) {
+        toast.error("Recurring booking includes a date/time in the past.");
+        setIsLoading(false);
+        return;
+      }
+    }
 
     if (!selectedRoom || !startTime || !endTime || (isRecurring && (!recurringStartDate || !recurringEndDate || selectedWeekdays.length === 0))) {
       toast.error("Please fill in all fields.");
@@ -352,7 +389,7 @@ export const CalendarBooking = () => {
       const endDate = (booking as any).endDate?.slice(0, 10);
       const startTime = (booking as any).startTime || booking.startDate?.slice(11, 16);
       const endTime = (booking as any).endTime || booking.endDate?.slice(11, 16);
-      const weekdays = (booking as any).weekdays || [1,2,3,4,5,6,0]; // fallback: all days
+      const weekdays = (booking as any).weekdays || [1, 2, 3, 4, 5, 6, 0]; // fallback: all days
       if (!startDate || !endDate || !startTime || !endTime) return [];
       const dates = getRecurringDates(startDate, endDate, weekdays);
       return dates.map(date => ({

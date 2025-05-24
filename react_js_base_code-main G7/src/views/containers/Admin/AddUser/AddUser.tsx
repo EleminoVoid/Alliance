@@ -32,17 +32,26 @@ export const AddUser = () => {
     setError(null)
     setSuccess(null)
 
-    // Compose the user object for db.json
-    const newUser = {
-      id: Date.now().toString(16),
-      email: userData.email,
-      username: `${userData.firstName} ${userData.lastName}`.trim(),
-      password: userData.password,
-      role: userData.role.toLowerCase(),
-      avatar: "https://i.pravatar.cc/40"
-    }
-
     try {
+      // Check if email already exists
+      const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(userData.email)}`);
+      const existingUsers = await res.json();
+      if (existingUsers.length > 0) {
+        setError("An account with this email already exists.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Compose the user object for db.json
+      const newUser = {
+        id: Date.now().toString(16),
+        email: userData.email,
+        username: `${userData.firstName} ${userData.lastName}`.trim(),
+        password: userData.password,
+        role: userData.role.toLowerCase(),
+        avatar: "https://i.pravatar.cc/40"
+      }
+
       const response = await fetch("http://localhost:3000/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

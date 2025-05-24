@@ -23,6 +23,14 @@ export const Register = () => {
     }
 
     try {
+      // Check if email already exists
+      const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(email)}`);
+      const existingUsers = await res.json();
+      if (existingUsers.length > 0) {
+        toast.error("An account with this email already exists.");
+        return;
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const response = await fetch("http://localhost:3000/users", {
