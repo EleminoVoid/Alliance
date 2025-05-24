@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PATHS } from "../../../constant";
+import { USER_PATHS } from "../../../constant";
 import { useNavigate } from "react-router-dom";
 import "./ViewRooms.css";
 
@@ -43,7 +43,7 @@ export const ViewRooms: React.FC = () => {
         <h1>Available Rooms</h1>
         <button
           className="rooms-book-button"
-          onClick={() => (window.location.href = PATHS.CALENDAR.path)}
+          onClick={() => (navigate(USER_PATHS.CALENDAR.path))}
         >
           Book a Room
         </button>
