@@ -52,26 +52,23 @@ export const AddRoom = () => {
       .map(([feature]) => feature);
 
     try {
-      // Fetch all rooms to check for duplicate name or id
       const res = await fetch("http://localhost:3000/rooms");
       const existingRooms = await res.json();
 
-      // Check for duplicate name (case-insensitive)
+      // Check for duplicate name
       if (existingRooms.some((room: any) => room.name.toLowerCase() === roomData.name.trim().toLowerCase())) {
         setError("A room with this name already exists.");
         return;
       }
 
-      // Generate a new id (for example, using timestamp)
       const newId = Date.now().toString(16);
 
-      // Check for duplicate id (should be rare, but for completeness)
+      // Check for duplicate id
       if (existingRooms.some((room: any) => room.id === newId)) {
         setError("A room with this ID already exists. Please try again.");
         return;
       }
 
-      // Create the room object matching db.json structure
       const newRoom = {
         id: newId,
         name: roomData.name.trim(),
@@ -88,9 +85,6 @@ export const AddRoom = () => {
       });
 
       if (!response.ok) throw new Error("Failed to add room");
-
-      // Optionally redirect or reset form here
-      // navigate(ADMIN_PATHS.ROOM_MANAGEMENT.path);
     } catch (err: any) {
       setError(err.message || "Error adding room");
     }

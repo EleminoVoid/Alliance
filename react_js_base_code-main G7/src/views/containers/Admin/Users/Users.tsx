@@ -15,7 +15,7 @@ export const Users = () => {
     const [users, setUsers] = useState<any[]>([]);
     const navigate = useNavigate();
 
-    // Fetch users from backend
+    // Fetch users
     useEffect(() => {
         fetch("http://localhost:3000/users")
             .then((res) => res.json())

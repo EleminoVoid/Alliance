@@ -42,7 +42,6 @@ export const AddUser = () => {
         return;
       }
 
-      // Compose the user object for db.json
       const newUser = {
         id: Date.now().toString(16),
         email: userData.email,
@@ -66,7 +65,6 @@ export const AddUser = () => {
         role: "",
         password: "",
       })
-      // Redirect to User Management after submit
       navigate(ADMIN_PATHS.USER_MANAGEMENT.path)
     } catch (err: any) {
       setError(err.message || "Error adding user")

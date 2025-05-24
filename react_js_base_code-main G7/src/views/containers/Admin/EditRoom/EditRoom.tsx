@@ -14,7 +14,6 @@ interface Room {
   image: string;
 }
 
-// Use the same static list as AddRoom
 const AMENITIES_LIST = [
   { key: "airCondition", label: "Air Condition" },
   { key: "speaker", label: "Speaker" },
@@ -40,7 +39,6 @@ export const EditRoom: React.FC = () => {
       .then((res) => res.json())
       .then((room: Room) => {
         setRoomData(room);
-        // Set amenities state for checkboxes
         const state: Record<string, boolean> = {};
         AMENITIES_LIST.forEach((a) => {
           state[a.key] = room.amenities?.includes(a.key) ?? false;

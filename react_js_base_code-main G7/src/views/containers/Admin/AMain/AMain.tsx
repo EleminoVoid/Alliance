@@ -22,8 +22,6 @@ import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import PeopleIcon from "@mui/icons-material/People";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import "./AMain.css";
 
 export const AdminMain = () => {
@@ -108,8 +106,8 @@ useEffect(() => {
           "& .MuiDrawer-paper": {
             width: 280,
             boxSizing: "border-box",
-            background: "#fff", // Match user sidebar background
-            color: "#222",      // Match user sidebar text color
+            background: "#fff",
+            color: "#222",
             borderRight: "1px solid #eee",
           },
         }}
@@ -163,10 +161,6 @@ useEffect(() => {
                   py: 1.5,
                 }}
               >
-                {/* Remove this block to hide the icon */}
-                {/* <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
-                  {item.icon || <DashboardIcon />}
-                </ListItemIcon> */}
                 <ListItemText
                   primary={item.label}
                   primaryTypographyProps={{ fontWeight: 500 }}

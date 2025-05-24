@@ -46,7 +46,6 @@ export const CalendarBooking = () => {
 
   // Fetch rooms and bookings from db.json
   useEffect(() => {
-    // Fetch rooms
     fetch("http://localhost:3000/rooms")
       .then((response) => {
         if (!response.ok) {
@@ -67,24 +66,21 @@ export const CalendarBooking = () => {
         toast.error("Failed to load rooms data")
       });
 
-    // Fetch bookings
     fetch("http://localhost:3000/bookings")
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch bookings")
         return response.json()
       })
       .then((data) => {
-        // Flatten bookings
         const flatBookings: Booking[] = [];
         data.forEach((entry: any) => {
-          // If entry has numeric keys, it's a group (recurring or batch)
+          // If entry has numeric keys, it's recurring
           const keys = Object.keys(entry).filter(k => !isNaN(Number(k)));
           if (keys.length > 0) {
             keys.forEach(k => {
               flatBookings.push(entry[k]);
             });
           } else {
-            // Single booking object
             flatBookings.push(entry);
           }
         });
@@ -96,12 +92,9 @@ export const CalendarBooking = () => {
       })
   }, [roomIdFromUrl])
 
-  // Update sidebar height when recurring toggle changes
   useEffect(() => {
-    // Allow time for DOM to update
     const timer = setTimeout(() => {
       if (sidebarRef.current) {
-        // Force a reflow to ensure the sidebar height is calculated correctly
         setSidebarHeight(`${sidebarRef.current.scrollHeight}px`)
       }
     }, 100)
@@ -109,12 +102,10 @@ export const CalendarBooking = () => {
     return () => clearTimeout(timer)
   }, [isRecurring, selectedWeekdays])
 
-  // Handle resize when time view is toggled
+  // Calendar resize when time view is toggled
   useEffect(() => {
-    // Force calendar to re-render when time view is toggled
     setCalendarKey((prev) => prev + 1)
 
-    // Allow time for DOM to update
     const timer = setTimeout(() => {
       if (calendarRef.current?.getApi) {
         const api = calendarRef.current.getApi()
@@ -127,7 +118,6 @@ export const CalendarBooking = () => {
       }
 
       if (sidebarRef.current) {
-        // Force a reflow to ensure the sidebar height is calculated correctly
         setSidebarHeight(`${sidebarRef.current.scrollHeight}px`)
       }
     }, 300)
@@ -149,7 +139,6 @@ export const CalendarBooking = () => {
       }
 
       if (sidebarRef.current) {
-        // Force a reflow to ensure the sidebar height is calculated correctly
         setSidebarHeight(`${sidebarRef.current.scrollHeight}px`)
       }
     }
@@ -158,18 +147,16 @@ export const CalendarBooking = () => {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Handle date click in the calendar
   const handleDateClick = (info: { dateStr: string }) => {
     setSelectedDate(info.dateStr)
     setShowTimeView(true)
   }
 
-  // Toggle weekday selection for recurring bookings
   const handleWeekdayToggle = (day: string) => {
     setSelectedWeekdays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]))
   }
 
-  // Helper to check if selected date/time is in the past
+  // Check if selected date/time is in the past
   function isDateTimeInPast(date: string, time: string) {
     if (!date || !time) return false;
     const selected = new Date(`${date}T${time}:00`);
@@ -177,7 +164,6 @@ export const CalendarBooking = () => {
     return selected < now;
   }
 
-  // Handle booking submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -186,7 +172,6 @@ export const CalendarBooking = () => {
     const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
     const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
 
-    // --- Add this block for single booking ---
     if (!isRecurring) {
       if (isDateTimeInPast(selectedDate, startTime)) {
         toast.error("You cannot book a time in the past.");
@@ -195,9 +180,7 @@ export const CalendarBooking = () => {
       }
     }
 
-    // --- Add this block for recurring booking ---
     if (isRecurring) {
-      // Check if any selected recurring date/time is in the past
       const weekdayMap: Record<string, number> = {
         "Su": 0, "M": 1, "T": 2, "W": 3, "Th": 4, "F": 5, "S": 6
       };
@@ -233,17 +216,16 @@ export const CalendarBooking = () => {
       return;
     }
 
-    // Always read the userId from localStorage
     const userId = localStorage.getItem("userId") || "1";
 
     let allBookings: Omit<Booking, "id">[] = [];
 
-    // Helper to check for overlap
+    // Check if two time periods overlap
     function isOverlap(startA: string, endA: string, startB: string, endB: string) {
       return startA < endB && endA > startB;
     }
 
-    // Prepare new booking(s) for overlap check
+    // Prepare new booking for overlap check
     let newBookingTimes: { date: string, start: string, end: string }[] = [];
 
     if (isRecurring && selectedWeekdays.length > 0) {
@@ -294,7 +276,6 @@ export const CalendarBooking = () => {
     const hasOverlap = newBookingTimes.some(newBooking => {
       return bookings.some(existing => {
         if (existing.roomId !== selectedRoom) return false;
-        // Get date and times for existing booking
         let existingDate = (existing as any).date || existing.startDate?.slice(0, 10);
         let existingStart = (existing as any).startTime || existing.startDate?.slice(11, 16);
         let existingEnd = (existing as any).endTime || existing.endDate?.slice(11, 16);
@@ -349,7 +330,7 @@ export const CalendarBooking = () => {
       });
   };
 
-  // Helper to get all dates for recurring bookings
+  // Get all dates for recurring bookings
   function getRecurringDates(startDate: string, endDate: string, weekdays: number[]) {
     const dates: string[] = [];
     let current = new Date(startDate);
@@ -366,7 +347,6 @@ export const CalendarBooking = () => {
   // Map bookings to FullCalendar events
   const formattedEvents = bookings.flatMap((booking) => {
     if (booking.type === "single") {
-      // For single bookings, use date/startTime/endTime
       const date = (booking as any).date || booking.startDate?.slice(0, 10);
       const startTime = (booking as any).startTime || booking.startDate?.slice(11, 16);
       const endTime = (booking as any).endTime || booking.endDate?.slice(11, 16);
@@ -384,7 +364,6 @@ export const CalendarBooking = () => {
         },
       }];
     } else if (booking.type === "recurring") {
-      // For recurring, generate events for each matching weekday
       const startDate = (booking as any).startDate?.slice(0, 10);
       const endDate = (booking as any).endDate?.slice(0, 10);
       const startTime = (booking as any).startTime || booking.startDate?.slice(11, 16);
@@ -408,7 +387,6 @@ export const CalendarBooking = () => {
     return [];
   });
 
-  // Get the selected room data
   const selectedRoomData = rooms.find((room) => room.id === selectedRoom)
 
   // Filter events for the time view
@@ -420,10 +398,8 @@ export const CalendarBooking = () => {
     );
   });
 
-  // Handle closing the time view
   const handleCloseTimeView = () => {
     setShowTimeView(false)
-    // Force calendar to re-render after closing time view
     setTimeout(() => {
       if (calendarRef.current?.getApi) {
         const api = calendarRef.current.getApi()
@@ -454,7 +430,7 @@ export const CalendarBooking = () => {
             return arg.dateStr === selectedDate ? "selected-date" : ""
           }}
           validRange={{
-            start: new Date().toISOString().slice(0, 10) // disables days before today
+            start: new Date().toISOString().slice(0, 10)
           }}
         />
       </div>

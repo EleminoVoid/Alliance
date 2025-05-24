@@ -32,7 +32,6 @@ export const Main = () => {
   const [activeLink, setActiveLink] = useState("");
 
   useEffect(() => {
-    // Set active link based on current pathname
     const path = pathname.split("/").pop();
     setActiveLink(path || "homepage");
   }, [pathname]);
@@ -52,7 +51,6 @@ export const Main = () => {
     if (pathname === PATHS.MAIN.path) navigate(PATHS.LOGIN.path);
   }, [pathname]);
 
-  // Handle navigation link clicks
   const handleNavLinkClick = (path) => {
     setActiveLink(path);
     navigate(`/${path}`);
@@ -123,7 +121,7 @@ export const Main = () => {
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         ModalProps={{
-          keepMounted: true, // Improves performance on mobile
+          keepMounted: true,
         }}
         sx={{
           "& .MuiDrawer-paper": {

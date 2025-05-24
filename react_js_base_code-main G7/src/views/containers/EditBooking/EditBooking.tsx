@@ -34,7 +34,6 @@ export const EditBooking: React.FC = () => {
 
   // Fetch booking by ID and rooms
   useEffect(() => {
-    // Fetch rooms
     fetch("http://localhost:3000/rooms")
       .then((res) => res.json())
       .then((data) => setRooms(data))
@@ -103,7 +102,6 @@ export const EditBooking: React.FC = () => {
     return Array.from(featureSet);
   };
 
-  // Handle form changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -111,7 +109,6 @@ export const EditBooking: React.FC = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

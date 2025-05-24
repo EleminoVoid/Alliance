@@ -45,7 +45,6 @@ export const Login = () => {
         throw new Error("Invalid email or password");
       }
 
-      // Store both user ID and role in localStorage
       localStorage.setItem("userId", foundUser.id);
       localStorage.setItem("userRole", foundUser.role);
       localStorage.setItem("username", foundUser.username);

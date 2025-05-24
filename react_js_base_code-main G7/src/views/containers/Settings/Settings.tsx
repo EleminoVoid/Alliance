@@ -17,7 +17,7 @@ export const Settings: React.FC = () => {
   const [showNotification, setShowNotification] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>("");
 
-  // Fetch user info from db.json using userId from localStorage
+  // Fetch user info
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;

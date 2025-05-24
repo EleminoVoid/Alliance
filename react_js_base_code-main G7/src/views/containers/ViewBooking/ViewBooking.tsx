@@ -95,7 +95,6 @@ export const ViewBookings: React.FC = () => {
       const bookingsData = await bookingsRes.json();
       const roomsData: Room[] = await roomsRes.json();
 
-      // Flatten bookings (handle objects with numeric keys)
       const flatBookings: Booking[] = [];
       bookingsData.forEach((entry: any) => {
         const keys = Object.keys(entry).filter((k) => !isNaN(Number(k)));
@@ -108,7 +107,6 @@ export const ViewBookings: React.FC = () => {
         }
       });
 
-      // Only show bookings for the current user
       const userBookings = flatBookings.filter(
         (b) => String(b.userId) === String(userId)
       );
@@ -133,7 +131,6 @@ export const ViewBookings: React.FC = () => {
     navigate(PATHS.EDIT_BOOKINGS.path.replace(":id", bookingId));
   };
 
-  // Delete booking handler
   const handleDeleteBooking = async (bookingId: string) => {
     if (!window.confirm("Are you sure you want to delete this booking?")) return;
     try {
@@ -249,7 +246,7 @@ export const ViewBookings: React.FC = () => {
                   <td className="table-cell">{getRoomInfo(group.roomId)}</td>
                   <td className="table-cell">
                     <span style={{ color: "#604b66", }}>
-                       Recurring
+                      Recurring
                     </span>
                   </td>
                   <td className="table-cell">
@@ -268,7 +265,7 @@ export const ViewBookings: React.FC = () => {
                       className="edit-button"
                       onClick={() => handleEditBooking(group.sampleBooking.id)}
                     >
-                      Edit booking
+                      <EditIcon style={{ color: "green" }} />
                     </button>
                   </td>
                   <td className="table-cell">
@@ -286,19 +283,7 @@ export const ViewBookings: React.FC = () => {
                       }}
                       title="Delete"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        fill="#d9534f"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6zm2 .5a.5.5 0 0 1 .5-.5.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6z" />
-                        <path
-                          fillRule="evenodd"
-                          d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2h3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3a1 1 0 0 1 1 1zm-3-1a.5.5 0 0 0-.5-.5h-3A.5.5 0 0 0 7 2h2a.5.5 0 0 0 .5-.5zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118z"
-                        />
-                      </svg>
+                      <DeleteIcon style={{ color: "red" }} />
                     </button>
                   </td>
                 </tr>

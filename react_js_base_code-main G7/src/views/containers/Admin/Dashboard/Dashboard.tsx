@@ -43,7 +43,7 @@ const COLORS = [
 ];
 
 export const Dashboard = () => {
-  const [timeRange, setTimeRange] = useState("months"); // Default to months
+  const [timeRange, setTimeRange] = useState("months");
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [mostUsedRoom, setMostUsedRoom] = useState<Room | null>(null);
@@ -59,7 +59,7 @@ export const Dashboard = () => {
         ]);
 
         setRooms(roomsRes.data);
-        // FLATTEN BOOKINGS HERE
+
         const flatBookings = flattenBookings(bookingsRes.data);
         setBookings(flatBookings);
         calculateMostUsedRoom(roomsRes.data, flatBookings);
@@ -281,7 +281,7 @@ function flattenBookings(rawBookings: any[]): Booking[] {
       keys.forEach((k) => {
         flat.push({
           ...entry[k],
-          id: entry[k].id || entry.id, // use child id or parent id
+          id: entry[k].id || entry.id,
         });
       });
     }
