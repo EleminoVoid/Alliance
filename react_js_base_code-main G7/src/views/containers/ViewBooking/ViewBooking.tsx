@@ -4,6 +4,7 @@ import { PATHS } from "../../../constant";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./ViewBooking.css";
+import { getBookings, getRooms, deleteBooking } from "../../../api";
 
 interface Room {
   id: string;
@@ -66,12 +67,9 @@ function groupRecurringBookings(bookings: Booking[]) {
     group.startDate = group.dates[0];
     group.endDate = group.dates[group.dates.length - 1];
     // Remove duplicate weekdays and sort by week order
-    group.weekdays = Array.from(new Set(group.weekdays)).sort(
-      (a, b) =>
-        ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(a) -
-        ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(b)
-    );
-    recurringGroups.push(group);
+    const weekOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    group.weekdays = Array.from(new Set(group.weekdays as string[])).sort((a: string, b: string) => weekOrder.indexOf(a) - weekOrder.indexOf(b));
+    recurringGroups.push(group as any);
   });
 
   return { singles, recurringGroups };
@@ -88,12 +86,7 @@ export const ViewBookings: React.FC = () => {
     const fetchData = async () => {
       const userId = localStorage.getItem("userId");
       // Fetch bookings and rooms
-      const [bookingsRes, roomsRes] = await Promise.all([
-        fetch("http://localhost:3000/bookings"),
-        fetch("http://localhost:3000/rooms"),
-      ]);
-      const bookingsData = await bookingsRes.json();
-      const roomsData: Room[] = await roomsRes.json();
+      const [bookingsData, roomsData] = await Promise.all([getBookings(), getRooms()]);
 
       const flatBookings: Booking[] = [];
       bookingsData.forEach((entry: any) => {
@@ -134,10 +127,7 @@ export const ViewBookings: React.FC = () => {
   const handleDeleteBooking = async (bookingId: string) => {
     if (!window.confirm("Are you sure you want to delete this booking?")) return;
     try {
-      const res = await fetch(`http://localhost:3000/bookings/${bookingId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete booking");
+      await deleteBooking(bookingId);
       setBookings((prev) => prev.filter((b) => b.id !== bookingId));
     } catch (err) {
       alert("Error deleting booking.");
