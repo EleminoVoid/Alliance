@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { USER_PATHS } from "../../../constant";
 import { useNavigate } from "react-router-dom";
 import "./ViewRooms.css";
+import { getRooms } from "../../../api";
 
 interface Room {
   id: string;
@@ -21,9 +22,9 @@ export const ViewRooms: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/rooms")
-      .then((response) => response.json())
-      .then((data) => setRooms(data));
+    getRooms()
+      .then((data: any[]) => setRooms(data || []))
+      .catch((err) => console.error("Error fetching rooms:", err));
   }, []);
 
   const filteredRooms = rooms.filter(

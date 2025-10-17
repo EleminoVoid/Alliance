@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import bcrypt from "bcryptjs";
 import "./Register.css";
 import { ToastContainer, toast } from "react-toastify";
+import { getUsers, addUser } from "../../../api";
 
 export const Register = () => {
   const { pathname } = window.location;
@@ -24,22 +25,16 @@ export const Register = () => {
 
     try {
       // Check if email already exists
-      const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(email)}`);
-      const existingUsers = await res.json();
-      if (existingUsers.length > 0) {
+      const existingUsers = await getUsers();
+      if ((existingUsers || []).some((u: any) => (u.Email ?? u.email) === email)) {
         toast.error("An account with this email already exists.");
         return;
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const response = await fetch("http://localhost:3000/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password: hashedPassword, role: "user" }),
-      });
-
-      if (response.ok) {
+      const created = await addUser({ Email: email, Username: username, Password: hashedPassword, Role: "user" });
+      if (created) {
         navigate(PATHS.LOGIN.path);
       } else {
         toast.error("Failed to register. Please try again.");

@@ -21,12 +21,14 @@ export const Settings: React.FC = () => {
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
-    fetch(`http://localhost:3000/users/${userId}`)
-      .then(res => res.json())
-      .then(user => {
-        if (user && user.email) setEmail(user.email);
-      })
-      .catch(() => setEmail(""));
+    import("../../../api").then(({ getUsers }) => {
+      getUsers()
+        .then((users: any[]) => {
+          const u = (users || []).find((x) => (x.Id ?? x.id) === (Number(userId) || userId));
+          if (u) setEmail(u.Email ?? u.email ?? "");
+        })
+        .catch(() => setEmail(""));
+    });
   }, []);
 
   const handleSaveAccount = (): void => {

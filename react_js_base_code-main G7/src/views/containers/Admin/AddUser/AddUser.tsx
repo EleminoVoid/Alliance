@@ -4,6 +4,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import "./AddUser.css"
 import { ADMIN_PATHS } from "../../../../constant/constants";
+import { getUsers, addUser } from "../../../../api";
 
 export const AddUser = () => {
   const [userData, setUserData] = useState({
@@ -33,10 +34,8 @@ export const AddUser = () => {
     setSuccess(null)
 
     try {
-      // Check if email already exists
-      const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(userData.email)}`);
-      const existingUsers = await res.json();
-      if (existingUsers.length > 0) {
+      const existingUsers = await getUsers();
+      if ((existingUsers || []).some((u: any) => (u.Email ?? u.email) === userData.email)) {
         setError("An account with this email already exists.");
         setIsSubmitting(false);
         return;
@@ -51,12 +50,8 @@ export const AddUser = () => {
         avatar: "https://i.pravatar.cc/40"
       }
 
-      const response = await fetch("http://localhost:3000/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
-      })
-      if (!response.ok) throw new Error("Failed to add user")
+      const created = await addUser({ Email: newUser.email, Username: newUser.username, Password: newUser.password, Role: newUser.role });
+      if (!created) throw new Error("Failed to add user")
       setSuccess("User added successfully!")
       setUserData({
         firstName: "",

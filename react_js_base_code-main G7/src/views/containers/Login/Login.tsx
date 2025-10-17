@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../constant";
 import React, { useState, useEffect } from "react";
 import bcrypt from "bcryptjs";
+import { getUsers } from "../../../api";
 import "./Login.css";
 import { CircularProgress } from "@mui/material";
 
@@ -33,12 +34,7 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3000/users");
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const users = await response.json();
+      const users = await getUsers();
       const foundUser = users.find((user: any) => user.email === formData.email);
 
       if (!foundUser) {
@@ -50,9 +46,10 @@ export const Login = () => {
         throw new Error("Invalid email or password");
       }
 
-      localStorage.setItem("userId", foundUser.id);
-      localStorage.setItem("userRole", foundUser.role);
-      localStorage.setItem("username", foundUser.username);
+  // backend may use Id/Username/Role casing — handle both
+  localStorage.setItem("userId", foundUser.Id ?? foundUser.id);
+  localStorage.setItem("userRole", foundUser.Role ?? foundUser.role);
+  localStorage.setItem("username", foundUser.Username ?? foundUser.username);
 
       // Redirect based on role
       if (foundUser.role === "admin") {
