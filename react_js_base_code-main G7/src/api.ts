@@ -1,85 +1,95 @@
-const API_BASE = "https://localhost:5001/api"; 
+// Try the HTTPS backend first, then HTTP. Update these if your backend runs elsewhere.
+const API_BASES = ["https://localhost:5001/api", "http://localhost:5000/api"];
+
+async function requestJson(path: string, init?: RequestInit) {
+  let lastError: any = null;
+  for (const base of API_BASES) {
+    try {
+      const res = await fetch(`${base}${path}`, init);
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return await res.json();
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("Network request failed");
+}
+
+async function requestEmpty(path: string, init?: RequestInit) {
+  let lastError: any = null;
+  for (const base of API_BASES) {
+    try {
+      const res = await fetch(`${base}${path}`, init);
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("Network request failed");
+}
 
 // USERS
 export async function getUsers() {
-  const res = await fetch(`${API_BASE}/users`);
-  if (!res.ok) throw new Error("Failed to fetch users");
-  return res.json();
+  return requestJson("/users");
 }
 
 export async function addUser(user: any) {
-  const res = await fetch(`${API_BASE}/users`, {
+  return requestJson("/users", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(user),
   });
-  if (!res.ok) throw new Error("Failed to add user");
-  return res.json();
 }
 
 export async function deleteUser(id: string) {
-  const res = await fetch(`${API_BASE}/users/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete user");
+  return requestEmpty(`/users/${id}`, { method: "DELETE" });
 }
 
 // ROOMS
 export async function getRooms() {
-  const res = await fetch(`${API_BASE}/rooms`);
-  if (!res.ok) throw new Error("Failed to fetch rooms");
-  return res.json();
+  return requestJson("/rooms");
 }
 
 export async function addRoom(room: any) {
-  const res = await fetch(`${API_BASE}/rooms`, {
+  return requestJson("/rooms", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(room),
   });
-  if (!res.ok) throw new Error("Failed to add room");
-  return res.json();
 }
 
 export async function deleteRoom(id: string) {
-  const res = await fetch(`${API_BASE}/rooms/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete room");
+  return requestEmpty(`/rooms/${id}`, { method: "DELETE" });
 }
 
 // AMENITIES
 export async function getRoomAmenities(roomId: string) {
-  const res = await fetch(`${API_BASE}/roomamenities/${roomId}`);
-  if (!res.ok) throw new Error("Failed to fetch amenities");
-  return res.json();
+  return requestJson(`/roomamenities/${roomId}`);
 }
 
 export async function addRoomAmenity(roomId: string, amenity: string) {
-  const res = await fetch(`${API_BASE}/roomamenities`, {
+  return requestJson(`/roomamenities`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ roomId, amenity }),
   });
-  if (!res.ok) throw new Error("Failed to add amenity");
-  return res.json();
 }
 
 // BOOKINGS
 export async function getBookings() {
-  const res = await fetch(`${API_BASE}/bookings`);
-  if (!res.ok) throw new Error("Failed to fetch bookings");
-  return res.json();
+  return requestJson("/bookings");
 }
 
 export async function addBooking(booking: any) {
-  const res = await fetch(`${API_BASE}/bookings`, {
+  return requestJson("/bookings", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(booking),
   });
-  if (!res.ok) throw new Error("Failed to add booking");
-  return res.json();
 }
 
 export async function deleteBooking(id: string) {
-  const res = await fetch(`${API_BASE}/bookings/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete booking");
+  return requestEmpty(`/bookings/${id}`, { method: "DELETE" });
 }
 
