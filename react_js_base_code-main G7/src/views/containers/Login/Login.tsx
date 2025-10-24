@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../../constant";
 import React, { useState, useEffect } from "react";
-import bcrypt from "bcryptjs";
-import { getUsers } from "../../../api";
 import "./Login.css";
 import { CircularProgress } from "@mui/material";
+import { login } from "../../../api";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -34,31 +33,22 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      const users = await getUsers();
-      const foundUser = users.find((user: any) => user.email === formData.email);
+      // Call backend login API
+      const user = await login(formData.email, formData.password);
 
-      if (!foundUser) {
-        throw new Error("Invalid email or password");
-      }
-
-      const isPasswordValid = await bcrypt.compare(formData.password, foundUser.password);
-      if (!isPasswordValid) {
-        throw new Error("Invalid email or password");
-      }
-
-  // backend may use Id/Username/Role casing — handle both
-  localStorage.setItem("userId", foundUser.Id ?? foundUser.id);
-  localStorage.setItem("userRole", foundUser.Role ?? foundUser.role);
-  localStorage.setItem("username", foundUser.Username ?? foundUser.username);
+      // Store user data in localStorage
+      localStorage.setItem("userId", user.Id ?? user.id);
+      localStorage.setItem("userRole", user.Role ?? user.role);
+      localStorage.setItem("username", user.Username ?? user.username);
 
       // Redirect based on role
-      if (foundUser.role === "admin") {
-        navigate(PATHS.DASHBOARD.path || PATHS.DASHBOARD.path);
+      if ((user.Role ?? user.role)?.toLowerCase() === "admin") {
+        navigate(PATHS.DASHBOARD.path);
       } else {
         navigate(PATHS.HOMEPAGE.path);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to connect to server");
+      setError(err instanceof Error ? err.message : "Invalid email or password");
       console.error("Login error:", err);
     } finally {
       setLoading(false);

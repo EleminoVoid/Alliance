@@ -1,15 +1,22 @@
-// Try the HTTPS backend first, then HTTP. Update these if your backend runs elsewhere.
-const API_BASES = ["https://localhost:5001/api", "http://localhost:5000/api"];
+// Using HTTP backend only to avoid duplicate requests
+const API_BASES = ["http://localhost:5000/api"];
 
 async function requestJson(path: string, init?: RequestInit) {
   let lastError: any = null;
   for (const base of API_BASES) {
     try {
       const res = await fetch(`${base}${path}`, init);
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      return await res.json();
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error(`API Error (${res.status}):`, errorText);
+        throw new Error(`${res.status} ${res.statusText}: ${errorText}`);
+      }
+      const data = await res.json();
+      return data; // Successfully got response, return immediately
     } catch (err) {
+      console.error("Request failed:", err);
       lastError = err;
+      // Continue to next base only if this one failed
     }
   }
   throw lastError || new Error("Network request failed");
@@ -21,9 +28,10 @@ async function requestEmpty(path: string, init?: RequestInit) {
     try {
       const res = await fetch(`${base}${path}`, init);
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      return;
+      return; // Successfully completed, return immediately
     } catch (err) {
       lastError = err;
+      // Continue to next base only if this one failed
     }
   }
   throw lastError || new Error("Network request failed");
@@ -44,6 +52,15 @@ export async function addUser(user: any) {
 
 export async function deleteUser(id: string) {
   return requestEmpty(`/users/${id}`, { method: "DELETE" });
+}
+
+// AUTH
+export async function login(userId: string, password: string) {
+  return requestJson("/users/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ UserId: userId, Password: password }),
+  });
 }
 
 // ROOMS

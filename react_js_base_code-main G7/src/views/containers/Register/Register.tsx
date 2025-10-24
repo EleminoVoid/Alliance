@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router";
 import { PATHS } from "../../../constant";
 import React, { useState } from "react";
-import bcrypt from "bcryptjs";
 import "./Register.css";
 import { ToastContainer, toast } from "react-toastify";
 import { getUsers, addUser } from "../../../api";
@@ -14,6 +13,7 @@ export const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,25 +23,42 @@ export const Register = () => {
       return;
     }
 
+    if (isSubmitting) {
+      return; // Prevent double submission
+    }
+
+    setIsSubmitting(true);
+
     try {
       // Check if email already exists
       const existingUsers = await getUsers();
       if ((existingUsers || []).some((u: any) => (u.Email ?? u.email) === email)) {
         toast.error("An account with this email already exists.");
+        setIsSubmitting(false);
         return;
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // Send plain password - backend will hash it
+      try {
+        const result = await addUser({ Email: email, Username: username, Password: password, Role: "user" });
+        console.log("Registration result:", result);
 
-      const created = await addUser({ Email: email, Username: username, Password: hashedPassword, Role: "user" });
-      if (created) {
-        navigate(PATHS.LOGIN.path);
-      } else {
-        toast.error("Failed to register. Please try again.");
+        // Successfully registered, navigate to login
+        toast.success("Registration successful! Please login.");
+        setTimeout(() => {
+          navigate(PATHS.LOGIN.path);
+        }, 1500);
+      } catch (err: any) {
+        console.error("Registration error:", err);
+        const errorMessage = err?.response?.data?.message || err?.message || "Failed to register. Please try again.";
+        toast.error(errorMessage);
+        setIsSubmitting(false);
       }
-    } catch (err) {
-      toast.error("Failed to connect to server.");
-      console.error(err);
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      const errorMessage = err?.message || "Failed to register. Please try again.";
+      toast.error(errorMessage);
+      setIsSubmitting(false);
     }
   };
 
@@ -94,8 +111,8 @@ export const Register = () => {
                 </label>
               </div>
               {error && <p className="register-error">{error}</p>}
-              <button type="submit" className="register-submitButton">
-                Sign Up
+              <button type="submit" className="register-submitButton" disabled={isSubmitting}>
+                {isSubmitting ? "Registering..." : "Sign Up"}
               </button>
             </form>
           </div>
