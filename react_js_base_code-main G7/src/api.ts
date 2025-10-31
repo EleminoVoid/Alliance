@@ -81,9 +81,21 @@ export async function getRooms() {
   return requestJson("/rooms");
 }
 
+export async function getRoomById(id: string) {
+  return requestJson(`/rooms/${id}`);
+}
+
 export async function addRoom(room: any) {
   return requestJson("/rooms", {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(room),
+  });
+}
+
+export async function updateRoom(id: string, room: any) {
+  return requestJson(`/rooms/${id}`, {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(room),
   });

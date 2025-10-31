@@ -4,6 +4,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../../constant";
+import { getRooms, deleteRoom } from "../../../../api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Rooms.css";
 
 export const Rooms = () => {
@@ -13,11 +16,18 @@ export const Rooms = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:3000/rooms")
-      .then((res) => res.json())
-      .then((data) => setRooms(data))
-      .catch((err) => console.error("Error fetching rooms:", err));
+    loadRooms();
   }, []);
+
+  const loadRooms = async () => {
+    try {
+      const data = await getRooms();
+      console.log("Rooms data from API:", data);
+      setRooms(data);
+    } catch (err) {
+      console.error("Error fetching rooms:", err);
+    }
+  };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -31,23 +41,21 @@ export const Rooms = () => {
     navigate(ADMIN_PATHS.EDIT_ROOM.path.replace(":id", roomId));
   };
 
-  const handleDeleteRoom = (roomId: string) => {
+  const handleDeleteRoom = async (roomId: string) => {
     if (!window.confirm("Are you sure you want to delete this room?")) return;
-    fetch(`http://localhost:3000/rooms/${roomId}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to delete room");
-        setRooms((prev) => prev.filter((room: any) => room.id !== roomId));
-      })
-      .catch((err) => {
-        alert("Error deleting room.");
-        console.error(err);
-      });
+    try {
+      await deleteRoom(roomId);
+      setRooms((prev) => prev.filter((room: any) => room.id !== roomId));
+      toast.success("Room deleted successfully!");
+    } catch (err) {
+      toast.error("Error deleting room.");
+      console.error(err);
+    }
   };
 
   return (
     <div className="room-management-container">
+      <ToastContainer />
       <div className="room-management-header">
         <h1>Room Management</h1>
         <div className="room-count">
@@ -83,20 +91,24 @@ export const Rooms = () => {
         </div>
 
         <div className="room-table-body">
-          {filteredRooms.map((room: any) => (
-            <div key={room.id} className="room-table-row">
-              <div className="name-column">{room.name}</div>
-              <div className="amenities-column">
-                {Array.isArray(room.amenities)
-                ? room.amenities.join(", ")
-                : room.amenities || "-"}
-              </div>
-              <div className="actions-column">
+          {filteredRooms.map((room: any) => {
+            console.log("Room amenities:", room.amenities, "Type:", typeof room.amenities);
+            return (
+              <div key={room.id} className="room-table-row">
+                <div className="name-column">{room.name}</div>
+                <div className="amenities-column">
+                  {Array.isArray(room.amenities) && room.amenities.length > 0
+                    ? room.amenities.join(", ")
+                    : room.Amenities && Array.isArray(room.Amenities) && room.Amenities.length > 0
+                    ? room.Amenities.join(", ")
+                    : "-"}
+                </div>
+                <div className="actions-column">
                 <button
                   className="edit-button"
                   onClick={() => handleEditRoom(room.id)}
                 >
-                  <EditIcon style={{color: 'green'}} />
+                  <EditIcon style={{ color: 'green' }} />
                 </button>
               </div>
               <div className="actions-column">
@@ -104,11 +116,12 @@ export const Rooms = () => {
                   className="delete-button"
                   onClick={() => handleDeleteRoom(room.id)}
                 >
-                  <DeleteIcon style={{color: 'red'}} />
+                  <DeleteIcon style={{ color: 'red' }} />
                 </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

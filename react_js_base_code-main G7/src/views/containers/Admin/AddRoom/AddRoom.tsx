@@ -2,6 +2,9 @@ import type React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import { getRooms, addRoom } from "../../../../api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./AddRoom.css"
 
 export const AddRoom = () => {
@@ -22,6 +25,8 @@ export const AddRoom = () => {
     },
   })
   const [error, setError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -43,6 +48,19 @@ export const AddRoom = () => {
     })
   }
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -52,56 +70,75 @@ export const AddRoom = () => {
       .map(([feature]) => feature);
 
     try {
-      const res = await fetch("http://localhost:3000/rooms");
-      const existingRooms = await res.json();
+      const existingRooms = await getRooms();
 
       // Check for duplicate name
-      if (existingRooms.some((room: any) => room.name.toLowerCase() === roomData.name.trim().toLowerCase())) {
+      if (existingRooms.some((room: any) => room.name?.toLowerCase() === roomData.name.trim().toLowerCase())) {
         setError("A room with this name already exists.");
         return;
       }
 
-      const newId = Date.now().toString(16);
-
-      // Check for duplicate id
-      if (existingRooms.some((room: any) => room.id === newId)) {
-        setError("A room with this ID already exists. Please try again.");
-        return;
+      // Convert image to base64 if uploaded
+      let imageData = "https://via.placeholder.com/400x300?text=Room+Image";
+      if (imageFile) {
+        imageData = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(imageFile);
+        });
       }
 
       const newRoom = {
-        id: newId,
         name: roomData.name.trim(),
         location: roomData.location,
-        capacity: roomData.capacity,
+        capacity: parseInt(roomData.capacity),
+        image: imageData,
         amenities,
-        features: roomData.features,
       };
 
-      const response = await fetch("http://localhost:3000/rooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newRoom),
-      });
-
-      if (!response.ok) throw new Error("Failed to add room");
+      await addRoom(newRoom);
+      toast.success("Room added successfully!");
+      setTimeout(() => navigate(-1), 1500);
     } catch (err: any) {
       setError(err.message || "Error adding room");
+      toast.error("Error adding room");
+      console.error("Error adding room:", err);
     }
   }
 
   return (
     <div className="room-form-container">
+      <ToastContainer />
       <h1>Add room</h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="avatar-section">
-          <div className="room-avatar">
-            <EditIcon />
-          </div>
-        </div>
-
         <div className="form-fields">
+          <div className="form-field">
+            <label htmlFor="image">Room Image</label>
+            <input
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {imagePreview && (
+              <div style={{ marginTop: '10px' }}>
+                <img
+                  src={imagePreview}
+                  alt="Room preview"
+                  style={{
+                    width: '200px',
+                    height: '150px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
+                    border: '2px solid #ddd'
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
           <div className="form-field">
             <label htmlFor="name">Room Name</label>
             <input

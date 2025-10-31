@@ -29,21 +29,24 @@ export const AdminMain = () => {
   const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const theme = useTheme();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [adminFeatures, setAdminFeatures] = useState({
     analytics: true,
     userManagement: true,
     contentModeration: true
   });
+
   useEffect(() => {
-    const verifyAdmin = async () => {
+    const verifyAdmin = () => {
       const userId = localStorage.getItem("userId");
       const userRole = localStorage.getItem("userRole");
       const username = localStorage.getItem("username");
+      const userEmail = localStorage.getItem("userEmail");
 
       // Case-insensitive role check
       if (!userId || userRole?.toLowerCase() !== "admin") {
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
 
@@ -51,13 +54,23 @@ export const AdminMain = () => {
       setUser({
         id: userId,
         username: username || "Admin",
-        email: "", // If you need email, store it in localStorage during login
+        email: userEmail || "",
         role: userRole,
       });
+
+      setIsLoading(false);
     };
 
     verifyAdmin();
   }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Fragment>

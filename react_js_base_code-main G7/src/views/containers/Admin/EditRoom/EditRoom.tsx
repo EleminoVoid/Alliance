@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
+import { getRoomById, updateRoom } from "../../../../api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./EditRoom.css";
 
 interface Room {
@@ -35,16 +38,20 @@ export const EditRoom: React.FC = () => {
   // Fetch this room's data
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:3000/rooms/${id}`)
-      .then((res) => res.json())
-      .then((room: Room) => {
+    const loadRoom = async () => {
+      try {
+        const room: Room = await getRoomById(id);
         setRoomData(room);
         const state: Record<string, boolean> = {};
         AMENITIES_LIST.forEach((a) => {
           state[a.key] = room.amenities?.includes(a.key) ?? false;
         });
         setAmenitiesState(state);
-      });
+      } catch (err) {
+        console.error("Error loading room:", err);
+      }
+    };
+    loadRoom();
   }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -64,20 +71,20 @@ export const EditRoom: React.FC = () => {
     e.preventDefault();
     if (!roomData) return;
     const updatedRoom = {
-      ...roomData,
+      name: roomData.name,
+      location: roomData.floor,
+      capacity: Number(roomData.capacity),
       amenities: AMENITIES_LIST.filter((a) => amenitiesState[a.key]).map((a) => a.key),
+      description: roomData.description,
+      available: roomData.available,
     };
     try {
-      const res = await fetch(`http://localhost:3000/rooms/${roomData.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedRoom),
-      });
-      if (!res.ok) throw new Error("Failed to update room");
-      alert("Room updated successfully!");
-      navigate(-1);
+      await updateRoom(roomData.id, updatedRoom);
+      toast.success("Room updated successfully!");
+      setTimeout(() => navigate(-1), 1500);
     } catch (err) {
-      alert("Error updating room");
+      toast.error("Error updating room");
+      console.error("Update error:", err);
     }
   };
 
@@ -85,6 +92,7 @@ export const EditRoom: React.FC = () => {
 
   return (
     <div className="room-form-container">
+      <ToastContainer />
       <h1>Edit room</h1>
       <form onSubmit={handleSubmit}>
         <div className="avatar-section">

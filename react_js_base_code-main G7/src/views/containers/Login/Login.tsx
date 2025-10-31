@@ -40,6 +40,7 @@ export const Login = () => {
       localStorage.setItem("userId", user.Id ?? user.id);
       localStorage.setItem("userRole", user.Role ?? user.role);
       localStorage.setItem("username", user.Username ?? user.username);
+      localStorage.setItem("userEmail", user.Email ?? user.email ?? formData.email);
 
       // Redirect based on role
       if ((user.Role ?? user.role)?.toLowerCase() === "admin") {

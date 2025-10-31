@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import bcrypt from "bcryptjs";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./EditUser.css";
 
 interface UserData {
@@ -56,10 +58,10 @@ export const EditUser: React.FC = () => {
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to update user");
-        alert("User updated!");
-        navigate(-1);
+        toast.success("User updated successfully!");
+        setTimeout(() => navigate(-1), 1500);
       })
-      .catch(() => alert("Error updating user"));
+      .catch(() => toast.error("Error updating user"));
   };
 
   if (loading) return <div>Loading...</div>;
@@ -67,6 +69,7 @@ export const EditUser: React.FC = () => {
 
   return (
     <div className="user-form-container">
+      <ToastContainer />
       <h1>Edit user</h1>
       <form onSubmit={handleSubmit}>
         <div className="avatar-section">
