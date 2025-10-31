@@ -63,6 +63,19 @@ export async function login(userId: string, password: string) {
   });
 }
 
+export async function changePassword(userId: string, currentPassword: string, newPassword: string, confirmPassword: string) {
+  return requestJson("/users/change-password", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userId,
+      currentPassword,
+      newPassword,
+      confirmPassword
+    }),
+  });
+}
+
 // ROOMS
 export async function getRooms() {
   return requestJson("/rooms");

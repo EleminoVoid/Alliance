@@ -35,32 +35,29 @@ export const AdminMain = () => {
     userManagement: true,
     contentModeration: true
   });
-useEffect(() => {
-  const verifyAdmin = async () => {
-    const userId = localStorage.getItem("userId");
-    const userRole = localStorage.getItem("userRole");
+  useEffect(() => {
+    const verifyAdmin = async () => {
+      const userId = localStorage.getItem("userId");
+      const userRole = localStorage.getItem("userRole");
+      const username = localStorage.getItem("username");
 
-    if (!userId || userRole !== "admin") {
-      navigate("/login");
-      return;
-    }
+      // Case-insensitive role check
+      if (!userId || userRole?.toLowerCase() !== "admin") {
+        navigate("/login");
+        return;
+      }
 
-    try {
-      const response = await fetch(`http://localhost:3000/users/${userId}`);
-      if (!response.ok) throw new Error("Failed to verify user");
-      
-      const userData = await response.json();
-      setUser(userData);
-    } catch (error) {
-      console.error("Admin verification failed:", error);
-      localStorage.removeItem("userId");
-      localStorage.removeItem("userRole");
-      navigate("/login");
-    }
-  };
+      // Set user data from localStorage (already validated during login)
+      setUser({
+        id: userId,
+        username: username || "Admin",
+        email: "", // If you need email, store it in localStorage during login
+        role: userRole,
+      });
+    };
 
-  verifyAdmin();
-}, [navigate]);
+    verifyAdmin();
+  }, [navigate]);
 
   return (
     <Fragment>

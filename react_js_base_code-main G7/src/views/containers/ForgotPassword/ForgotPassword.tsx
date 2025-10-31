@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { PATHS } from "../../../constant";
 import { ToastContainer, toast } from "react-toastify"
+import { getUsers, changePassword } from "../../../api";
 import "./ForgotPassword.css";
 
 export const ForgotPassword = () => {
@@ -9,14 +10,16 @@ export const ForgotPassword = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !newPassword || !confirmPassword) {
+    if (!email || !currentPassword || !newPassword || !confirmPassword) {
       toast.info("All fields are required.");
       return;
     }
@@ -25,29 +28,33 @@ export const ForgotPassword = () => {
       return;
     }
 
-    // Check if user exists
-    const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(email)}`);
-    const users = await res.json();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-    if (users.length === 0) {
-      toast.error("Email not found");
-      return;
-    }
+    try {
+      // Find user by email to get userId
+      const users = await getUsers();
+      const user = users.find((u: any) => (u.Email ?? u.email) === email);
 
-    // Update password (plain text for demo; hash in real app)
-    const user = users[0];
-    await fetch(`http://localhost:3000/users/${user.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: newPassword })
-    });
-
-    toast.success("Password changed successfully.");
-    setTimeout(() => {
-      if (pathname === PATHS.FORGOT_PASSWORD.path) {
-        navigate(PATHS.LOGIN.path);
+      if (!user) {
+        toast.error("Email not found");
+        setIsSubmitting(false);
+        return;
       }
-    }, 1500);
+
+      // Call change password API
+      await changePassword(user.Id ?? user.id, currentPassword, newPassword, confirmPassword);
+
+      toast.success("Password changed successfully.");
+      setTimeout(() => {
+        navigate(PATHS.LOGIN.path);
+      }, 1500);
+    } catch (err: any) {
+      console.error("Password change error:", err);
+      const errorMessage = err?.message || "Failed to change password. Please check your current password.";
+      toast.error(errorMessage);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -64,6 +71,18 @@ export const ForgotPassword = () => {
                 className="forgot-password-input"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+          <div className="forgot-password-inputContainer">
+            <label>
+              <span className="forgot-password-label">Current Password</span>
+              <input
+                type="password"
+                className="forgot-password-input"
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
                 required
               />
             </label>
@@ -92,8 +111,8 @@ export const ForgotPassword = () => {
               />
             </label>
           </div>
-          <button type="submit" className="forgot-password-submitButton">
-            Change Password
+          <button type="submit" className="forgot-password-submitButton" disabled={isSubmitting}>
+            {isSubmitting ? "Changing Password..." : "Change Password"}
           </button>
           {message && <div className="forgot-password-message">{message}</div>}
         </form>
