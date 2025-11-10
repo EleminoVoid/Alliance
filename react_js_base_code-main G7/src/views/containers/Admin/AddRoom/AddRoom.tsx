@@ -11,25 +11,18 @@ export const AddRoom = () => {
   const navigate = useNavigate();
   const [roomData, setRoomData] = useState({
     name: "",
-    location: "",
+    floor: "",
     capacity: "",
-    features: {
-      airCondition: false,
-      projector: false,
-      whiteboard: false,
-      tv: false,
-      speaker: false,
-      wifi: false,
-      powerOutlets: false,
-      videoConferencing: false,
-    },
+    description: "",
+    available: true,
+    amenities: [] as string[],
   })
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setRoomData({
@@ -38,14 +31,13 @@ export const AddRoom = () => {
     });
   }
 
-  const handleFeatureToggle = (feature: string) => {
-    setRoomData({
-      ...roomData,
-      features: {
-        ...roomData.features,
-        [feature]: !roomData.features[feature as keyof typeof roomData.features],
-      },
-    })
+  const handleAmenityToggle = (amenity: string) => {
+    setRoomData((prev) => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenity)
+        ? prev.amenities.filter(a => a !== amenity)
+        : [...prev.amenities, amenity]
+    }))
   }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,10 +56,6 @@ export const AddRoom = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    const amenities = Object.entries(roomData.features)
-      .filter(([_, checked]) => checked)
-      .map(([feature]) => feature);
 
     try {
       const existingRooms = await getRooms();
@@ -90,10 +78,13 @@ export const AddRoom = () => {
 
       const newRoom = {
         name: roomData.name.trim(),
-        location: roomData.location,
+        floor: roomData.floor,
         capacity: parseInt(roomData.capacity),
+        description: roomData.description || "",
         image: imageData,
-        amenities,
+        available: true,
+        amenities: roomData.amenities,
+        createdBy: localStorage.getItem("username") || "admin"
       };
 
       await addRoom(newRoom);
@@ -151,13 +142,26 @@ export const AddRoom = () => {
             />
           </div>
 
+          <div className="form-field">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Enter room description"
+              value={roomData.description}
+              onChange={handleInputChange}
+              rows={3}
+              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+            />
+          </div>
+
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="location">Location</label>
+              <label htmlFor="floor">Floor</label>
               <select
-                id="location"
-                name="location"
-                value={roomData.location}
+                id="floor"
+                name="floor"
+                value={roomData.floor}
                 onChange={handleInputChange}
                 required
               >
@@ -177,19 +181,20 @@ export const AddRoom = () => {
                 placeholder="20"
                 value={roomData.capacity}
                 onChange={handleInputChange}
+                required
               />
             </div>
           </div>
 
           <div className="features-section">
-            <label>Features</label>
+            <label>Amenities</label>
             <div className="features-grid">
               <div className="feature-item">
                 <input
                   type="checkbox"
                   id="airCondition"
-                  checked={roomData.features.airCondition}
-                  onChange={() => handleFeatureToggle("airCondition")}
+                  checked={roomData.amenities.includes("airCondition")}
+                  onChange={() => handleAmenityToggle("airCondition")}
                 />
                 <label htmlFor="airCondition">Air Condition</label>
               </div>
@@ -197,8 +202,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="speaker"
-                  checked={roomData.features.speaker}
-                  onChange={() => handleFeatureToggle("speaker")}
+                  checked={roomData.amenities.includes("speaker")}
+                  onChange={() => handleAmenityToggle("speaker")}
                 />
                 <label htmlFor="speaker">Speaker</label>
               </div>
@@ -206,8 +211,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="projector"
-                  checked={roomData.features.projector}
-                  onChange={() => handleFeatureToggle("projector")}
+                  checked={roomData.amenities.includes("projector")}
+                  onChange={() => handleAmenityToggle("projector")}
                 />
                 <label htmlFor="projector">Projector</label>
               </div>
@@ -215,8 +220,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="wifi"
-                  checked={roomData.features.wifi}
-                  onChange={() => handleFeatureToggle("wifi")}
+                  checked={roomData.amenities.includes("wifi")}
+                  onChange={() => handleAmenityToggle("wifi")}
                 />
                 <label htmlFor="wifi">WIFI</label>
               </div>
@@ -224,8 +229,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="whiteboard"
-                  checked={roomData.features.whiteboard}
-                  onChange={() => handleFeatureToggle("whiteboard")}
+                  checked={roomData.amenities.includes("whiteboard")}
+                  onChange={() => handleAmenityToggle("whiteboard")}
                 />
                 <label htmlFor="whiteboard">White Board</label>
               </div>
@@ -233,8 +238,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="powerOutlets"
-                  checked={roomData.features.powerOutlets}
-                  onChange={() => handleFeatureToggle("powerOutlets")}
+                  checked={roomData.amenities.includes("powerOutlets")}
+                  onChange={() => handleAmenityToggle("powerOutlets")}
                 />
                 <label htmlFor="powerOutlets">Power Outlets</label>
               </div>
@@ -242,8 +247,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="tv"
-                  checked={roomData.features.tv}
-                  onChange={() => handleFeatureToggle("tv")}
+                  checked={roomData.amenities.includes("tv")}
+                  onChange={() => handleAmenityToggle("tv")}
                 />
                 <label htmlFor="tv">TV</label>
               </div>
@@ -251,8 +256,8 @@ export const AddRoom = () => {
                 <input
                   type="checkbox"
                   id="videoConferencing"
-                  checked={roomData.features.videoConferencing}
-                  onChange={() => handleFeatureToggle("videoConferencing")}
+                  checked={roomData.amenities.includes("videoConferencing")}
+                  onChange={() => handleAmenityToggle("videoConferencing")}
                 />
                 <label htmlFor="videoConferencing">Video Conferencing Setup</label>
               </div>

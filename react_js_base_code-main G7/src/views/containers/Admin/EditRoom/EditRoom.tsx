@@ -15,6 +15,7 @@ interface Room {
   amenities: string[];
   description: string;
   image: string;
+  createdBy?: string;
 }
 
 const AMENITIES_LIST = [
@@ -34,6 +35,8 @@ export const EditRoom: React.FC = () => {
 
   const [roomData, setRoomData] = useState<Room | null>(null);
   const [amenitiesState, setAmenitiesState] = useState<Record<string, boolean>>({});
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>("");
 
   // Fetch this room's data
   useEffect(() => {
@@ -42,6 +45,7 @@ export const EditRoom: React.FC = () => {
       try {
         const room: Room = await getRoomById(id);
         setRoomData(room);
+        setImagePreview(room.image || "");
         const state: Record<string, boolean> = {};
         AMENITIES_LIST.forEach((a) => {
           state[a.key] = room.amenities?.includes(a.key) ?? false;
@@ -54,10 +58,22 @@ export const EditRoom: React.FC = () => {
     loadRoom();
   }, [id]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (!roomData) return;
     const { name, value } = e.target;
     setRoomData({ ...roomData, [name]: name === "capacity" ? Number(value) : value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleAmenityToggle = (amenity: string) => {
@@ -70,13 +86,26 @@ export const EditRoom: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!roomData) return;
+
+    // Convert new image to base64 if uploaded, otherwise keep existing
+    let imageData = roomData.image;
+    if (imageFile) {
+      imageData = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(imageFile);
+      });
+    }
+
     const updatedRoom = {
-      name: roomData.name,
-      location: roomData.floor,
+      name: roomData.name.trim(),
+      floor: roomData.floor,
       capacity: Number(roomData.capacity),
-      amenities: AMENITIES_LIST.filter((a) => amenitiesState[a.key]).map((a) => a.key),
-      description: roomData.description,
+      description: roomData.description || "",
+      image: imageData,
       available: roomData.available,
+      amenities: AMENITIES_LIST.filter((a) => amenitiesState[a.key]).map((a) => a.key),
+      createdBy: roomData.createdBy || localStorage.getItem("username") || "admin"
     };
     try {
       await updateRoom(roomData.id, updatedRoom);
@@ -95,12 +124,33 @@ export const EditRoom: React.FC = () => {
       <ToastContainer />
       <h1>Edit room</h1>
       <form onSubmit={handleSubmit}>
-        <div className="avatar-section">
-          <div className="room-avatar">
-            <EditIcon />
-          </div>
-        </div>
         <div className="form-fields">
+          <div className="form-field">
+            <label htmlFor="image">Room Image</label>
+            <input
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {imagePreview && (
+              <div style={{ marginTop: '10px' }}>
+                <img
+                  src={imagePreview}
+                  alt="Room preview"
+                  style={{
+                    width: '200px',
+                    height: '150px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
+                    border: '2px solid #ddd'
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
           <div className="form-field">
             <label htmlFor="name">Room Name</label>
             <input
@@ -112,9 +162,23 @@ export const EditRoom: React.FC = () => {
               required
             />
           </div>
+
+          <div className="form-field">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Enter room description"
+              value={roomData.description}
+              onChange={handleInputChange}
+              rows={3}
+              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+            />
+          </div>
+
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="floor">Location</label>
+              <label htmlFor="floor">Floor</label>
               <select
                 id="floor"
                 name="floor"

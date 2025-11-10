@@ -4,13 +4,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../../constant";
-import { getRooms, deleteRoom } from "../../../../api";
+import { getRooms, deleteRoom, getRoomAmenitiesList } from "../../../../api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Rooms.css";
 
 export const Rooms = () => {
   const [rooms, setRooms] = useState([]);
+  const [roomAmenities, setRoomAmenities] = useState<{ [key: string]: string[] }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
@@ -24,6 +25,19 @@ export const Rooms = () => {
       const data = await getRooms();
       console.log("Rooms data from API:", data);
       setRooms(data);
+
+      // Fetch amenities for each room
+      const amenitiesMap: { [key: string]: string[] } = {};
+      for (const room of data) {
+        try {
+          const amenities = await getRoomAmenitiesList(room.id);
+          amenitiesMap[room.id] = amenities;
+        } catch (err) {
+          console.error(`Error fetching amenities for room ${room.id}:`, err);
+          amenitiesMap[room.id] = [];
+        }
+      }
+      setRoomAmenities(amenitiesMap);
     } catch (err) {
       console.error("Error fetching rooms:", err);
     }
@@ -92,32 +106,28 @@ export const Rooms = () => {
 
         <div className="room-table-body">
           {filteredRooms.map((room: any) => {
-            console.log("Room amenities:", room.amenities, "Type:", typeof room.amenities);
+            const amenities = roomAmenities[room.id] || [];
             return (
               <div key={room.id} className="room-table-row">
                 <div className="name-column">{room.name}</div>
                 <div className="amenities-column">
-                  {Array.isArray(room.amenities) && room.amenities.length > 0
-                    ? room.amenities.join(", ")
-                    : room.Amenities && Array.isArray(room.Amenities) && room.Amenities.length > 0
-                    ? room.Amenities.join(", ")
-                    : "-"}
+                  {amenities.length > 0 ? amenities.join(", ") : "-"}
                 </div>
                 <div className="actions-column">
-                <button
-                  className="edit-button"
-                  onClick={() => handleEditRoom(room.id)}
-                >
-                  <EditIcon style={{ color: 'green' }} />
-                </button>
-              </div>
-              <div className="actions-column">
-                <button
-                  className="delete-button"
-                  onClick={() => handleDeleteRoom(room.id)}
-                >
-                  <DeleteIcon style={{ color: 'red' }} />
-                </button>
+                  <button
+                    className="edit-button"
+                    onClick={() => handleEditRoom(room.id)}
+                  >
+                    <EditIcon style={{ color: 'green' }} />
+                  </button>
+                </div>
+                <div className="actions-column">
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeleteRoom(room.id)}
+                  >
+                    <DeleteIcon style={{ color: 'red' }} />
+                  </button>
                 </div>
               </div>
             );

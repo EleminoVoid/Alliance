@@ -106,8 +106,20 @@ export async function deleteRoom(id: string) {
 }
 
 // AMENITIES
+export async function getAllRoomAmenities() {
+  return requestJson("/roomamenities");
+}
+
 export async function getRoomAmenities(roomId: string) {
-  return requestJson(`/roomamenities/${roomId}`);
+  return requestJson(`/roomamenities/room/${roomId}`);
+}
+
+export async function getRoomAmenitiesList(roomId: string) {
+  return requestJson(`/roomamenities/room/${roomId}/list`);
+}
+
+export async function getUniqueAmenities() {
+  return requestJson("/roomamenities/unique");
 }
 
 export async function addRoomAmenity(roomId: string, amenity: string) {
