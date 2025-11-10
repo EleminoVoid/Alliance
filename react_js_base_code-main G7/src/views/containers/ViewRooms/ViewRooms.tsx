@@ -23,7 +23,22 @@ export const ViewRooms: React.FC = () => {
 
   useEffect(() => {
     getRooms()
-      .then((data: any[]) => setRooms(data || []))
+      .then((data: any[]) => {
+        console.log("Rooms data from API:", data);
+        // Normalize the data to handle both PascalCase and camelCase
+        const normalizedRooms = (data || []).map((room: any) => ({
+          id: room.id || room.Id,
+          name: room.name || room.Name || "",
+          floor: (room.floor || room.Floor || "").toLowerCase(),
+          capacity: room.capacity || room.Capacity || 0,
+          available: room.available !== undefined ? room.available : room.Available !== undefined ? room.Available : true,
+          amenities: room.amenities || room.Amenities || [],
+          description: room.description || room.Description || "",
+          image: room.image || room.Image || "https://via.placeholder.com/400x300?text=Room+Image"
+        }));
+        console.log("Normalized rooms:", normalizedRooms);
+        setRooms(normalizedRooms);
+      })
       .catch((err) => console.error("Error fetching rooms:", err));
   }, []);
 
@@ -109,5 +124,3 @@ export const ViewRooms: React.FC = () => {
     </div>
   );
 };
-
-export default ViewRooms;
