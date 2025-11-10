@@ -494,7 +494,7 @@
             <img
               src={
                 selectedRoomData.image
-                  ? selectedRoomData.image.startsWith("/") || selectedRoomData.image.startsWith("http")
+                  ? selectedRoomData.image.startsWith("data:") || selectedRoomData.image.startsWith("/") || selectedRoomData.image.startsWith("http")
                     ? selectedRoomData.image
                     : "/" + selectedRoomData.image
                   : "/placeholder.svg"
