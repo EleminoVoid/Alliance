@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
-import bcrypt from "bcryptjs";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getUserById, updateUser, resetUserPassword } from "../../../../api";
 import "./EditUser.css";
 
 interface UserData {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  password: string;
-  avatar?: string;
+  Id: string;
+  Username: string;
+  Email: string;
+  Role: string;
 }
 
 export const EditUser: React.FC = () => {
@@ -24,13 +21,30 @@ export const EditUser: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:3000/users/${id}`)
-      .then((res) => res.json())
-      .then((data: UserData) => {
-        setUserData(data);
+    console.log("Fetching user with ID:", id);
+    getUserById(id)
+      .then((data: any) => {
+        console.log("User data received:", data);
+        // Handle both PascalCase and camelCase
+        const role = data.Role || data.role || "";
+        // Normalize role to PascalCase (capitalize first letter)
+        const normalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+
+        const normalizedData = {
+          Id: data.Id || data.id,
+          Username: data.Username || data.username,
+          Email: data.Email || data.email,
+          Role: normalizedRole
+        };
+        console.log("Normalized user data:", normalizedData);
+        setUserData(normalizedData);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error("Error loading user:", err);
+        toast.error("Failed to load user");
+        setLoading(false);
+      });
   }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,23 +59,27 @@ export const EditUser: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userData) return;
-    let updatedUser = { ...userData };
-    if (passwordInput) {
-      // Hash the new password
-      updatedUser.password = await bcrypt.hash(passwordInput, 10);
+
+    try {
+      // Update user details
+      const updatedUserData = {
+        Username: userData.Username,
+        Email: userData.Email,
+        Role: userData.Role
+      };
+      await updateUser(userData.Id, updatedUserData);
+
+      // Reset password if provided
+      if (passwordInput) {
+        await resetUserPassword(userData.Id, passwordInput);
+      }
+
+      toast.success("User updated successfully!");
+      setTimeout(() => navigate(-1), 1500);
+    } catch (err) {
+      console.error("Error updating user:", err);
+      toast.error("Error updating user");
     }
-    // else, keep the old hash
-    fetch(`http://localhost:3000/users/${userData.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedUser),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to update user");
-        toast.success("User updated successfully!");
-        setTimeout(() => navigate(-1), 1500);
-      })
-      .catch(() => toast.error("Error updating user"));
   };
 
   if (loading) return <div>Loading...</div>;
@@ -72,61 +90,53 @@ export const EditUser: React.FC = () => {
       <ToastContainer />
       <h1>Edit user</h1>
       <form onSubmit={handleSubmit}>
-        <div className="avatar-section">
-          <div className="user-avatar">
-            <img src={userData.avatar || "https://i.pravatar.cc/40"} alt="avatar" />
-            <EditIcon />
-          </div>
-        </div>
         <div className="form-fields">
-          <div className="form-row">
-            <div className="form-field">
-              <label htmlFor="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={userData.username}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+          <div className="form-field">
+            <label htmlFor="Username">Username</label>
+            <input
+              type="text"
+              id="Username"
+              name="Username"
+              value={userData.Username}
+              onChange={handleInputChange}
+              required
+            />
           </div>
           <div className="form-field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="Email">Email</label>
             <input
               type="email"
-              id="email"
-              name="email"
-              value={userData.email}
+              id="Email"
+              name="Email"
+              value={userData.Email}
               onChange={handleInputChange}
               required
             />
           </div>
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="role">Role</label>
+              <label htmlFor="Role">Role</label>
               <select
-                id="role"
-                name="role"
-                value={userData.role}
+                id="Role"
+                name="Role"
+                value={userData.Role}
                 onChange={handleInputChange}
                 required
               >
-                <option value="admin">Admin</option>
-                <option value="manager">Manager</option>
-                <option value="user">User</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="User">User</option>
               </select>
             </div>
             <div className="form-field">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">New Password (optional)</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 value={passwordInput}
                 onChange={e => setPasswordInput(e.target.value)}
-                placeholder="Enter new password to change"
+                placeholder="Leave empty to keep current password"
               />
             </div>
           </div>

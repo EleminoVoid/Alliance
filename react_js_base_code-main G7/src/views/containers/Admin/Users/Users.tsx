@@ -20,7 +20,10 @@ export const Users: React.FC = () => {
 
   useEffect(() => {
     getUsers()
-      .then((data) => setUsers(data || []))
+      .then((data) => {
+        console.log("Users data from API:", data);
+        setUsers(data || []);
+      })
       .catch((err) => {
         console.error("Error fetching users:", err);
         toast.error("Failed to load users");
@@ -40,7 +43,7 @@ export const Users: React.FC = () => {
     if (!userToDelete) return;
     try {
       await deleteUser(userToDelete);
-      setUsers((prev) => prev.filter((u) => u.Id !== userToDelete));
+      setUsers((prev) => prev.filter((u: any) => (u.Id || u.id || u._id) !== userToDelete));
       toast.success("User deleted");
     } catch (err) {
       console.error(err);
@@ -93,35 +96,40 @@ export const Users: React.FC = () => {
         </div>
 
         <div className="user-table-body">
-          {filtered.map((user) => (
-            <div key={user.Id} className="user-table-row">
-              <div className="name-column">
-                <div className="user-avatar">
-                  <img src={user.Avatar || "/placeholder.svg"} alt="avatar" />
+          {filtered.map((user: any) => {
+            console.log("Rendering user:", user);
+            const username = user.Username || user.username || 'N/A';
+            const email = user.Email || user.email || 'N/A';
+            const role = user.Role || user.role || 'N/A';
+            const userId = user.Id || user.id || user._id;
+
+            return (
+              <div key={userId} className="user-table-row">
+                <div className="name-column">
+                  {username}
                 </div>
-                {user.Username}
+
+                <div className="role-column">
+                  <span className={`role-badge ${role?.toLowerCase()}`}>{role}</span>
+                </div>
+
+                <div className="date-column">{email}</div>
+
+                <div className="actions-column">
+                  <button
+                    className="edit-button"
+                    onClick={() => navigate(ADMIN_PATHS.EDIT_USER.path.replace(":id", userId))}
+                  >
+                    <EditIcon style={{ color: "green" }} />
+                  </button>
+
+                  <button className="delete-button" onClick={() => openDeleteModal(userId)}>
+                    <DeleteIcon style={{ color: "red" }} />
+                  </button>
+                </div>
               </div>
-
-              <div className="role-column">
-                <span className={`role-badge ${user.Role?.toLowerCase()}`}>{user.Role}</span>
-              </div>
-
-              <div className="date-column">{user.Email}</div>
-
-              <div className="actions-column">
-                <button
-                  className="edit-button"
-                  onClick={() => navigate(ADMIN_PATHS.EDIT_USER.path.replace(":id", user.Id))}
-                >
-                  <EditIcon style={{ color: "green" }} />
-                </button>
-
-                <button className="delete-button" onClick={() => openDeleteModal(user.Id)}>
-                  <DeleteIcon style={{ color: "red" }} />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -149,6 +157,3 @@ export const Users: React.FC = () => {
     </div>
   );
 };
-
-export default Users;
-

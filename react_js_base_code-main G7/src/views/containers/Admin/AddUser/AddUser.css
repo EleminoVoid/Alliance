@@ -1,11 +1,13 @@
 .user-form-container {
   max-width: 800px;
+  max-height: calc(100vh - 100px);
   margin: 0 auto;
   padding: 2rem;
   font-family: "Arial", sans-serif;
   background-color: #f5f7fa;
   border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
 }
 
 .user-form-container h1 {

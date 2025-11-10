@@ -1,5 +1,5 @@
 * {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
 
 }
@@ -126,8 +126,8 @@
   display: table-row;
 }
 
-.user-table-header > div,
-.user-table-row > div {
+.user-table-header>div,
+.user-table-row>div {
   display: table-cell;
   vertical-align: middle;
   padding: 1rem;
@@ -140,8 +140,9 @@
   color: white;
 }
 
-.user-table-header > div {
+.user-table-header>div {
   border-bottom: none;
+  color: white;
 }
 
 .user-table-body {
@@ -164,40 +165,45 @@
   text-align: center;
 }
 
-.name-column {
-  min-width: 120px;
-  width: 2fr;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  background-color: #e5e7eb;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.user-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+.user-table-row .name-column {
+  min-width: 200px;
+  width: 30%;
+  font-weight: 500;
+  color: #111827;
 }
 
 .role-column {
-  min-width: 100px;
-  width: 1fr;
+  min-width: 150px;
+  width: 20%;
 }
 
-.date-column {
-  min-width: 160px;
-  width: 1fr;
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.role-badge.admin {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.role-badge.manager {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.role-badge.user {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.user-table-row .date-column {
+  min-width: 200px;
+  width: 30%;
+  color: #111827;
 }
 
 .actions-column {
@@ -262,30 +268,35 @@
 }
 
 @media (max-width: 1024px) {
-  .user-table-header > div,
-  .user-table-row > div {
+
+  .user-table-header>div,
+  .user-table-row>div {
     padding: 0.75rem;
     font-size: 0.95rem;
   }
 }
 
 @media (max-width: 768px) {
+
   .user-table-header,
   .user-table-row {
     grid-template-columns: 40px 2fr 1fr 100px;
     display: grid;
   }
+
   .date-column {
     display: none;
   }
 }
 
 @media (max-width: 480px) {
+
   .user-table-header,
   .user-table-row {
     grid-template-columns: 40px 2fr 100px;
     display: grid;
   }
+
   .role-column {
     display: none;
   }

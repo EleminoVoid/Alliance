@@ -42,6 +42,14 @@ export async function getUsers() {
   return requestJson("/users");
 }
 
+export async function getUserById(id: string) {
+  return requestJson(`/users/${id}`);
+}
+
+export async function searchUsers(query: string) {
+  return requestJson(`/users/search?query=${encodeURIComponent(query)}`);
+}
+
 export async function addUser(user: any) {
   return requestJson("/users", {
     method: "POST",
@@ -50,8 +58,24 @@ export async function addUser(user: any) {
   });
 }
 
+export async function updateUser(id: string, user: any) {
+  return requestJson(`/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(user),
+  });
+}
+
 export async function deleteUser(id: string) {
   return requestEmpty(`/users/${id}`, { method: "DELETE" });
+}
+
+export async function resetUserPassword(id: string, newPassword: string) {
+  return requestJson(`/users/${id}/reset-password`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ newPassword }),
+  });
 }
 
 // AUTH

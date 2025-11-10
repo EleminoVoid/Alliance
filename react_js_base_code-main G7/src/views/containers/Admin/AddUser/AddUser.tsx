@@ -1,22 +1,20 @@
 import type React from "react"
 import { useState } from "react"
-import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./AddUser.css"
 import { ADMIN_PATHS } from "../../../../constant/constants";
 import { getUsers, addUser } from "../../../../api";
 
 export const AddUser = () => {
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
+    username: "",
     email: "",
     role: "",
     password: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -30,39 +28,35 @@ export const AddUser = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    setError(null)
-    setSuccess(null)
 
     try {
       const existingUsers = await getUsers();
       if ((existingUsers || []).some((u: any) => (u.Email ?? u.email) === userData.email)) {
-        setError("An account with this email already exists.");
+        toast.error("An account with this email already exists.");
         setIsSubmitting(false);
         return;
       }
 
       const newUser = {
-        id: Date.now().toString(16),
-        email: userData.email,
-        username: `${userData.firstName} ${userData.lastName}`.trim(),
-        password: userData.password,
-        role: userData.role.toLowerCase(),
-        avatar: "https://i.pravatar.cc/40"
+        Email: userData.email,
+        Username: userData.username.trim(),
+        Password: userData.password,
+        Role: userData.role
       }
 
-      const created = await addUser({ Email: newUser.email, Username: newUser.username, Password: newUser.password, Role: newUser.role });
-      if (!created) throw new Error("Failed to add user")
-      setSuccess("User added successfully!")
+      await addUser(newUser);
+      toast.success("User added successfully!")
+      setTimeout(() => {
+        navigate(ADMIN_PATHS.USER_MANAGEMENT.path)
+      }, 1500);
       setUserData({
-        firstName: "",
-        lastName: "",
+        username: "",
         email: "",
         role: "",
         password: "",
       })
-      navigate(ADMIN_PATHS.USER_MANAGEMENT.path)
     } catch (err: any) {
-      setError(err.message || "Error adding user")
+      toast.error(err.message || "Error adding user")
     } finally {
       setIsSubmitting(false)
     }
@@ -70,42 +64,22 @@ export const AddUser = () => {
 
   return (
     <div className="user-form-container">
+      <ToastContainer />
       <h1>Add user</h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="avatar-section">
-          <div className="user-avatar">
-            <EditIcon />
-          </div>
-        </div>
-
         <div className="form-fields">
-          <div className="form-row">
-            <div className="form-field">
-              <label htmlFor="firstName">First Name</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                placeholder="First Name"
-                value={userData.firstName}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="form-field">
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                placeholder="Last Name"
-                value={userData.lastName}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+          <div className="form-field">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Username"
+              value={userData.username}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
           <div className="form-field">
@@ -159,8 +133,6 @@ export const AddUser = () => {
             Cancel
           </button>
         </div>
-        {error && <div className="form-error">{error}</div>}
-        {success && <div className="form-success">{success}</div>}
       </form>
     </div>
   )

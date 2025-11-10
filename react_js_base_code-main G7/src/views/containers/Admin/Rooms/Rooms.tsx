@@ -29,14 +29,18 @@ export const Rooms = () => {
       // Fetch amenities for each room
       const amenitiesMap: { [key: string]: string[] } = {};
       for (const room of data) {
+        const roomId = room.id || room.Id;
         try {
-          const amenities = await getRoomAmenitiesList(room.id);
-          amenitiesMap[room.id] = amenities;
+          console.log(`Fetching amenities for room ${roomId}`);
+          const amenities = await getRoomAmenitiesList(roomId);
+          console.log(`Amenities for room ${roomId}:`, amenities);
+          amenitiesMap[roomId] = amenities;
         } catch (err) {
-          console.error(`Error fetching amenities for room ${room.id}:`, err);
-          amenitiesMap[room.id] = [];
+          console.error(`Error fetching amenities for room ${roomId}:`, err);
+          amenitiesMap[roomId] = [];
         }
       }
+      console.log("Final amenitiesMap:", amenitiesMap);
       setRoomAmenities(amenitiesMap);
     } catch (err) {
       console.error("Error fetching rooms:", err);
@@ -48,7 +52,7 @@ export const Rooms = () => {
   };
 
   const filteredRooms = rooms.filter((room: any) =>
-    room.name.toLowerCase().includes(searchQuery.toLowerCase())
+    (room.name || room.Name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleEditRoom = (roomId: string) => {
@@ -59,7 +63,7 @@ export const Rooms = () => {
     if (!window.confirm("Are you sure you want to delete this room?")) return;
     try {
       await deleteRoom(roomId);
-      setRooms((prev) => prev.filter((room: any) => room.id !== roomId));
+      setRooms((prev) => prev.filter((room: any) => (room.id || room.Id) !== roomId));
       toast.success("Room deleted successfully!");
     } catch (err) {
       toast.error("Error deleting room.");
@@ -106,17 +110,20 @@ export const Rooms = () => {
 
         <div className="room-table-body">
           {filteredRooms.map((room: any) => {
-            const amenities = roomAmenities[room.id] || [];
+            const roomId = room.id || room.Id;
+            const roomName = room.name || room.Name;
+            const amenities = roomAmenities[roomId] || [];
+            console.log(`Displaying room ${roomId}, amenities:`, amenities);
             return (
-              <div key={room.id} className="room-table-row">
-                <div className="name-column">{room.name}</div>
+              <div key={roomId} className="room-table-row">
+                <div className="name-column">{roomName}</div>
                 <div className="amenities-column">
                   {amenities.length > 0 ? amenities.join(", ") : "-"}
                 </div>
                 <div className="actions-column">
                   <button
                     className="edit-button"
-                    onClick={() => handleEditRoom(room.id)}
+                    onClick={() => handleEditRoom(roomId)}
                   >
                     <EditIcon style={{ color: 'green' }} />
                   </button>
@@ -124,7 +131,7 @@ export const Rooms = () => {
                 <div className="actions-column">
                   <button
                     className="delete-button"
-                    onClick={() => handleDeleteRoom(room.id)}
+                    onClick={() => handleDeleteRoom(roomId)}
                   >
                     <DeleteIcon style={{ color: 'red' }} />
                   </button>

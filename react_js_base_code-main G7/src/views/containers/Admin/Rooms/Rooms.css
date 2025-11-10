@@ -98,6 +98,7 @@
 
 .room-table-header>div {
   border-bottom: none;
+  color: white;
 }
 
 .room-table-body {
@@ -115,14 +116,17 @@
   background-color: #f9fafb;
 }
 
-.name-column {
+.room-table-row .name-column {
   min-width: 120px;
   width: 2fr;
+  color: #111827;
+  font-weight: 500;
 }
 
-.amenities-column {
+.room-table-row .amenities-column {
   min-width: 160px;
   width: 1fr;
+  color: #111827;
 }
 
 .actions-column {

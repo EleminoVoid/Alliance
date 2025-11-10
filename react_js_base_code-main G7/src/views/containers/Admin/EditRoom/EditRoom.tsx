@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
-import { getRoomById, updateRoom } from "../../../../api";
+import { getRoomById, updateRoom, getRoomAmenities } from "../../../../api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditRoom.css";
@@ -43,14 +43,40 @@ export const EditRoom: React.FC = () => {
     if (!id) return;
     const loadRoom = async () => {
       try {
-        const room: Room = await getRoomById(id);
+        const room: any = await getRoomById(id);
+        console.log("Loaded room data:", room);
+
         setRoomData(room);
-        setImagePreview(room.image || "");
-        const state: Record<string, boolean> = {};
-        AMENITIES_LIST.forEach((a) => {
-          state[a.key] = room.amenities?.includes(a.key) ?? false;
-        });
-        setAmenitiesState(state);
+        setImagePreview(room.image || room.Image || "");
+
+        // Fetch amenities from the amenities endpoint
+        try {
+          const amenitiesData = await getRoomAmenities(id);
+          console.log("Amenities data from API:", amenitiesData);
+
+          // Extract amenity names from the response
+          let roomAmenities: string[] = [];
+          if (Array.isArray(amenitiesData)) {
+            // If it returns array of objects with Amenity property
+            roomAmenities = amenitiesData.map((item: any) => item.Amenity || item.amenity).filter(Boolean);
+          }
+          console.log("Processing amenities:", roomAmenities);
+
+          const state: Record<string, boolean> = {};
+          AMENITIES_LIST.forEach((a) => {
+            state[a.key] = roomAmenities.includes(a.key);
+          });
+          console.log("Amenities state:", state);
+          setAmenitiesState(state);
+        } catch (amenityErr) {
+          console.error("Error loading amenities:", amenityErr);
+          // If amenities fetch fails, initialize all as unchecked
+          const state: Record<string, boolean> = {};
+          AMENITIES_LIST.forEach((a) => {
+            state[a.key] = false;
+          });
+          setAmenitiesState(state);
+        }
       } catch (err) {
         console.error("Error loading room:", err);
       }
