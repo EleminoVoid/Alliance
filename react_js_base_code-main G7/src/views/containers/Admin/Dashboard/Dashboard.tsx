@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { getRooms, getBookings } from "../../../../api";
 import {
   PieChart,
   Pie,
@@ -53,16 +54,34 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [roomsRes, bookingsRes] = await Promise.all([
-          axios.get<Room[]>("http://localhost:3000/rooms"),
-          axios.get<any[]>("http://localhost:3000/bookings")
+        const [roomsData, bookingsData] = await Promise.all([
+          getRooms(),
+          getBookings()
         ]);
 
-        setRooms(roomsRes.data);
+        // Normalize room data
+        const normalizedRooms: Room[] = (roomsData || []).map((room: any) => ({
+          id: room.id || room.Id,
+          name: room.name || room.Name || "",
+          floor: room.floor || room.Floor || "",
+          capacity: room.capacity || room.Capacity || 0,
+          available: room.available ?? room.Available ?? true
+        }));
+        setRooms(normalizedRooms);
 
-        const flatBookings = flattenBookings(bookingsRes.data);
+        // Normalize booking data
+        const normalizedBookings = (bookingsData || []).map((booking: any) => ({
+          id: booking.id || booking.Id,
+          userId: booking.userId || booking.UserId || "",
+          roomId: booking.roomId || booking.RoomId || "",
+          startDate: booking.startDate || booking.StartDate || "",
+          endDate: booking.endDate || booking.EndDate || "",
+          type: booking.type || booking.Type || "single"
+        }));
+
+        const flatBookings = flattenBookings(normalizedBookings);
         setBookings(flatBookings);
-        calculateMostUsedRoom(roomsRes.data, flatBookings);
+        calculateMostUsedRoom(normalizedRooms, flatBookings);
         const counts = calculateBookingPercentages(flatBookings);
         setBookingCounts(counts);
       } catch (error) {
@@ -75,7 +94,7 @@ export const Dashboard = () => {
 
   const calculateMostUsedRoom = (rooms: Room[], bookings: Booking[]) => {
     const roomUsage: Record<string, number> = {};
-    
+
     bookings.forEach((booking) => {
       roomUsage[booking.roomId] = (roomUsage[booking.roomId] || 0) + 1;
     });
@@ -95,7 +114,7 @@ export const Dashboard = () => {
     const totalBookings = bookings.length;
     const percentages: Record<string, number> = {};
     const counts: Record<string, number> = {};
-    
+
     if (totalBookings === 0) {
       setBookingPercentages({});
       return {};
@@ -105,7 +124,7 @@ export const Dashboard = () => {
       percentages[booking.roomId] = (percentages[booking.roomId] || 0) + (1 / totalBookings) * 100;
       counts[booking.roomId] = (counts[booking.roomId] || 0) + 1;
     });
-    
+
     setBookingPercentages(percentages);
     return counts;
   };
@@ -123,9 +142,9 @@ export const Dashboard = () => {
       .map(([month, count]) => ({
         month,
         bookings: count,
-        monthDisplay: new Date(month + '-01').toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'short' 
+        monthDisplay: new Date(month + '-01').toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short'
         })
       }))
       .sort((a, b) => a.month.localeCompare(b.month));
@@ -174,7 +193,7 @@ export const Dashboard = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage, count }) => 
+                    label={({ name, percentage, count }) =>
                       `${name}\n${count} booking${count !== 1 ? 's' : ''}\n(${percentage}%)`
                     }
                     outerRadius={120}
@@ -194,7 +213,7 @@ export const Dashboard = () => {
                       return `${data.name}: ${data.count} (${data.percentage}%)`;
                     }}
                   />
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value: number, name: string, props: any) => [
                       `${props.payload.count} booking${props.payload.count !== 1 ? 's' : ''}`,
                       `${props.payload.name} (${value}%)`
@@ -251,7 +270,7 @@ export const Dashboard = () => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="monthDisplay" />
                 <YAxis />
-                <Tooltip 
+                <Tooltip
                   formatter={(value) => [`${value} bookings`, 'Bookings']}
                   labelFormatter={(month) => `Month: ${month}`}
                 />

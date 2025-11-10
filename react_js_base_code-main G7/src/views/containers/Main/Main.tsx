@@ -9,6 +9,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React, { Fragment, useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import { getUserById } from "../../../api";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import AppBar from "../../components/AppBar";
@@ -41,9 +42,17 @@ export const Main = () => {
     const userId = localStorage.getItem("userId");
     if (!userId) return;
 
-    fetch(`http://localhost:3000/users/${userId}`)
-      .then((res) => res.json())
-      .then((data) => setUser(data))
+    getUserById(userId)
+      .then((data) => {
+        // Normalize user data to handle PascalCase from C# backend
+        const normalizedUser = {
+          id: data.id || data.Id,
+          username: data.username || data.Username || "",
+          email: data.email || data.Email || "",
+          role: data.role || data.Role || ""
+        };
+        setUser(normalizedUser);
+      })
       .catch((err) => console.error("Failed to fetch user", err));
   }, []);
 

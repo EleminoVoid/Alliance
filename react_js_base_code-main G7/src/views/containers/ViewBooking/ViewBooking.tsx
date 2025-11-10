@@ -4,7 +4,9 @@ import { PATHS } from "../../../constant";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./ViewBooking.css";
-import { getBookings, getRooms, deleteBooking } from "../../../api";
+import { getBookings, getRooms, deleteBooking, deleteRecurringBooking } from "../../../api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Room {
   id: string;
@@ -56,7 +58,7 @@ function groupRecurringBookings(bookings: Booking[]) {
       recurringMap[key].dates.push(b.startDate);
       recurringMap[key].weekdays.push(
         ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
-          new Date(b.startDate).getDay()
+        new Date(b.startDate).getDay()
         ]
       );
     }
@@ -85,27 +87,36 @@ export const ViewBookings: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const userId = localStorage.getItem("userId");
-      // Fetch bookings and rooms
-      const [bookingsData, roomsData] = await Promise.all([getBookings(), getRooms()]);
+      try {
+        // Fetch bookings and rooms
+        const [bookingsData, roomsData] = await Promise.all([getBookings(), getRooms()]);
 
-      const flatBookings: Booking[] = [];
-      bookingsData.forEach((entry: any) => {
-        const keys = Object.keys(entry).filter((k) => !isNaN(Number(k)));
-        if (keys.length > 0) {
-          keys.forEach((k) => {
-            flatBookings.push({ ...entry[k], id: entry[k].id || entry.id });
-          });
-        } else if (entry.roomId) {
-          flatBookings.push(entry);
-        }
-      });
+        // Normalize booking data to handle PascalCase from C# backend
+        const normalizedBookings: Booking[] = (bookingsData || []).map((booking: any) => ({
+          id: booking.id || booking.Id,
+          userId: booking.userId || booking.UserId || "",
+          roomId: booking.roomId || booking.RoomId || "",
+          startDate: booking.startDate || booking.StartDate || "",
+          endDate: booking.endDate || booking.EndDate || "",
+          type: (booking.type || booking.Type || "single") as "single" | "recurring"
+        }));
 
-      const userBookings = flatBookings.filter(
-        (b) => String(b.userId) === String(userId)
-      );
+        // Normalize room data
+        const normalizedRooms: Room[] = (roomsData || []).map((room: any) => ({
+          id: room.id || room.Id,
+          name: room.name || room.Name || "",
+          floor: room.floor || room.Floor || ""
+        }));
 
-      setBookings(userBookings);
-      setRooms(roomsData);
+        const userBookings = normalizedBookings.filter(
+          (b) => String(b.userId) === String(userId)
+        );
+
+        setBookings(userBookings);
+        setRooms(normalizedRooms);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
     fetchData();
@@ -124,13 +135,30 @@ export const ViewBookings: React.FC = () => {
     navigate(PATHS.EDIT_BOOKINGS.path.replace(":id", bookingId));
   };
 
-  const handleDeleteBooking = async (bookingId: string) => {
+  const handleDeleteBooking = async (bookingId: string, bookingType?: "single" | "recurring") => {
     if (!window.confirm("Are you sure you want to delete this booking?")) return;
+
+    console.log("Deleting booking with ID:", bookingId, "Type:", bookingType);
+
     try {
-      await deleteBooking(bookingId);
+      let result;
+
+      // Use appropriate delete endpoint based on booking type
+      if (bookingType === "recurring") {
+        result = await deleteRecurringBooking(bookingId);
+        console.log("Delete recurring result:", result);
+      } else {
+        result = await deleteBooking(bookingId);
+        console.log("Delete single result:", result);
+      }
+
+      // Update local state to remove the deleted booking(s)
+      // For recurring, this will remove all bookings with the same pattern
       setBookings((prev) => prev.filter((b) => b.id !== bookingId));
-    } catch (err) {
-      alert("Error deleting booking.");
+      toast.success("Booking deleted successfully!");
+    } catch (err: any) {
+      console.error("Error deleting booking:", err);
+      toast.error(err.message || "Error deleting booking. Please try again.");
     }
   };
 
@@ -172,6 +200,7 @@ export const ViewBookings: React.FC = () => {
 
   return (
     <div className="view-bookings-container">
+      <ToastContainer />
       <div className="view-bookings-header">
         <h1 className="view-bookings-title">Your Bookings</h1>
       </div>
@@ -213,7 +242,7 @@ export const ViewBookings: React.FC = () => {
                   <td className="table-cell">
                     <button
                       className="delete-button"
-                      onClick={() => handleDeleteBooking(booking.id)}
+                      onClick={() => handleDeleteBooking(booking.id, booking.type)}
                       style={{
                         background: "transparent",
                         border: "none",
@@ -248,7 +277,7 @@ export const ViewBookings: React.FC = () => {
                     })}
                   </td>
                   <td className="table-cell">
-                    {formatTimeRange(group.startDate, group.endDate)}
+                    {formatTimeRange(group.sampleBooking.startDate, group.sampleBooking.endDate)}
                   </td>
                   <td className="table-cell">
                     <button
@@ -261,7 +290,7 @@ export const ViewBookings: React.FC = () => {
                   <td className="table-cell">
                     <button
                       className="delete-button"
-                      onClick={() => handleDeleteBooking(group.sampleBooking.id)}
+                      onClick={() => handleDeleteBooking(group.sampleBooking.id, "recurring")}
                       style={{
                         background: "transparent",
                         border: "none",
@@ -326,7 +355,7 @@ export const ViewBookings: React.FC = () => {
                 </button>
                 <button
                   className="delete-button"
-                  onClick={() => handleDeleteBooking(booking.id)}
+                  onClick={() => handleDeleteBooking(booking.id, booking.type)}
                   style={{
                     background: "transparent",
                     border: "none",

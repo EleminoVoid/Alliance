@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PATHS } from "../../../constant";
 import "./EditBooking.css";
+import { getBookingById, getRooms, updateBooking } from "../../../api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Booking {
   id: string;
@@ -34,61 +37,57 @@ export const EditBooking: React.FC = () => {
 
   // Fetch booking by ID and rooms
   useEffect(() => {
-    fetch("http://localhost:3000/rooms")
-      .then((res) => res.json())
-      .then((data) => setRooms(data))
-      .catch(() => setRooms([]));
+    const fetchData = async () => {
+      try {
+        // Fetch rooms
+        const roomsData = await getRooms();
+        const normalizedRooms: Room[] = (roomsData || []).map((room: any) => ({
+          id: room.id || room.Id,
+          name: room.name || room.Name || "",
+          amenities: room.amenities || room.Amenities || []
+        }));
+        setRooms(normalizedRooms);
 
-    if (!id) {
-      setError("No booking ID provided in the URL.");
-      setLoading(false);
-      return;
-    }
-    fetch(`http://localhost:3000/bookings/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Booking not found");
-        return res.json();
-      })
-      .then((data) => {
-        // If the booking is not found, data will be empty or undefined
+        if (!id) {
+          setError("No booking ID provided in the URL.");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch booking by ID
+        const data = await getBookingById(id);
+
         if (!data || Object.keys(data).length === 0) {
           setError("Booking not found");
           setLoading(false);
           return;
         }
-        let bookingData = data;
-        const numericKeys = Object.keys(data).filter((k) => !isNaN(Number(k)));
-        if (numericKeys.length > 0) {
-          // Recurring booking: get all startDates and endDates
-          const allStartDates = numericKeys
-            .map((k) => data[k]?.startDate)
-            .filter(Boolean)
-            .sort();
-          const allEndDates = numericKeys
-            .map((k) => data[k]?.endDate)
-            .filter(Boolean)
-            .sort();
-          bookingData = data[numericKeys[0]];
-          if (!bookingData.id && data.id) bookingData.id = data.id;
-          if (bookingData.type === "recurring" && allStartDates.length > 1) {
-            bookingData.startDate = allStartDates[0];
-            bookingData.endDate = allEndDates[allEndDates.length - 1];
-          }
-        } else if (data[0]) {
-          bookingData = data[0];
-        }
+
+        // Normalize booking data to handle PascalCase from C# backend
+        const bookingData: Booking = {
+          id: data.id || data.Id,
+          userId: data.userId || data.UserId || "",
+          roomId: data.roomId || data.RoomId || "",
+          startDate: data.startDate || data.StartDate || "",
+          endDate: data.endDate || data.EndDate || "",
+          type: (data.type || data.Type || "single") as "single" | "recurring"
+        };
+
         setBooking(bookingData);
         setForm({
           roomId: bookingData.roomId,
-          startDate: bookingData.startDate
-            ? bookingData.startDate.slice(0, 16)
-            : "",
+          startDate: bookingData.startDate ? bookingData.startDate.slice(0, 16) : "",
           endDate: bookingData.endDate ? bookingData.endDate.slice(0, 16) : "",
           type: bookingData.type,
         });
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      } catch (err: any) {
+        setError(err.message || "Error loading booking");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
   // Get all unique amenities from rooms
@@ -114,24 +113,27 @@ export const EditBooking: React.FC = () => {
     setError("");
     if (!booking) return;
 
+    // Ensure dates are in proper format with seconds
     const updatedBooking = {
-      ...booking,
+      userId: booking.userId,
       roomId: form.roomId,
-      startDate: form.startDate,
-      endDate: form.endDate,
+      startDate: form.startDate.includes(":") ? `${form.startDate}:00` : form.startDate,
+      endDate: form.endDate.includes(":") ? `${form.endDate}:00` : form.endDate,
       type: form.type as "single" | "recurring",
     };
 
+    console.log("Updating booking:", updatedBooking);
+
     try {
-      const res = await fetch(`http://localhost:3000/bookings/${booking.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedBooking),
-      });
-      if (!res.ok) throw new Error("Failed to update booking");
-      alert("Booking updated successfully!");
-      navigate(PATHS.BOOKINGS?.path || "/bookings");
+      const result = await updateBooking(booking.id, updatedBooking);
+      console.log("Update result:", result);
+      toast.success("Booking updated successfully!");
+      setTimeout(() => {
+        navigate(PATHS.BOOKINGS?.path || "/bookings");
+      }, 1500);
     } catch (err: any) {
+      console.error("Error updating booking:", err);
+      toast.error(err.message || "Error updating booking. Please try again.");
       setError(err.message || "Error updating booking");
     }
   };
@@ -147,6 +149,7 @@ export const EditBooking: React.FC = () => {
 
   return (
     <div className="edit-booking-container">
+      <ToastContainer />
       <h1>Edit Booking</h1>
       <form className="edit-booking-form" onSubmit={handleSubmit}>
         <div>
