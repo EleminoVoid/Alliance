@@ -56,6 +56,20 @@
 .form-field label {
   font-weight: 600;
   color: #374151;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin: -0.25rem 0 0;
+}
+
+.required-indicator {
+  color: #dc2626;
+  font-size: 0.95rem;
 }
 
 .form-field input,
@@ -86,8 +100,10 @@
 .features-section>label {
   font-weight: 600;
   color: #374151;
-  display: block;
   margin-bottom: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .features-grid {

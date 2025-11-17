@@ -123,6 +123,13 @@
   font-weight: 500;
 }
 
+.room-table-row .capacity-column {
+  min-width: 100px;
+  width: 0.8fr;
+  color: #111827;
+  font-weight: 500;
+}
+
 .room-table-row .amenities-column {
   min-width: 160px;
   width: 1fr;
@@ -208,7 +215,7 @@
 
   .room-table-header,
   .room-table-row {
-    grid-template-columns: 2fr 1fr 100px;
+    grid-template-columns: 2fr 0.8fr 100px 100px;
     display: grid;
   }
 
@@ -221,7 +228,7 @@
 
   .room-table-header,
   .room-table-row {
-    grid-template-columns: 2fr 100px;
+    grid-template-columns: 1.5fr 0.8fr 80px 80px;
     display: grid;
   }
 }
