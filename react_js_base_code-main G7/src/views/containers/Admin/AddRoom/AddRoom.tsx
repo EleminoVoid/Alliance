@@ -19,6 +19,7 @@ export const AddRoom = () => {
     amenities: [] as string[],
   })
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
   const auth = useAuth();
@@ -58,13 +59,48 @@ export const AddRoom = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setValidationErrors({});
+
+    const trimmedName = roomData.name.trim();
+    const numericCapacity = Number(roomData.capacity);
+
+    const errors: Record<string, string> = {};
+
+    if (!trimmedName) {
+      errors.name = "Room Name is required.";
+    }
+
+    if (!roomData.floor) {
+      errors.floor = "Location is required.";
+    }
+
+    if (!roomData.capacity) {
+      errors.capacity = "Capacity is required.";
+    } else if (Number.isNaN(numericCapacity) || numericCapacity <= 0) {
+      errors.capacity = "Capacity must be a positive number.";
+    }
+
+    if (roomData.amenities.length === 0) {
+      errors.amenities = "Select at least one amenity.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      const allErrors = Object.values(errors);
+      allErrors.forEach((errMsg) => toast.error(errMsg));
+      setError(allErrors[0]);
+      return;
+    }
 
     try {
       const existingRooms = await getRooms();
 
       // Check for duplicate name
-      if (existingRooms.some((room: any) => room.name?.toLowerCase() === roomData.name.trim().toLowerCase())) {
-        setError("A room with this name already exists.");
+      if (existingRooms.some((room: any) => room.name?.toLowerCase() === trimmedName.toLowerCase())) {
+        const duplicateError = "A room with this name already exists.";
+        setValidationErrors({ name: duplicateError });
+        setError(duplicateError);
+        toast.error(duplicateError);
         return;
       }
 
@@ -81,9 +117,9 @@ export const AddRoom = () => {
   const currentUser = auth.user;
 
       const newRoom = {
-        name: roomData.name.trim(),
+        name: trimmedName,
         floor: roomData.floor,
-        capacity: parseInt(roomData.capacity),
+        capacity: numericCapacity,
         description: roomData.description || "",
         image: imageData,
         available: true,
@@ -106,7 +142,7 @@ export const AddRoom = () => {
       <ToastContainer />
       <h1>Add room</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="form-fields">
           <div className="form-field">
             <label htmlFor="image">Room Image</label>
@@ -135,7 +171,9 @@ export const AddRoom = () => {
           </div>
 
           <div className="form-field">
-            <label htmlFor="name">Room Name</label>
+            <label htmlFor="name">
+              Room Name <span className="required-indicator">*</span>
+            </label>
             <input
               type="text"
               id="name"
@@ -143,7 +181,11 @@ export const AddRoom = () => {
               placeholder="Room Name 101"
               value={roomData.name}
               onChange={handleInputChange}
+              required
             />
+            {validationErrors.name && (
+              <p className="field-error">{validationErrors.name}</p>
+            )}
           </div>
 
           <div className="form-field">
@@ -161,7 +203,9 @@ export const AddRoom = () => {
 
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="floor">Floor</label>
+              <label htmlFor="floor">
+                Location <span className="required-indicator">*</span>
+              </label>
               <select
                 id="floor"
                 name="floor"
@@ -174,10 +218,15 @@ export const AddRoom = () => {
                 <option value="mezzanine">Mezzanine Floor</option>
                 <option value="first">First Floor</option>
               </select>
+              {validationErrors.floor && (
+                <p className="field-error">{validationErrors.floor}</p>
+              )}
             </div>
 
             <div className="form-field">
-              <label htmlFor="capacity">Capacity</label>
+              <label htmlFor="capacity">
+                Capacity <span className="required-indicator">*</span>
+              </label>
               <input
                 type="number"
                 id="capacity"
@@ -186,12 +235,18 @@ export const AddRoom = () => {
                 value={roomData.capacity}
                 onChange={handleInputChange}
                 required
+                min={1}
               />
+              {validationErrors.capacity && (
+                <p className="field-error">{validationErrors.capacity}</p>
+              )}
             </div>
           </div>
 
           <div className="features-section">
-            <label>Amenities</label>
+            <label>
+              Amenities <span className="required-indicator">*</span>
+            </label>
             <div className="features-grid">
               <div className="feature-item">
                 <input
@@ -266,10 +321,11 @@ export const AddRoom = () => {
                 <label htmlFor="videoConferencing">Video Conferencing Setup</label>
               </div>
             </div>
+            {validationErrors.amenities && (
+              <p className="field-error">{validationErrors.amenities}</p>
+            )}
           </div>
         </div>
-
-        {error && <div className="form-error">{error}</div>}
 
         <div className="form-actions">
           <button type="submit" className="submit-button">

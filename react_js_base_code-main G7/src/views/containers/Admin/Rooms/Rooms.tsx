@@ -73,6 +73,14 @@ export const Rooms = () => {
     }
   };
 
+  const formatAmenityLabel = (value: string) => {
+    return value
+      ?.replace(/[_-]+/g, " ")
+      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replace(/\b\w/g, (char) => char.toUpperCase())
+      .trim();
+  };
+
   return (
     <div className="room-management-container">
       <ToastContainer />
@@ -106,6 +114,7 @@ export const Rooms = () => {
         <div className="room-table-header">
           <div className="number-column">No.</div>
           <div className="name-column">Name</div>
+          <div className="capacity-column">Capacity</div>
           <div className="amenities-column">Amenities</div>
           <div className="actions-column">Edit</div>
           <div className="actions-column">Delete</div>
@@ -122,6 +131,9 @@ export const Rooms = () => {
               <div key={roomId} className="room-table-row">
                 <div className="number-column">{number}</div>
                 <div className="name-column">{roomName}</div>
+                <div className="capacity-column">
+                  {room.capacity ?? room.Capacity ?? "-"}
+                </div>
                 <div className="amenities-column">
                   {amenities && amenities.length > 0 ? joinAmenityList(amenities) : "-"}
                 </div>

@@ -246,7 +246,7 @@
 
   .room-table-header,
   .room-table-row {
-    grid-template-columns: 2fr 1fr 100px;
+    grid-template-columns: 2fr 0.8fr 100px 100px;
     display: grid;
   }
 
@@ -259,7 +259,7 @@
 
   .room-table-header,
   .room-table-row {
-    grid-template-columns: 2fr 100px;
+    grid-template-columns: 1.5fr 0.8fr 80px 80px;
     display: grid;
   }
 }
