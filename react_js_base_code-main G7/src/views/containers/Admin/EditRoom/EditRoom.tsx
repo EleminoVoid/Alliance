@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import { getRoomById, updateRoom, getRoomAmenities } from "../../../../api";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./EditRoom.css";
@@ -37,6 +38,7 @@ export const EditRoom: React.FC = () => {
   const [amenitiesState, setAmenitiesState] = useState<Record<string, boolean>>({});
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const auth = useAuth();
 
   // Fetch this room's data
   useEffect(() => {
@@ -131,7 +133,7 @@ export const EditRoom: React.FC = () => {
       image: imageData,
       available: roomData.available,
       amenities: AMENITIES_LIST.filter((a) => amenitiesState[a.key]).map((a) => a.key),
-      createdBy: roomData.createdBy || localStorage.getItem("username") || "admin"
+      createdBy: roomData.createdBy || auth.user?.username || auth.user?.Username || "admin"
     };
     try {
       await updateRoom(roomData.id, updatedRoom);

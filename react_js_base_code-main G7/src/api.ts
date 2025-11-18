@@ -1,11 +1,20 @@
 // Using HTTP backend only to avoid duplicate requests
 const API_BASES = ["http://localhost:5000/api"];
 
+// In-memory auth token (set after login if backend returns a token)
+let AUTH_TOKEN: string | null = null;
+
+export function setAuthToken(token: string | null) {
+  AUTH_TOKEN = token;
+}
+
 async function requestJson(path: string, init?: RequestInit) {
   let lastError: any = null;
   for (const base of API_BASES) {
     try {
-      const res = await fetch(`${base}${path}`, init);
+      const headers = new Headers(init?.headers as any || {});
+      if (AUTH_TOKEN) headers.set("Authorization", `Bearer ${AUTH_TOKEN}`);
+      const res = await fetch(`${base}${path}`, { ...init, headers });
       if (!res.ok) {
         const errorText = await res.text();
         console.error(`API Error (${res.status}):`, errorText);
@@ -26,7 +35,9 @@ async function requestEmpty(path: string, init?: RequestInit) {
   let lastError: any = null;
   for (const base of API_BASES) {
     try {
-      const res = await fetch(`${base}${path}`, init);
+      const headers = new Headers(init?.headers as any || {});
+      if (AUTH_TOKEN) headers.set("Authorization", `Bearer ${AUTH_TOKEN}`);
+      const res = await fetch(`${base}${path}`, { ...init, headers });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       return; // Successfully completed, return immediately
     } catch (err) {
@@ -85,6 +96,16 @@ export async function login(userId: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ UserId: userId, Password: password }),
   });
+}
+
+// Get current authenticated user (relies on server session/cookie or token)
+export async function getCurrentUser() {
+  return requestJson("/users/me");
+}
+
+// Logout - best-effort to call server logout endpoint if available
+export async function logout() {
+  return requestEmpty("/users/logout", { method: "POST" });
 }
 
 export async function changePassword(userId: string, currentPassword: string, newPassword: string, confirmPassword: string) {

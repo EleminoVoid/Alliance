@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import "./Settings.css";
 import { ToastContainer, toast } from "react-toastify";
 
@@ -14,22 +16,24 @@ export const Settings: React.FC = () => {
   const [bookingReminders, setBookingReminders] = useState<boolean>(true);
   const [systemUpdates, setSystemUpdates] = useState<boolean>(false);
 
+  // Admin-only settings
+  const [allowRecurringBookings, setAllowRecurringBookings] = useState<boolean>(true);
+  const [requireBookingApproval, setRequireBookingApproval] = useState<boolean>(false);
+  const [maxBookingHours, setMaxBookingHours] = useState<number>(2);
+
   const [showNotification, setShowNotification] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>("");
+  const auth = useAuth();
+  const navigate = useNavigate();
 
   // Fetch user info
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
-    import("../../../api").then(({ getUsers }) => {
-      getUsers()
-        .then((users: any[]) => {
-          const u = (users || []).find((x) => (x.Id ?? x.id) === (Number(userId) || userId));
-          if (u) setEmail(u.Email ?? u.email ?? "");
-        })
-        .catch(() => setEmail(""));
-    });
-  }, []);
+    if (auth && auth.user) {
+      setEmail(auth.user.email || auth.user.Email || "");
+    }
+  }, [auth]);
+
+  const isAdmin = !!(auth && auth.user && String(auth.user.role || '').toLowerCase().includes('admin'));
 
   const handleSaveAccount = (): void => {
     if (newPassword && newPassword !== confirmPassword) {
@@ -42,6 +46,11 @@ export const Settings: React.FC = () => {
 
   const handleSaveNotifications = (): void => {
     toast.success("Notification preferences saved successfully.");
+  };
+
+  const handleSaveAdminSettings = (): void => {
+    // In a real app we'd persist these via API. For now show a toast and keep state local.
+    toast.success("Admin settings saved.");
   };
 
   return (
@@ -62,6 +71,14 @@ export const Settings: React.FC = () => {
         >
           Notifications
         </button>
+        {isAdmin && (
+          <button
+            className={`settings-tab ${activeTab === "admin" ? "settings-tab-active" : ""}`}
+            onClick={() => setActiveTab("admin")}
+          >
+            Admin
+          </button>
+        )}
       </div>
 
       {activeTab === "account" && (
@@ -187,6 +204,63 @@ export const Settings: React.FC = () => {
           <button onClick={handleSaveNotifications} className="save-button">
             Save Preferences
           </button>
+        </div>
+      )}
+
+      {isAdmin && activeTab === "admin" && (
+        <div className="settings-section">
+          <h2 className="section-title">Admin Settings</h2>
+          <p className="section-description">System-wide configuration and policies</p>
+
+          <div className="notification-option">
+            <div>
+              <label htmlFor="allow-recurring" className="label">Allow Recurring Bookings</label>
+              <p className="option-description">Enable or disable recurring booking creation by users</p>
+            </div>
+            <input
+              id="allow-recurring"
+              type="checkbox"
+              checked={allowRecurringBookings}
+              onChange={() => setAllowRecurringBookings(!allowRecurringBookings)}
+              className="checkbox"
+            />
+          </div>
+
+          <div className="notification-option">
+            <div>
+              <label htmlFor="require-approval" className="label">Require Booking Approval</label>
+              <p className="option-description">Bookings will require admin approval before being confirmed</p>
+            </div>
+            <input
+              id="require-approval"
+              type="checkbox"
+              checked={requireBookingApproval}
+              onChange={() => setRequireBookingApproval(!requireBookingApproval)}
+              className="checkbox"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="max-hours" className="label">Max Booking Duration (hours)</label>
+            <input
+              id="max-hours"
+              type="number"
+              min={1}
+              max={24}
+              value={maxBookingHours}
+              onChange={(e) => setMaxBookingHours(Number(e.target.value || 1))}
+              className="input"
+            />
+          </div>
+
+          <div className="admin-actions">
+            <button onClick={() => navigate('/admin/users')} className="secondary-button">
+              Manage Users
+            </button>
+            <button onClick={handleSaveAdminSettings} className="save-button">
+              Save Admin Settings
+            </button>
+          </div>
         </div>
       )}
 

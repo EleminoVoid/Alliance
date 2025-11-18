@@ -1,5 +1,6 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
+import { useAuth } from "../../../contexts/AuthContext";
 import { useParams } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
@@ -25,6 +26,7 @@ interface Booking {
 
 export const CalendarBooking = () => {
   const { id: roomIdFromUrl } = useParams<{ id: string }>();
+  const auth = useAuth();
   const [rooms, setRooms] = useState<Room[]>([])
   const [bookings, setBookings] = useState<Booking[]>([])
   const [selectedRoom, setSelectedRoom] = useState<string>("")
@@ -37,6 +39,8 @@ export const CalendarBooking = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [calendarKey, setCalendarKey] = useState<number>(0)
   const [sidebarHeight, setSidebarHeight] = useState<string>("auto")
+  const [startTimeState, setStartTimeState] = useState<string>("");
+  const [endTimeState, setEndTimeState] = useState<string>("");
 
   const calendarRef = useRef<any>(null)
   const timeViewRef = useRef<any>(null)
@@ -177,8 +181,9 @@ export const CalendarBooking = () => {
     setIsLoading(true);
 
     const form = e.currentTarget;
-    const startTime = (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
-    const endTime = (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
+  // prefer controlled state values for start/end time (fall back to form inputs if needed)
+  const startTime = startTimeState || (form.elements.namedItem("startTime") as HTMLInputElement)?.value;
+  const endTime = endTimeState || (form.elements.namedItem("endTime") as HTMLInputElement)?.value;
 
     // --- Add this block for single booking ---
     if (!isRecurring) {
@@ -227,8 +232,8 @@ export const CalendarBooking = () => {
       return;
     }
 
-    // Always read the userId from localStorage
-    const userId = localStorage.getItem("userId") || "1";
+    // Read current user id from AuthContext
+    const userId = auth.user?.id || auth.user?.Id || "1";
 
     let allBookings: Omit<Booking, "id">[] = [];
 
@@ -346,6 +351,10 @@ export const CalendarBooking = () => {
           }));
           setBookings(normalizedBookings);
           form.reset();
+          setStartTimeState("");
+          setEndTimeState("");
+          setStartTimeState("");
+          setEndTimeState("");
           setSelectedWeekdays([]);
           setIsRecurring(false);
           setRecurringStartDate("");
@@ -518,6 +527,33 @@ export const CalendarBooking = () => {
     }, 300)
   }
 
+  // Handle selecting a time slot in the time view (prefill start/end times)
+  const handleTimeSelect = (info: any) => {
+    try {
+      const startDateObj: Date = info.start;
+      const iso = startDateObj.toISOString();
+      const datePart = iso.slice(0, 10);
+      const timePart = iso.slice(11, 16);
+      setSelectedDate(datePart);
+      setStartTimeState(timePart);
+
+      // set end time to 30 minutes after start by default, but ensure not beyond 2 hours / 20:00
+      const d = new Date(startDateObj);
+      d.setMinutes(d.getMinutes() + 30);
+      const endMin = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+      const d2 = new Date(startDateObj);
+      d2.setMinutes(d2.getMinutes() + 120);
+      const candidate = `${String(d2.getHours()).padStart(2, "0")}:${String(d2.getMinutes()).padStart(2, "0")}`;
+      const endMax = candidate > "20:00" ? "20:00" : candidate;
+      // default end to endMin
+      setEndTimeState(endMin > endMax ? endMax : endMin);
+      // show time view if not already
+      setShowTimeView(true);
+    } catch (err) {
+      console.error("Error handling time select:", err);
+    }
+  };
+
   return (
     <div className={`calendar-booking-container ${showTimeView ? "show-time-view" : ""}`} ref={containerRef}>
       <ToastContainer />
@@ -560,6 +596,7 @@ export const CalendarBooking = () => {
             initialView="timeGridDay"
             height="auto"
             selectable
+            select={handleTimeSelect}
             events={filteredEvents}
             headerToolbar={false}
             slotDuration="00:30:00"
@@ -691,6 +728,42 @@ export const CalendarBooking = () => {
                   step="1800"
                   min="08:00"
                   max="19:30"
+                  value={startTimeState}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setStartTimeState(v);
+                    // compute new end min (30min after start) and max (2 hours after start, capped at 20:00)
+                    const addMinutes = (time: string, mins: number) => {
+                      if (!time) return "";
+                      const [hh, mm] = time.split(":").map(Number);
+                      const d = new Date();
+                      d.setHours(hh, mm + mins, 0, 0);
+                      const H = String(d.getHours()).padStart(2, "0");
+                      const M = String(d.getMinutes()).padStart(2, "0");
+                      return `${H}:${M}`;
+                    };
+
+                    const clampTime = (time: string, min: string, max: string) => {
+                      if (!time) return min;
+                      if (time < min) return min;
+                      if (time > max) return max;
+                      return time;
+                    };
+
+                    const endMin = addMinutes(v, 30);
+                    const endMaxCandidate = addMinutes(v, 120);
+                    const globalEndMax = "20:00";
+                    const endMax = endMaxCandidate && endMaxCandidate > globalEndMax ? globalEndMax : endMaxCandidate;
+
+                    // If current end time is outside allowed range, adjust it
+                    if (endTimeState) {
+                      const adjusted = clampTime(endTimeState, endMin || "08:30", endMax || globalEndMax);
+                      setEndTimeState(adjusted);
+                    } else {
+                      // default end time to endMin when start selected
+                      setEndTimeState(endMin || "08:30");
+                    }
+                  }}
                 />
                 <span className="calendar-booking-timeSeparator">--</span>
                 <input
@@ -700,8 +773,21 @@ export const CalendarBooking = () => {
                   required
                   className="calendar-booking-input"
                   step="1800"
-                  min="08:30"
-                  max="20:00"
+                  min={startTimeState ? (() => {
+                    // 30 minutes after start
+                    const [hh, mm] = startTimeState.split(":").map(Number);
+                    const d = new Date(); d.setHours(hh, mm + 30, 0, 0);
+                    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+                  })() : "08:30"}
+                  max={startTimeState ? (() => {
+                    // 2 hours after start, capped at 20:00
+                    const [hh, mm] = startTimeState.split(":").map(Number);
+                    const d = new Date(); d.setHours(hh, mm + 120, 0, 0);
+                    const candidate = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+                    return candidate > "20:00" ? "20:00" : candidate;
+                  })() : "20:00"}
+                  value={endTimeState}
+                  onChange={(e) => setEndTimeState(e.target.value)}
                 />
               </div>
             </div>

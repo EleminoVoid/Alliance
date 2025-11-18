@@ -5,6 +5,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { ADMIN_PATHS, ADMIN_SIDE_BAR_MENU } from "../../../../constant";
 import { getRooms, deleteRoom, getRoomAmenitiesList } from "../../../../api";
+import { joinAmenityList } from '../../../../utils/format';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Rooms.css";
@@ -14,6 +15,7 @@ export const Rooms = () => {
   const [roomAmenities, setRoomAmenities] = useState<{ [key: string]: string[] }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,6 +104,7 @@ export const Rooms = () => {
 
       <div className="room-table">
         <div className="room-table-header">
+          <div className="number-column">No.</div>
           <div className="name-column">Name</div>
           <div className="amenities-column">Amenities</div>
           <div className="actions-column">Edit</div>
@@ -109,31 +112,37 @@ export const Rooms = () => {
         </div>
 
         <div className="room-table-body">
-          {filteredRooms.map((room: any) => {
+          {filteredRooms.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((room: any, idx: number) => {
             const roomId = room.id || room.Id;
             const roomName = room.name || room.Name;
             const amenities = roomAmenities[roomId] || [];
+            const number = (currentPage - 1) * pageSize + idx + 1;
             console.log(`Displaying room ${roomId}, amenities:`, amenities);
             return (
               <div key={roomId} className="room-table-row">
+                <div className="number-column">{number}</div>
                 <div className="name-column">{roomName}</div>
                 <div className="amenities-column">
-                  {amenities.length > 0 ? amenities.join(", ") : "-"}
+                  {amenities && amenities.length > 0 ? joinAmenityList(amenities) : "-"}
                 </div>
                 <div className="actions-column">
                   <button
                     className="edit-button"
+                    title="Edit room"
+                    aria-label={`Edit room ${roomName}`}
                     onClick={() => handleEditRoom(roomId)}
                   >
-                    <EditIcon style={{ color: 'green' }} />
+                    <EditIcon />
                   </button>
                 </div>
                 <div className="actions-column">
                   <button
                     className="delete-button"
+                    title="Delete room"
+                    aria-label={`Delete room ${roomName}`}
                     onClick={() => handleDeleteRoom(roomId)}
                   >
-                    <DeleteIcon style={{ color: 'red' }} />
+                    <DeleteIcon />
                   </button>
                 </div>
               </div>
@@ -143,24 +152,15 @@ export const Rooms = () => {
       </div>
 
       <div className="pagination">
-        <button
-          className={`pagination-button ${currentPage === 1 ? "active" : ""}`}
-          onClick={() => setCurrentPage(1)}
-        >
-          1
-        </button>
-        <button
-          className={`pagination-button ${currentPage === 2 ? "active" : ""}`}
-          onClick={() => setCurrentPage(2)}
-        >
-          2
-        </button>
-        <button
-          className={`pagination-button ${currentPage === 3 ? "active" : ""}`}
-          onClick={() => setCurrentPage(3)}
-        >
-          3
-        </button>
+        {Array.from({ length: Math.max(1, Math.ceil(filteredRooms.length / pageSize)) }, (_, i) => (
+          <button
+            key={i}
+            className={`pagination-button ${currentPage === i + 1 ? "active" : ""}`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
       </div>
     </div>
   );

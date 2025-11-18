@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { PATHS } from "../../../constant";
 import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { CircularProgress } from "@mui/material";
-import { login } from "../../../api";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -16,7 +16,8 @@ export const Login = () => {
 
   // Clear all local storage when the login page loads
   useEffect(() => {
-    localStorage.clear();
+    // No-op: we avoid using localStorage for auth; backend session/cookies
+    // and AuthContext handle authentication state.
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,24 +28,24 @@ export const Login = () => {
     }));
   };
 
+  const auth = useAuth();
+  const location = useLocation();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // Call backend login API
-      const user = await login(formData.email, formData.password);
-
-      // Store user data in localStorage
-      localStorage.setItem("userId", user.Id ?? user.id);
-      localStorage.setItem("userRole", user.Role ?? user.role);
-      localStorage.setItem("username", user.Username ?? user.username);
-      localStorage.setItem("userEmail", user.Email ?? user.email ?? formData.email);
-
-      // Redirect based on role
-      if ((user.Role ?? user.role)?.toLowerCase() === "admin") {
+      // Use AuthContext to perform login and populate current user from server
+      const user = await auth.login(formData.email, formData.password);
+      const role = (user?.role || user?.Role || user?.role || user?.Role || "").toString();
+      // If the login flow included a return path, navigate there after successful login
+      const from = (location.state as any)?.from as string | undefined;
+      if (role.toLowerCase() === "admin") {
         navigate(PATHS.DASHBOARD.path);
+      } else if (from) {
+        navigate(from);
       } else {
         navigate(PATHS.HOMEPAGE.path);
       }

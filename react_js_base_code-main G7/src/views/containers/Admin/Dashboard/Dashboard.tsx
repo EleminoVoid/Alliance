@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { getRooms, getBookings } from "../../../../api";
+import { getRooms, getBookings, getRoomAmenitiesList } from "../../../../api";
+import { joinAmenityList, amenityLabel, prettifyLabel } from '../../../../utils/format';
 import {
   PieChart,
   Pie,
@@ -19,10 +20,12 @@ import "./Dashboard.css";
 interface Room {
   id: string;
   name: string;
-  capacity: number;
-  description: string;
-  amenities: string[];
-  image: string;
+  floor?: string;
+  capacity?: number;
+  description?: string;
+  amenities?: string[];
+  image?: string;
+  available?: boolean;
 }
 
 interface Booking {
@@ -65,9 +68,39 @@ export const Dashboard = () => {
           name: room.name || room.Name || "",
           floor: room.floor || room.Floor || "",
           capacity: room.capacity || room.Capacity || 0,
+          description: room.description || room.Description || "",
+          amenities: (() => {
+            const a = room.amenities ?? room.Amenities ?? [];
+            if (typeof a === 'string') {
+              return a.split(',').map((s: string) => s.trim()).filter(Boolean);
+            }
+            if (Array.isArray(a)) return a;
+            return [];
+          })(),
+          image: room.image || room.Image || "",
+          // keep backward-compatible available if provided
           available: room.available ?? room.Available ?? true
         }));
-        setRooms(normalizedRooms);
+        // Fetch amenities per room (use same approach as Rooms.tsx)
+        let roomsToUse: Room[] = normalizedRooms;
+        try {
+          const amenitiesResults = await Promise.all(
+            normalizedRooms.map((r) =>
+              getRoomAmenitiesList(r.id).then((list: any) => list || []).catch((err) => {
+                console.error(`Failed to fetch amenities for room ${r.id}:`, err);
+                return [];
+              })
+            )
+          );
+
+          const roomsWithAmenities = normalizedRooms.map((r, i) => ({ ...r, amenities: amenitiesResults[i] }));
+          roomsToUse = roomsWithAmenities;
+          setRooms(roomsWithAmenities);
+        } catch (err) {
+          // If amenities fetch fails, fall back to normalizedRooms
+          console.error("Error fetching amenities for rooms:", err);
+          setRooms(normalizedRooms);
+        }
 
         // Normalize booking data
         const normalizedBookings = (bookingsData || []).map((booking: any) => ({
@@ -79,10 +112,10 @@ export const Dashboard = () => {
           type: booking.type || booking.Type || "single"
         }));
 
-        const flatBookings = flattenBookings(normalizedBookings);
-        setBookings(flatBookings);
-        calculateMostUsedRoom(normalizedRooms, flatBookings);
-        const counts = calculateBookingPercentages(flatBookings);
+  // The API returns a flat array of bookings (normalized above). Use it directly.
+  setBookings(normalizedBookings);
+  calculateMostUsedRoom(roomsToUse, normalizedBookings);
+  const counts = calculateBookingPercentages(normalizedBookings);
         setBookingCounts(counts);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -241,14 +274,17 @@ export const Dashboard = () => {
                 <p>Capacity: {mostUsedRoom.capacity}</p>
                 <p>Description: {mostUsedRoom.description}</p>
                 <p>
-                  Amenities:{" "}
-                  {mostUsedRoom.amenities?.join(", ") || "No amenities listed"}
+                  Amenities: {mostUsedRoom.amenities && mostUsedRoom.amenities.length > 0
+                    ? joinAmenityList(mostUsedRoom.amenities)
+                    : "No amenities listed"}
                 </p>
-                <img
-                  src={mostUsedRoom.image}
-                  alt={mostUsedRoom.name}
-                  style={{ maxWidth: "100%", height: "auto", borderRadius: "8px" }}
-                />
+                {mostUsedRoom.image && (
+                  <img
+                    src={mostUsedRoom.image}
+                    alt={mostUsedRoom.name}
+                    className="most-used-room-image"
+                  />
+                )}
               </div>
             ) : (
               <p>No booking data available.</p>

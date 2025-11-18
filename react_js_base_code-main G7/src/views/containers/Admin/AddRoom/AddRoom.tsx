@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import { getRooms, addRoom } from "../../../../api";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AddRoom.css"
@@ -20,6 +21,7 @@ export const AddRoom = () => {
   const [error, setError] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const auth = useAuth();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -76,6 +78,8 @@ export const AddRoom = () => {
         });
       }
 
+  const currentUser = auth.user;
+
       const newRoom = {
         name: roomData.name.trim(),
         floor: roomData.floor,
@@ -84,7 +88,7 @@ export const AddRoom = () => {
         image: imageData,
         available: true,
         amenities: roomData.amenities,
-        createdBy: localStorage.getItem("username") || "admin"
+        createdBy: currentUser?.username || currentUser?.Username || "admin"
       };
 
       await addRoom(newRoom);

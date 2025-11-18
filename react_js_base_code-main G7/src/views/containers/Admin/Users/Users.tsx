@@ -12,6 +12,7 @@ import type { User } from "../../../../types";
 
 export const Users: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // items per page
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -89,22 +90,27 @@ export const Users: React.FC = () => {
 
       <div className="user-table">
         <div className="user-table-header">
+          <div className="number-column">No.</div>
           <div className="name-column">Name</div>
           <div className="role-column">Role / Access</div>
           <div className="date-column">Email</div>
-          <div className="actions-column">Actions</div>
+          <div className="actions-column">Edit</div>
+          <div className="actions-column">Delete</div>
         </div>
 
         <div className="user-table-body">
-          {filtered.map((user: any) => {
+          {filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((user: any, idx: number) => {
             console.log("Rendering user:", user);
             const username = user.Username || user.username || 'N/A';
             const email = user.Email || user.email || 'N/A';
             const role = user.Role || user.role || 'N/A';
             const userId = user.Id || user.id || user._id;
+            const number = (currentPage - 1) * pageSize + idx + 1;
 
             return (
               <div key={userId} className="user-table-row">
+                <div className="number-column">{number}</div>
+
                 <div className="name-column">
                   {username}
                 </div>
@@ -118,13 +124,22 @@ export const Users: React.FC = () => {
                 <div className="actions-column">
                   <button
                     className="edit-button"
+                    title="Edit user"
+                    aria-label={`Edit user ${username}`}
                     onClick={() => navigate(ADMIN_PATHS.EDIT_USER.path.replace(":id", userId))}
                   >
-                    <EditIcon style={{ color: "green" }} />
+                    <EditIcon />
                   </button>
+                </div>
 
-                  <button className="delete-button" onClick={() => openDeleteModal(userId)}>
-                    <DeleteIcon style={{ color: "red" }} />
+                <div className="actions-column">
+                  <button
+                    className="delete-button"
+                    title="Delete user"
+                    aria-label={`Delete user ${username}`}
+                    onClick={() => openDeleteModal(userId)}
+                  >
+                    <DeleteIcon />
                   </button>
                 </div>
               </div>
@@ -134,9 +149,15 @@ export const Users: React.FC = () => {
       </div>
 
       <div className="pagination">
-        <button className={`pagination-button ${currentPage === 1 ? "active" : ""}`}>1</button>
-        <button className={`pagination-button ${currentPage === 2 ? "active" : ""}`}>2</button>
-        <button className={`pagination-button ${currentPage === 3 ? "active" : ""}`}>3</button>
+        {Array.from({ length: Math.max(1, Math.ceil(filtered.length / pageSize)) }, (_, i) => (
+          <button
+            key={i}
+            className={`pagination-button ${currentPage === i + 1 ? "active" : ""}`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
       </div>
 
       {showModal && (

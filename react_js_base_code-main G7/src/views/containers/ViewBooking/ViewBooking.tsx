@@ -5,6 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./ViewBooking.css";
 import { getBookings, getRooms, deleteBooking, deleteRecurringBooking } from "../../../api";
+import { useAuth } from "../../../contexts/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -79,6 +80,7 @@ function groupRecurringBookings(bookings: Booking[]) {
 
 export const ViewBookings: React.FC = () => {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("All Users");
@@ -86,7 +88,7 @@ export const ViewBookings: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const userId = localStorage.getItem("userId");
+      const userId = auth.user?.id || auth.user?.Id;
       try {
         // Fetch bookings and rooms
         const [bookingsData, roomsData] = await Promise.all([getBookings(), getRooms()]);

@@ -22,6 +22,8 @@ import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import { getUserById } from "../../../../api";
+import { useAuth } from "../../../../contexts/AuthContext";
 import "./AMain.css";
 
 export const AdminMain = () => {
@@ -37,32 +39,26 @@ export const AdminMain = () => {
     contentModeration: true
   });
 
-  useEffect(() => {
-    const verifyAdmin = () => {
-      const userId = localStorage.getItem("userId");
-      const userRole = localStorage.getItem("userRole");
-      const username = localStorage.getItem("username");
-      const userEmail = localStorage.getItem("userEmail");
+  const auth = useAuth();
 
-      // Case-insensitive role check
-      if (!userId || userRole?.toLowerCase() !== "admin") {
+  useEffect(() => {
+    // If auth context populated, validate role
+    if (!auth.loading) {
+      if (!auth.user) {
         navigate("/login", { replace: true });
         return;
       }
 
-      // Set user data from localStorage (already validated during login)
-      setUser({
-        id: userId,
-        username: username || "Admin",
-        email: userEmail || "",
-        role: userRole,
-      });
+      const role = (auth.user.role || auth.user.Role || "").toString();
+      if (role.toLowerCase() !== "admin") {
+        navigate("/login", { replace: true });
+        return;
+      }
 
+      setUser(auth.user);
       setIsLoading(false);
-    };
-
-    verifyAdmin();
-  }, [navigate]);
+    }
+  }, [auth.user, auth.loading, navigate]);
 
   if (isLoading) {
     return (

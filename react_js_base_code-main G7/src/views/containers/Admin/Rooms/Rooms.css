@@ -13,6 +13,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .room-management-header h1 {
@@ -20,6 +22,13 @@
   font-weight: 700;
   color: #111827;
   margin: 0;
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .room-count {
@@ -123,6 +132,13 @@
   font-weight: 500;
 }
 
+.number-column {
+  width: 56px;
+  text-align: center;
+  font-weight: 600;
+  color: #6b7280;
+}
+
 .room-table-row .amenities-column {
   min-width: 160px;
   width: 1fr;
@@ -157,6 +173,28 @@
 
 .delete-button:hover {
   color: #ef4444;
+}
+
+/* Ensure icon sizes and spacing are consistent */
+.edit-button svg,
+.delete-button svg {
+  font-size: 1.25rem; /* consistent icon size */
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Make the action buttons visually consistent and separated */
+.actions-column button {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions-column button:hover {
+  background: rgba(0,0,0,0.03);
 }
 
 .pagination {

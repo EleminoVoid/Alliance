@@ -10,6 +10,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { getUserById } from "../../../api";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
 import AppBar from "../../components/AppBar";
@@ -31,6 +32,7 @@ export const Main = () => {
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const theme = useTheme();
   const [user, setUser] = useState(null);
+  const auth = useAuth();
   const [activeLink, setActiveLink] = useState("");
 
   useEffect(() => {
@@ -39,43 +41,24 @@ export const Main = () => {
   }, [pathname]);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
-
-    getUserById(userId)
-      .then((data) => {
-        // Normalize user data to handle PascalCase from C# backend
-        const normalizedUser = {
-          id: data.id || data.Id,
-          username: data.username || data.Username || "",
-          email: data.email || data.Email || "",
-          role: data.role || data.Role || ""
-        };
-        setUser(normalizedUser);
-      })
-      .catch((err) => console.error("Failed to fetch user", err));
-  }, []);
+    // Populate local component user from AuthContext
+    if (auth.user) setUser(auth.user);
+  }, [auth.user]);
 
   useEffect(() => {
-    // Check for authentication token or userId in localStorage
-    const authToken = localStorage.getItem("authToken");
-    const userId = localStorage.getItem("userId");
-    // If not authenticated and not already on login/register, redirect to login
-    if ((!authToken && !userId) && location.pathname !== "/login" && location.pathname !== "/register") {
+    // Redirect to login if not authenticated
+    if (!auth.user && location.pathname !== "/login" && location.pathname !== "/register") {
       navigate("/login");
     }
-  }, [location, navigate]);
+  }, [auth.user, location, navigate]);
 
   const handleNavLinkClick = (path) => {
     setActiveLink(path);
     navigate(`/${path}`);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken"); // or whatever key you use for auth
-    localStorage.removeItem("user");      // remove user info if stored
-    // Optionally clear all localStorage:
-    // localStorage.clear();
+  const handleLogout = async () => {
+    await auth.logout();
     navigate("/login");
   };
 
@@ -179,10 +162,7 @@ export const Main = () => {
                 item.label === "Logout" ? (
                   <ListItem key={item.path} disablePadding>
                     <ListItemButton
-                      onClick={() => {
-                        localStorage.clear(); // Clear all local storage
-                        navigate("/login");
-                      }}
+                      onClick={handleLogout}
                     >
                       <ListItemIcon>
                         {item.icon || <ListItemIcon />}
