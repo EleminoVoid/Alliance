@@ -50,6 +50,7 @@ export const Rooms = () => {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentPage(1);
     setSearchQuery(e.target.value);
   };
 
@@ -110,7 +111,7 @@ export const Rooms = () => {
         </div>
       </div>
 
-      <div className="room-table">
+  <div className="room-table">
         <div className="room-table-header">
           <div className="number-column">No.</div>
           <div className="name-column">Name</div>
@@ -161,9 +162,14 @@ export const Rooms = () => {
             );
           })}
         </div>
-      </div>
+  </div>
 
-      <div className="pagination">
+  {/* Show a helpful message if a search returned no results */}
+  {searchQuery.trim() !== "" && filteredRooms.length === 0 && (
+    <div className="no-data-message">Room does not exist</div>
+  )}
+
+  <div className="pagination">
         {Array.from({ length: Math.max(1, Math.ceil(filteredRooms.length / pageSize)) }, (_, i) => (
           <button
             key={i}

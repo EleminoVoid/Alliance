@@ -204,6 +204,20 @@
   margin-top: 2rem;
 }
 
+.no-data-message {
+  margin-top: 1.25rem;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 600;
+  background: #fff7f5;
+  border: 1px solid #fee2e2;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .pagination-button {
   width: 36px;
   height: 36px;
