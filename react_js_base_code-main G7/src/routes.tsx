@@ -22,6 +22,7 @@ export const AppRoutes = () => {
         </Route><Route path={ADMIN_PATHS.ADMIN_MAIN.path} element={<Views.AdminMain />}>
           {/* Nested routes under Main */}
           <Route path={ADMIN_PATHS.DASHBOARD.path} element={<Views.Dashboard />} />
+          <Route path={ADMIN_PATHS.SYSTEM_SETTINGS.path} element={<Views.Settings />} />
           <Route path={ADMIN_PATHS.EDIT_USER.path} element={<Views.EditUser />} />
           <Route path={ADMIN_PATHS.EDIT_ROOM.path} element={<Views.EditRoom />} />
           <Route path={ADMIN_PATHS.ADD_USER.path} element={<Views.AddUser />} />
