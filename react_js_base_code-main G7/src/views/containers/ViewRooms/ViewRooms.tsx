@@ -4,7 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { USER_PATHS } from "../../../constant";
 import { useNavigate } from "react-router-dom";
 import "./ViewRooms.css";
-import { getRooms } from "../../../api";
+import { getRooms, getRoomAmenitiesList } from "../../../api";
+import { joinAmenityList } from '../../../utils/format';
 
 interface Room {
   id: string;
@@ -25,7 +26,7 @@ export const ViewRooms: React.FC = () => {
 
   useEffect(() => {
     getRooms()
-      .then((data: any[]) => {
+      .then(async (data: any[]) => {
         console.log("Rooms data from API:", data);
         // Normalize the data to handle both PascalCase and camelCase
         const normalizedRooms = (data || []).map((room: any) => ({
@@ -38,8 +39,26 @@ export const ViewRooms: React.FC = () => {
           description: room.description || room.Description || "",
           image: room.image || room.Image || "https://via.placeholder.com/400x300?text=Room+Image"
         }));
-        console.log("Normalized rooms:", normalizedRooms);
-        setRooms(normalizedRooms);
+
+        // Fetch amenities per room (use same approach as Dashboard to ensure consistency)
+        try {
+          const amenitiesResults = await Promise.all(
+            normalizedRooms.map((r) =>
+              getRoomAmenitiesList(r.id).then((list: any) => list || []).catch((err) => {
+                console.error(`Failed to fetch amenities for room ${r.id}:`, err);
+                return [];
+              })
+            )
+          );
+
+          const roomsWithAmenities = normalizedRooms.map((r, i) => ({ ...r, amenities: amenitiesResults[i] }));
+          console.log("Normalized rooms with amenities:", roomsWithAmenities);
+          setRooms(roomsWithAmenities);
+        } catch (err) {
+          console.error("Error fetching room amenities:", err);
+          // fallback to normalized rooms without extra amenities
+          setRooms(normalizedRooms);
+        }
       })
       .catch((err) => {
         console.error("Error fetching rooms:", err);
@@ -110,11 +129,11 @@ export const ViewRooms: React.FC = () => {
                 </span>
               </div>
               <div className="room-amenities">
-                {room.amenities.map((amenity) => (
-                  <span key={amenity} className="room-amenity">
-                    {amenity}
-                  </span>
-                ))}
+                {room.amenities && room.amenities.length > 0 ? (
+                  <span className="room-amenity">{joinAmenityList(room.amenities)}</span>
+                ) : (
+                  <span className="room-amenity">No amenities listed</span>
+                )}
               </div>
               <button
                 className="room-book-button"

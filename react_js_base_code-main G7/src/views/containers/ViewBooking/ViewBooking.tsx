@@ -4,10 +4,11 @@ import { PATHS } from "../../../constant";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./ViewBooking.css";
-import { getBookings, getRooms, deleteBooking, deleteRecurringBooking } from "../../../api";
+import { getBookings, getRooms, getRoomAmenitiesList, deleteBooking, deleteRecurringBooking } from "../../../api";
 import { useAuth } from "../../../contexts/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
 import { getErrorMessage } from "../../../utils/error";
+import { amenityLabel } from '../../../utils/format';
 import "react-toastify/dist/ReactToastify.css";
 
 interface Room {
@@ -105,18 +106,38 @@ export const ViewBookings: React.FC = () => {
         }));
 
         // Normalize room data
-        const normalizedRooms: Room[] = (roomsData || []).map((room: any) => ({
+        const normalizedRooms: any[] = (roomsData || []).map((room: any) => ({
           id: room.id || room.Id,
           name: room.name || room.Name || "",
-          floor: room.floor || room.Floor || ""
+          floor: room.floor || room.Floor || "",
+          amenities: room.amenities || room.Amenities || []
         }));
 
-        const userBookings = normalizedBookings.filter(
-          (b) => String(b.userId) === String(userId)
-        );
+        // Fetch amenities per room to ensure consistent presentation
+        try {
+          const amenitiesResults = await Promise.all(
+            normalizedRooms.map((r) =>
+              getRoomAmenitiesList(r.id).then((list: any) => list || []).catch((err) => {
+                console.error(`Failed to fetch amenities for room ${r.id}:`, err);
+                return r.amenities || [];
+              })
+            )
+          );
 
-        setBookings(userBookings);
-        setRooms(normalizedRooms);
+          const roomsWithAmenities = normalizedRooms.map((r, i) => ({ ...r, amenities: amenitiesResults[i] }));
+
+          const userBookings = normalizedBookings.filter(
+            (b) => String(b.userId) === String(userId)
+          );
+
+          setBookings(userBookings);
+          setRooms(roomsWithAmenities as Room[]);
+        } catch (err) {
+          console.error('Error fetching room amenities:', err);
+          const userBookings = normalizedBookings.filter((b) => String(b.userId) === String(userId));
+          setBookings(userBookings);
+          setRooms(normalizedRooms as Room[]);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         const msg = getErrorMessage(error, "Error loading bookings");
@@ -222,6 +243,11 @@ export const ViewBookings: React.FC = () => {
     return room ? `${room.floor} - ${room.name}` : roomId;
   };
 
+  const getRoomAmenities = (roomId: string) => {
+    const room: any = rooms.find((r) => r.id === roomId);
+    return (room && Array.isArray(room.amenities)) ? room.amenities : [];
+  };
+
   const getWeekdayLabel = (dateString: string) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const date = new Date(dateString);
@@ -254,7 +280,14 @@ export const ViewBookings: React.FC = () => {
               {/* Render single bookings */}
               {singles.map((booking) => (
                 <tr key={booking.id} className="table-row">
-                  <td className="table-cell">{getRoomInfo(booking.roomId)}</td>
+                  <td className="table-cell">
+                    <div className="room-info-line">{getRoomInfo(booking.roomId)}</div>
+                    <div className="amenity-pills">
+                      {getRoomAmenities(booking.roomId).map((a: any, i: number) => (
+                        <span key={`${booking.roomId}-amen-${i}`} className="amenity-pill">{amenityLabel(a)}</span>
+                      ))}
+                    </div>
+                  </td>
                   <td className="table-cell">One-time</td>
                   <td className="table-cell">
                     {getWeekdayLabel(booking.startDate)}{" "}
@@ -294,7 +327,14 @@ export const ViewBookings: React.FC = () => {
               {/* Render recurring booking groups */}
               {recurringGroups.map((group) => (
                 <tr key={group.key} className="table-row">
-                  <td className="table-cell">{getRoomInfo(group.roomId)}</td>
+                  <td className="table-cell">
+                    <div className="room-info-line">{getRoomInfo(group.roomId)}</div>
+                    <div className="amenity-pills">
+                      {getRoomAmenities(group.roomId).map((a: any, i: number) => (
+                        <span key={`${group.roomId}-amen-${i}`} className="amenity-pill">{amenityLabel(a)}</span>
+                      ))}
+                    </div>
+                  </td>
                   <td className="table-cell">
                     <span style={{ color: "#604b66", }}>
                       Recurring
@@ -348,7 +388,12 @@ export const ViewBookings: React.FC = () => {
             bookings.map((booking) => (
               <div key={booking.id} className="mobile-booking-card">
                 <div className="mobile-booking-header">
-                  <span>{getRoomInfo(booking.roomId)}</span>
+                  <div className="room-info-line">{getRoomInfo(booking.roomId)}</div>
+                  <div className="amenity-pills mobile">
+                    {getRoomAmenities(booking.roomId).map((a: any, i: number) => (
+                      <span key={`${booking.roomId}-m-amen-${i}`} className="amenity-pill">{amenityLabel(a)}</span>
+                    ))}
+                  </div>
                 </div>
                 <div className="mobile-booking-details">
                   <div>
