@@ -7,6 +7,7 @@ import "./ViewBooking.css";
 import { getBookings, getRooms, deleteBooking, deleteRecurringBooking } from "../../../api";
 import { useAuth } from "../../../contexts/AuthContext";
 import { toast, ToastContainer } from "react-toastify";
+import { getErrorMessage } from "../../../utils/error";
 import "react-toastify/dist/ReactToastify.css";
 
 interface Room {
@@ -160,7 +161,8 @@ export const ViewBookings: React.FC = () => {
       toast.success("Booking deleted successfully!");
     } catch (err: any) {
       console.error("Error deleting booking:", err);
-      toast.error(err.message || "Error deleting booking. Please try again.");
+      const msg = getErrorMessage(err, "Error deleting booking. Please try again.");
+      toast.error(msg);
     }
   };
 

@@ -90,11 +90,11 @@ export async function resetUserPassword(id: string, newPassword: string) {
 }
 
 // AUTH
-export async function login(email: string, password: string) {
+export async function login(userId: string, password: string) {
   return requestJson("/users/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ Email: email, Password: password }),
+    body: JSON.stringify({ UserId: userId, Password: password }),
   });
 }
 

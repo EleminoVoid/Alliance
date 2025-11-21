@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import "./Register.css";
 import { ToastContainer, toast } from "react-toastify";
 import { getUsers, addUser } from "../../../api";
+import { getErrorMessage } from "../../../utils/error";
 
 export const Register = () => {
   const { pathname } = window.location;
@@ -50,13 +51,13 @@ export const Register = () => {
         }, 1500);
       } catch (err: any) {
         console.error("Registration error:", err);
-        const errorMessage = err?.response?.data?.message || err?.message || "Failed to register. Please try again.";
+        const errorMessage = getErrorMessage(err, "Failed to register. Please try again.");
         toast.error(errorMessage);
         setIsSubmitting(false);
       }
     } catch (err: any) {
       console.error("Registration error:", err);
-      const errorMessage = err?.message || "Failed to register. Please try again.";
+      const errorMessage = getErrorMessage(err, "Failed to register. Please try again.");
       toast.error(errorMessage);
       setIsSubmitting(false);
     }

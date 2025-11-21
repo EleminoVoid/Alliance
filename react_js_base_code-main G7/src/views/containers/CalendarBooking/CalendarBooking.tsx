@@ -9,7 +9,10 @@ import interactionPlugin from "@fullcalendar/interaction"
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import "./CalendarBooking.css"
-import { getRooms, getBookings, addBooking, addRecurringBooking } from "../../../api"; interface Room {
+import { getRooms, getBookings, addBooking, addRecurringBooking } from "../../../api";
+import { getErrorMessage } from "../../../utils/error";
+
+interface Room {
   id: string
   name: string
   image: string
@@ -362,10 +365,10 @@ export const CalendarBooking = () => {
         })
         .catch((error) => {
           console.error("Error creating recurring booking:", error);
-          // Check if it's a 500 error (serialization issue) - booking might still be saved
-          if (error.message?.includes("500") || error.message?.includes("Internal Server Error")) {
+          const msg = getErrorMessage(error, "Failed to create recurring booking. Please try again.");
+          // If the API indicates server error but booking may have been created, show a warning
+          if ((error && (error.status === 500 || (error.message && (error.message.includes("500") || error.message.includes("Internal Server Error"))))) ) {
             toast.warning("Booking may have been created. Refreshing...");
-            // Try to refresh bookings anyway
             getBookings().then((bookingsData: any[]) => {
               const normalizedBookings = (bookingsData || []).map((booking: any) => ({
                 id: booking.id || booking.Id,
@@ -378,7 +381,7 @@ export const CalendarBooking = () => {
               setBookings(normalizedBookings);
             });
           } else {
-            toast.error("Failed to create recurring booking. Please try again.");
+            toast.error(msg);
           }
         })
         .finally(() => {
@@ -417,10 +420,9 @@ export const CalendarBooking = () => {
         })
         .catch((error) => {
           console.error("Error creating booking:", error);
-          // Check if it's a 500 error (serialization issue) - booking might still be saved
-          if (error.message?.includes("500") || error.message?.includes("Internal Server Error")) {
+          const msg = getErrorMessage(error, "Failed to create booking. Please try again.");
+          if ((error && (error.status === 500 || (error.message && (error.message.includes("500") || error.message.includes("Internal Server Error"))))) ) {
             toast.warning("Booking may have been created. Refreshing...");
-            // Try to refresh bookings anyway
             getBookings().then((bookingsData: any[]) => {
               const normalizedBookings = (bookingsData || []).map((booking: any) => ({
                 id: booking.id || booking.Id,
@@ -433,7 +435,7 @@ export const CalendarBooking = () => {
               setBookings(normalizedBookings);
             });
           } else {
-            toast.error("Failed to create booking. Please try again.");
+            toast.error(msg);
           }
         })
         .finally(() => {

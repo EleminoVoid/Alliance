@@ -7,6 +7,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./AddRoom.css"
+import { getErrorMessage } from "../../../../utils/error";
 
 export const AddRoom = () => {
   const navigate = useNavigate();
@@ -131,8 +132,9 @@ export const AddRoom = () => {
       toast.success("Room added successfully!");
       setTimeout(() => navigate(-1), 1500);
     } catch (err: any) {
-      setError(err.message || "Error adding room");
-      toast.error("Error adding room");
+      const msg = getErrorMessage(err, "Error adding room");
+      setError(msg);
+      toast.error(msg);
       console.error("Error adding room:", err);
     }
   }

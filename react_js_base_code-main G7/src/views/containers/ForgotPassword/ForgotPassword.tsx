@@ -4,6 +4,7 @@ import { PATHS } from "../../../constant";
 import { ToastContainer, toast } from "react-toastify"
 import { getUsers, changePassword } from "../../../api";
 import "./ForgotPassword.css";
+import { getErrorMessage } from "../../../utils/error";
 
 export const ForgotPassword = () => {
   const { pathname } = window.location;
@@ -50,7 +51,7 @@ export const ForgotPassword = () => {
       }, 1500);
     } catch (err: any) {
       console.error("Password change error:", err);
-      const errorMessage = err?.message || "Failed to change password. Please check your current password.";
+      const errorMessage = getErrorMessage(err, "Failed to change password. Please check your current password.");
       toast.error(errorMessage);
       setIsSubmitting(false);
     }

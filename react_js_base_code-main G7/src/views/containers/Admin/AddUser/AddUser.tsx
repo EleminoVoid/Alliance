@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./AddUser.css"
 import { ADMIN_PATHS } from "../../../../constant/constants";
 import { getUsers, addUser } from "../../../../api";
+import { getErrorMessage } from "../../../../utils/error";
 
 export const AddUser = () => {
   const [userData, setUserData] = useState({
@@ -65,7 +66,8 @@ export const AddUser = () => {
         confirmPassword: "",
       })
     } catch (err: any) {
-      toast.error(err.message || "Error adding user")
+      const msg = getErrorMessage(err, "Error adding user");
+      toast.error(msg)
     } finally {
       setIsSubmitting(false)
     }

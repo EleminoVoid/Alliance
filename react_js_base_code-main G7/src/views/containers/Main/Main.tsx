@@ -31,7 +31,8 @@ export const Main = () => {
   const location = useLocation();
   const [openDrawer, setOpenDrawer] = React.useState(false);
   const theme = useTheme();
-  const [user, setUser] = useState(null);
+  type User = { username?: string; email?: string } | null;
+  const [user, setUser] = useState<User>(null);
   const auth = useAuth();
   const [activeLink, setActiveLink] = useState("");
 
@@ -52,7 +53,7 @@ export const Main = () => {
     }
   }, [auth.user, location, navigate]);
 
-  const handleNavLinkClick = (path) => {
+  const handleNavLinkClick = (path: string) => {
     setActiveLink(path);
     navigate(`/${path}`);
   };
@@ -158,7 +159,7 @@ export const Main = () => {
           {/* Menu Items */}
           <Box sx={{ flexGrow: 1 }}>
             <List>
-              {USER_SIDE_BAR_MENU.map((item) =>
+              {USER_SIDE_BAR_MENU.map((item: any) =>
                 item.label === "Logout" ? (
                   <ListItem key={item.path} disablePadding>
                     <ListItemButton

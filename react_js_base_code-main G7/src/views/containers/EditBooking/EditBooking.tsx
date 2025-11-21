@@ -4,6 +4,7 @@ import { PATHS } from "../../../constant";
 import "./EditBooking.css";
 import { getBookingById, getRooms, updateBooking } from "../../../api";
 import { toast, ToastContainer } from "react-toastify";
+import { getErrorMessage } from '../../../utils/error';
 import "react-toastify/dist/ReactToastify.css";
 
 interface Booking {
@@ -81,7 +82,8 @@ export const EditBooking: React.FC = () => {
           type: bookingData.type,
         });
       } catch (err: any) {
-        setError(err.message || "Error loading booking");
+        const msg = getErrorMessage(err, "Error loading booking");
+        setError(msg);
       } finally {
         setLoading(false);
       }
@@ -133,8 +135,9 @@ export const EditBooking: React.FC = () => {
       }, 1500);
     } catch (err: any) {
       console.error("Error updating booking:", err);
-      toast.error(err.message || "Error updating booking. Please try again.");
-      setError(err.message || "Error updating booking");
+      const msg = getErrorMessage(err, "Error updating booking. Please try again.");
+      toast.error(msg);
+      setError(msg);
     }
   };
 

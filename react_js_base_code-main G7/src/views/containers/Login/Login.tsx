@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "../../../contexts/AuthContext";
+import { getErrorMessage } from '../../../utils/error';
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -50,7 +51,8 @@ export const Login = () => {
         navigate(PATHS.HOMEPAGE.path);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Invalid email or password");
+      const msg = getErrorMessage(err, "Invalid email or password");
+      setError(msg);
       console.error("Login error:", err);
     } finally {
       setLoading(false);
