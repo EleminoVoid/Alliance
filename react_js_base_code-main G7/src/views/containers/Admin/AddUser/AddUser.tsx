@@ -13,6 +13,7 @@ export const AddUser = () => {
     email: "",
     role: "",
     password: "",
+    confirmPassword: "",
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate();
@@ -28,6 +29,13 @@ export const AddUser = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+
+    // Validate password confirmation
+    if (userData.password !== userData.confirmPassword) {
+      toast.error("Passwords do not match");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const existingUsers = await getUsers();
@@ -54,6 +62,7 @@ export const AddUser = () => {
         email: "",
         role: "",
         password: "",
+        confirmPassword: "",
       })
     } catch (err: any) {
       toast.error(err.message || "Error adding user")
@@ -118,6 +127,19 @@ export const AddUser = () => {
                 required
               />
             </div>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={userData.confirmPassword}
+              onChange={handleInputChange}
+              required
+            />
           </div>
         </div>
 
