@@ -10,7 +10,6 @@ export const ForgotPassword = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -19,7 +18,7 @@ export const ForgotPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !currentPassword || !newPassword || !confirmPassword) {
+    if (!email || !newPassword || !confirmPassword) {
       toast.info("All fields are required.");
       return;
     }
@@ -43,7 +42,7 @@ export const ForgotPassword = () => {
       }
 
       // Call change password API
-      await changePassword(user.Id ?? user.id, currentPassword, newPassword, confirmPassword);
+      await changePassword(user.Id ?? user.id, newPassword, confirmPassword);
 
       toast.success("Password changed successfully.");
       setTimeout(() => {
@@ -71,18 +70,6 @@ export const ForgotPassword = () => {
                 className="forgot-password-input"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                required
-              />
-            </label>
-          </div>
-          <div className="forgot-password-inputContainer">
-            <label>
-              <span className="forgot-password-label">Current Password</span>
-              <input
-                type="password"
-                className="forgot-password-input"
-                value={currentPassword}
-                onChange={e => setCurrentPassword(e.target.value)}
                 required
               />
             </label>
