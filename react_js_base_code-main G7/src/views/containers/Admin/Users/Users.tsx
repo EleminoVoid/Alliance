@@ -12,7 +12,7 @@ import type { User } from "../../../../types";
 
 export const Users: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // items per page
+  const pageSize = 7; // items per page
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -32,6 +32,7 @@ export const Users: React.FC = () => {
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentPage(1);
     setSearchQuery(e.target.value);
   };
 

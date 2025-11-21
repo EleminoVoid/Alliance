@@ -15,7 +15,9 @@ export const Rooms = () => {
   const [roomAmenities, setRoomAmenities] = useState<{ [key: string]: string[] }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [showModal, setShowModal] = useState(false);
+  const [roomToDelete, setRoomToDelete] = useState<string | null>(null);
+  const pageSize = 7;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,23 +56,37 @@ export const Rooms = () => {
     setSearchQuery(e.target.value);
   };
 
-  const filteredRooms = rooms.filter((room: any) =>
-    (room.name || room.Name || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredRooms = rooms
+    .filter((room: any) =>
+      (room.name || room.Name || "").toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a: any, b: any) => {
+      const nameA = (a.name || a.Name || "").toLowerCase();
+      const nameB = (b.name || b.Name || "").toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
 
   const handleEditRoom = (roomId: string) => {
     navigate(ADMIN_PATHS.EDIT_ROOM.path.replace(":id", roomId));
   };
 
-  const handleDeleteRoom = async (roomId: string) => {
-    if (!window.confirm("Are you sure you want to delete this room?")) return;
+  const openDeleteModal = (roomId: string) => {
+    setRoomToDelete(roomId);
+    setShowModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!roomToDelete) return;
     try {
-      await deleteRoom(roomId);
-      setRooms((prev) => prev.filter((room: any) => (room.id || room.Id) !== roomId));
+      await deleteRoom(roomToDelete);
+      setRooms((prev) => prev.filter((room: any) => (room.id || room.Id) !== roomToDelete));
       toast.success("Room deleted successfully!");
     } catch (err) {
       toast.error("Error deleting room.");
       console.error(err);
+    } finally {
+      setShowModal(false);
+      setRoomToDelete(null);
     }
   };
 
@@ -111,7 +127,7 @@ export const Rooms = () => {
         </div>
       </div>
 
-  <div className="room-table">
+      <div className="room-table">
         <div className="room-table-header">
           <div className="number-column">No.</div>
           <div className="name-column">Name</div>
@@ -153,7 +169,7 @@ export const Rooms = () => {
                     className="delete-button"
                     title="Delete room"
                     aria-label={`Delete room ${roomName}`}
-                    onClick={() => handleDeleteRoom(roomId)}
+                    onClick={() => openDeleteModal(roomId)}
                   >
                     <DeleteIcon />
                   </button>
@@ -162,14 +178,14 @@ export const Rooms = () => {
             );
           })}
         </div>
-  </div>
+      </div>
 
-  {/* Show a helpful message if a search returned no results */}
-  {searchQuery.trim() !== "" && filteredRooms.length === 0 && (
-    <div className="no-data-message">Room does not exist</div>
-  )}
+      {/* Show a helpful message if a search returned no results */}
+      {searchQuery.trim() !== "" && filteredRooms.length === 0 && (
+        <div className="no-data-message">Room does not exist</div>
+      )}
 
-  <div className="pagination">
+      <div className="pagination">
         {Array.from({ length: Math.max(1, Math.ceil(filteredRooms.length / pageSize)) }, (_, i) => (
           <button
             key={i}
@@ -180,6 +196,22 @@ export const Rooms = () => {
           </button>
         ))}
       </div>
+
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <p>Are you sure you want to delete this room?</p>
+            <div className="modal-actions">
+              <button onClick={confirmDelete} className="modal-confirm">
+                Delete
+              </button>
+              <button onClick={() => setShowModal(false)} className="modal-cancel">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
