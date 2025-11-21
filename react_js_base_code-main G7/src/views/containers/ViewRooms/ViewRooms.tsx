@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { USER_PATHS } from "../../../constant";
 import { useNavigate } from "react-router-dom";
 import "./ViewRooms.css";
@@ -39,7 +41,10 @@ export const ViewRooms: React.FC = () => {
         console.log("Normalized rooms:", normalizedRooms);
         setRooms(normalizedRooms);
       })
-      .catch((err) => console.error("Error fetching rooms:", err));
+      .catch((err) => {
+        console.error("Error fetching rooms:", err);
+        toast.error("Failed to load rooms");
+      });
   }, []);
 
   const filteredRooms = rooms.filter(
@@ -55,6 +60,7 @@ export const ViewRooms: React.FC = () => {
 
   return (
     <div className="rooms-page-wrapper">
+      <ToastContainer />
       <div className="rooms-page-header">
         <h1>Available Rooms</h1>
         <button

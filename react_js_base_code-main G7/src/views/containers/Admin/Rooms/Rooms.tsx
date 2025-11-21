@@ -48,6 +48,7 @@ export const Rooms = () => {
       setRoomAmenities(amenitiesMap);
     } catch (err) {
       console.error("Error fetching rooms:", err);
+      toast.error("Failed to load rooms data");
     }
   };
 

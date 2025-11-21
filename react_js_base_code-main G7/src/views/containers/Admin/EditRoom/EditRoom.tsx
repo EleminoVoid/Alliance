@@ -72,6 +72,7 @@ export const EditRoom: React.FC = () => {
           setAmenitiesState(state);
         } catch (amenityErr) {
           console.error("Error loading amenities:", amenityErr);
+          toast.error("Failed to load room amenities");
           // If amenities fetch fails, initialize all as unchecked
           const state: Record<string, boolean> = {};
           AMENITIES_LIST.forEach((a) => {
@@ -81,6 +82,7 @@ export const EditRoom: React.FC = () => {
         }
       } catch (err) {
         console.error("Error loading room:", err);
+        toast.error("Failed to load room details");
       }
     };
     loadRoom();

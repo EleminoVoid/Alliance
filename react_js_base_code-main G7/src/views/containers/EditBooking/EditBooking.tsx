@@ -123,17 +123,17 @@ export const EditBooking: React.FC = () => {
       type: form.type as "single" | "recurring",
     };
 
-    console.log("Updating booking:", updatedBooking);
+    // show progress to user via toast
+    toast.info("Updating booking...");
 
     try {
       const result = await updateBooking(booking.id, updatedBooking);
-      console.log("Update result:", result);
+      // result info is not shown via console; success is shown via toast
       toast.success("Booking updated successfully!");
       setTimeout(() => {
         navigate(PATHS.BOOKINGS?.path || "/bookings");
       }, 1500);
     } catch (err: any) {
-      console.error("Error updating booking:", err);
       const msg = getErrorMessage(err, "Error updating booking. Please try again.");
       toast.error(msg);
     }

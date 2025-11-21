@@ -16,6 +16,8 @@ import {
   YAxis,
 } from "recharts";
 import "./Dashboard.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Room {
   id: string;
@@ -119,6 +121,7 @@ export const Dashboard = () => {
         setBookingCounts(counts);
       } catch (error) {
         console.error("Error fetching data:", error);
+        toast.error("Failed to load dashboard data");
       }
     };
 
@@ -196,6 +199,7 @@ export const Dashboard = () => {
 
   return (
     <div className="stats-container">
+      <ToastContainer />
       <div className="stats-header">
         <h1>Room Management - Stats</h1>
         <div className="time-range-tabs">

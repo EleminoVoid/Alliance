@@ -119,6 +119,8 @@ export const ViewBookings: React.FC = () => {
         setRooms(normalizedRooms);
       } catch (error) {
         console.error("Error fetching data:", error);
+        const msg = getErrorMessage(error, "Error loading bookings");
+        toast.error(msg);
       }
     };
 
@@ -139,8 +141,35 @@ export const ViewBookings: React.FC = () => {
   };
 
   const handleDeleteBooking = async (bookingId: string, bookingType?: "single" | "recurring") => {
-    if (!window.confirm("Are you sure you want to delete this booking?")) return;
+    // Use a custom toast to confirm deletion so UI is consistent with other messages
+    toast(
+      ({ closeToast }) => (
+        <div style={{ textAlign: "center" }}>
+          <p style={{ marginBottom: 12 }}>Are you sure you want to delete this booking?</p>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+            <button
+              onClick={() => {
+                closeToast();
+                confirmDelete(bookingId, bookingType);
+              }}
+              style={{ padding: "6px 12px", backgroundColor: "#dc2626", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}
+            >
+              Delete
+            </button>
+            <button
+              onClick={closeToast}
+              style={{ padding: "6px 12px", backgroundColor: "#6b7280", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ),
+      { autoClose: false, closeButton: false }
+    );
+  };
 
+  const confirmDelete = async (bookingId: string, bookingType?: "single" | "recurring") => {
     console.log("Deleting booking with ID:", bookingId, "Type:", bookingType);
 
     try {
@@ -156,7 +185,6 @@ export const ViewBookings: React.FC = () => {
       }
 
       // Update local state to remove the deleted booking(s)
-      // For recurring, this will remove all bookings with the same pattern
       setBookings((prev) => prev.filter((b) => b.id !== bookingId));
       toast.success("Booking deleted successfully!");
     } catch (err: any) {
