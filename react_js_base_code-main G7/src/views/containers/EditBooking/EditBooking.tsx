@@ -28,7 +28,7 @@ export const EditBooking: React.FC = () => {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  // use toast for all user-facing errors
   const [form, setForm] = useState({
     roomId: "",
     startDate: "",
@@ -50,7 +50,7 @@ export const EditBooking: React.FC = () => {
         setRooms(normalizedRooms);
 
         if (!id) {
-          setError("No booking ID provided in the URL.");
+          toast.error("No booking ID provided in the URL.");
           setLoading(false);
           return;
         }
@@ -59,7 +59,7 @@ export const EditBooking: React.FC = () => {
         const data = await getBookingById(id);
 
         if (!data || Object.keys(data).length === 0) {
-          setError("Booking not found");
+          toast.error("Booking not found");
           setLoading(false);
           return;
         }
@@ -83,7 +83,7 @@ export const EditBooking: React.FC = () => {
         });
       } catch (err: any) {
         const msg = getErrorMessage(err, "Error loading booking");
-        setError(msg);
+        toast.error(msg);
       } finally {
         setLoading(false);
       }
@@ -112,7 +112,6 @@ export const EditBooking: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     if (!booking) return;
 
     // Ensure dates are in proper format with seconds
@@ -137,7 +136,6 @@ export const EditBooking: React.FC = () => {
       console.error("Error updating booking:", err);
       const msg = getErrorMessage(err, "Error updating booking. Please try again.");
       toast.error(msg);
-      setError(msg);
     }
   };
 
@@ -147,7 +145,6 @@ export const EditBooking: React.FC = () => {
         <p>Loading booking details...</p>
       </div>
     );
-  if (error) return <div className="edit-booking-error">{error}</div>;
   if (!booking) return null;
 
   return (
@@ -207,7 +204,7 @@ export const EditBooking: React.FC = () => {
         >
           Cancel
         </button>
-        {error && <div className="edit-booking-error">{error}</div>}
+        {/* errors now shown via toast */}
       </form>
     </div>
   );

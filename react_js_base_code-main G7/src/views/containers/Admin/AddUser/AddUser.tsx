@@ -116,7 +116,9 @@ export const AddUser = () => {
                 <option value="User">User</option>
               </select>
             </div>
+          </div>
 
+          <div className="form-row">
             <div className="form-field">
               <label htmlFor="password">Password</label>
               <input
@@ -129,19 +131,19 @@ export const AddUser = () => {
                 required
               />
             </div>
-          </div>
 
-          <div className="form-field">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={userData.confirmPassword}
-              onChange={handleInputChange}
-              required
-            />
+            <div className="form-field">
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={userData.confirmPassword}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
           </div>
         </div>
 

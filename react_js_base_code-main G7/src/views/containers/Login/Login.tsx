@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import "./Login.css";
 import { CircularProgress } from "@mui/material";
 import { useAuth } from "../../../contexts/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { getErrorMessage } from '../../../utils/error';
 
 export const Login = () => {
@@ -12,7 +14,7 @@ export const Login = () => {
     email: "",
     password: ""
   });
-  const [error, setError] = useState("");
+  // we'll use toast for all user-facing errors
   const [loading, setLoading] = useState(false);
 
   // Clear all local storage when the login page loads
@@ -34,7 +36,6 @@ export const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -52,7 +53,7 @@ export const Login = () => {
       }
     } catch (err) {
       const msg = getErrorMessage(err, "Invalid email or password");
-      setError(msg);
+      toast.error(msg);
       console.error("Login error:", err);
     } finally {
       setLoading(false);
@@ -96,7 +97,7 @@ export const Login = () => {
               </label>
             </div>
 
-            {error && <p className="login-error">{error}</p>}
+            <ToastContainer />
 
             <p className="login-forgotPassword">
               Forgot Password?{" "}

@@ -13,7 +13,7 @@ export const Register = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  // using toast for all messages; keep local state minimal
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -111,7 +111,7 @@ export const Register = () => {
                   />
                 </label>
               </div>
-              {error && <p className="register-error">{error}</p>}
+              <ToastContainer />
               <button type="submit" className="register-submitButton" disabled={isSubmitting}>
                 {isSubmitting ? "Registering..." : "Sign Up"}
               </button>

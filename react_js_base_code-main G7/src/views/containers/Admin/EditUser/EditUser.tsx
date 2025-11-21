@@ -18,6 +18,7 @@ export const EditUser: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [passwordInput, setPasswordInput] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -59,6 +60,24 @@ export const EditUser: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userData) return;
+
+    // If user provided a new password, require confirmation and ensure match
+    if (passwordInput) {
+      if (!confirmPassword) {
+        toast.error("Please confirm the new password.");
+        return;
+      }
+      if (passwordInput !== confirmPassword) {
+        toast.error("Passwords do not match.");
+        return;
+      }
+    }
+
+    // Prevent submitting if confirmPassword is provided but password is empty
+    if (!passwordInput && confirmPassword) {
+      toast.error("Please enter the new password before confirming.");
+      return;
+    }
 
     try {
       // Update user details
@@ -128,6 +147,9 @@ export const EditUser: React.FC = () => {
                 <option value="User">User</option>
               </select>
             </div>
+          </div>
+
+          <div className="form-row">
             <div className="form-field">
               <label htmlFor="password">New Password (optional)</label>
               <input
@@ -137,6 +159,17 @@ export const EditUser: React.FC = () => {
                 value={passwordInput}
                 onChange={e => setPasswordInput(e.target.value)}
                 placeholder="Leave empty to keep current password"
+              />
+            </div>
+            <div className="form-field">
+              <label htmlFor="confirmPassword">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                placeholder="Repeat new password"
               />
             </div>
           </div>

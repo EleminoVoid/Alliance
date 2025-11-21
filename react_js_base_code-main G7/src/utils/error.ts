@@ -4,7 +4,30 @@ export function getErrorMessage(err: any, fallback = "An error occurred") {
   if (typeof err === "string") return err;
 
   // If it's an Error object with message set by API layer, prefer that
-  if (err.message && typeof err.message === "string") return err.message;
+  if (err.message && typeof err.message === "string") {
+    const m: string = err.message;
+    // If message contains a JSON body (e.g. "401 ...: {..}"), try parse it
+    const jsonStart = m.indexOf("{");
+    if (jsonStart !== -1) {
+      try {
+        const parsed = JSON.parse(m.slice(jsonStart));
+        if (parsed && typeof parsed === "object") {
+          if (parsed.message) return String(parsed.message);
+          if (parsed.error) return String(parsed.error);
+          return JSON.stringify(parsed);
+        }
+      } catch {
+        // fall through to other strategies
+      }
+    }
+    // If message has a status prefix like "401 Unauthorized: some message", take suffix
+    const colonIndex = m.indexOf(": ");
+    if (colonIndex !== -1) {
+      const suffix = m.slice(colonIndex + 2).trim();
+      if (suffix) return suffix;
+    }
+    return m;
+  }
 
   // If API attached a status, map to friendly messages as fallback
   if (typeof err.status === "number") {

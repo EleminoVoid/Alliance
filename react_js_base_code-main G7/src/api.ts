@@ -17,8 +17,17 @@ async function requestJson(path: string, init?: RequestInit) {
       const res = await fetch(`${base}${path}`, { ...init, headers });
       if (!res.ok) {
         const errorText = await res.text();
-        console.error(`API Error (${res.status}):`, errorText);
-        throw new Error(`${res.status} ${res.statusText}: ${errorText}`);
+        let userMessage: string = errorText;
+        try {
+          const parsed = JSON.parse(errorText);
+          if (parsed && typeof parsed === "object" && parsed.message) {
+            userMessage = String(parsed.message);
+          }
+        } catch (e) {
+          // not JSON, keep original text
+        }
+        console.error(`API Error (${res.status}):`, userMessage);
+        throw new Error(`${res.status} ${res.statusText}: ${userMessage}`);
       }
       const data = await res.json();
       return data; // Successfully got response, return immediately
@@ -279,8 +288,15 @@ export async function deleteBooking(id: string) {
 
       if (!res.ok) {
         const errorText = await res.text();
-        console.error(`Delete API Error (${res.status}):`, errorText);
-        throw new Error(`${res.status} ${res.statusText}: ${errorText}`);
+        let userMessage: string = errorText;
+        try {
+          const parsed = JSON.parse(errorText);
+          if (parsed && typeof parsed === "object" && parsed.message) {
+            userMessage = String(parsed.message);
+          }
+        } catch (e) {}
+        console.error(`Delete API Error (${res.status}):`, userMessage);
+        throw new Error(`${res.status} ${res.statusText}: ${userMessage}`);
       }
 
       // Try to parse JSON response if there is one
@@ -312,8 +328,15 @@ export async function deleteRecurringBooking(id: string) {
 
       if (!res.ok) {
         const errorText = await res.text();
-        console.error(`Delete recurring API Error (${res.status}):`, errorText);
-        throw new Error(`${res.status} ${res.statusText}: ${errorText}`);
+        let userMessage: string = errorText;
+        try {
+          const parsed = JSON.parse(errorText);
+          if (parsed && typeof parsed === "object" && parsed.message) {
+            userMessage = String(parsed.message);
+          }
+        } catch (e) {}
+        console.error(`Delete recurring API Error (${res.status}):`, userMessage);
+        throw new Error(`${res.status} ${res.statusText}: ${userMessage}`);
       }
 
       // Try to parse JSON response if there is one
